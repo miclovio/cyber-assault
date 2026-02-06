@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBER ASSAULT</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        canvas { image-rendering: pixelated; }
+    </style>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+
+    <!-- Data -->
+    <script src="js/data/constants.js"></script>
+    <script src="js/data/weapons.js"></script>
+    <script src="js/data/levels.js"></script>
+
+    <!-- Systems -->
+    <script src="js/systems/AudioManager.js"></script>
+    <script src="js/systems/ParallaxManager.js"></script>
+    <script src="js/systems/WeaponSystem.js"></script>
+    <script src="js/systems/EffectsManager.js"></script>
+    <script src="js/systems/PowerUpSystem.js"></script>
+    <script src="js/systems/CollisionManager.js"></script>
+    <script src="js/systems/LevelManager.js"></script>
+
+    <!-- Entities -->
+    <script src="js/entities/Bullet.js"></script>
+    <script src="js/entities/Player.js"></script>
+    <script src="js/entities/EnemyBase.js"></script>
+    <script src="js/entities/Grunt.js"></script>
+    <script src="js/entities/Flyer.js"></script>
+    <script src="js/entities/Heavy.js"></script>
+    <script src="js/entities/Ghost.js"></script>
+    <script src="js/entities/Turret.js"></script>
+    <script src="js/entities/Boss.js"></script>
+
+    <!-- Scenes -->
+    <script src="js/scenes/BootScene.js"></script>
+    <script src="js/scenes/PreloadScene.js"></script>
+    <script src="js/scenes/MenuScene.js"></script>
+    <script src="js/scenes/GameScene.js"></script>
+    <script src="js/scenes/HUDScene.js"></script>
+    <script src="js/scenes/GameOverScene.js"></script>
+    <script src="js/scenes/VictoryScene.js"></script>
+
+    <!-- Main -->
+    <script src="js/main.js"></script>
+</body>
+</html>

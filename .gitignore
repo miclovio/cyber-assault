@@ -1,0 +1,9 @@
+# Ignore all assets by default (only used assets are force-added)
+Assets/
+
+# Claude config
+.claude/
+
+# Large files
+*.zip
+NUL
