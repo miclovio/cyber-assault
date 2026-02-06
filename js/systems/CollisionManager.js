@@ -1,0 +1,138 @@
+// ============================================================================
+// Collision Manager - All collision pairs
+// ============================================================================
+
+class CollisionManager {
+    constructor(scene) {
+        this.scene = scene;
+    }
+
+    setup(platforms) {
+        const scene = this.scene;
+        const player = scene.player;
+
+        // Player vs Platforms
+        scene.physics.add.collider(player, platforms);
+
+        // Player bullets vs Platforms
+        scene.physics.add.collider(scene.weaponSystem.playerBullets, platforms, (bullet) => {
+            scene.effectsManager.playHitEffect(bullet.x, bullet.y);
+            bullet.deactivate();
+        });
+
+        // Enemy bullets vs Platforms
+        scene.physics.add.collider(scene.weaponSystem.enemyBullets, platforms, (bullet) => {
+            bullet.deactivate();
+        });
+
+        // Enemies vs Platforms
+        if (scene.levelManager) {
+            scene.physics.add.collider(scene.levelManager.enemies, platforms);
+        }
+
+        // PowerUps vs Platforms
+        if (scene.powerUpSystem) {
+            scene.physics.add.collider(scene.powerUpSystem.powerUps, platforms);
+        }
+    }
+
+    setupEnemyCollisions() {
+        const scene = this.scene;
+        const player = scene.player;
+
+        // Player bullets vs Enemies
+        if (scene.levelManager) {
+            scene.physics.add.overlap(
+                scene.weaponSystem.playerBullets,
+                scene.levelManager.enemies,
+                this.bulletHitEnemy.bind(this)
+            );
+        }
+
+        // Player bullets vs Boss
+        if (scene.boss) {
+            scene.physics.add.overlap(
+                scene.weaponSystem.playerBullets,
+                scene.boss,
+                this.bulletHitBoss.bind(this)
+            );
+        }
+
+        // Enemy bullets vs Player
+        scene.physics.add.overlap(
+            scene.weaponSystem.enemyBullets,
+            player,
+            this.enemyBulletHitPlayer.bind(this)
+        );
+
+        // Enemy body vs Player
+        if (scene.levelManager) {
+            scene.physics.add.overlap(
+                player,
+                scene.levelManager.enemies,
+                this.enemyTouchPlayer.bind(this)
+            );
+        }
+
+        // PowerUp collection
+        if (scene.powerUpSystem) {
+            scene.physics.add.overlap(
+                player,
+                scene.powerUpSystem.powerUps,
+                (playerObj, powerUp) => {
+                    scene.powerUpSystem.collectPowerUp(playerObj, powerUp);
+                }
+            );
+        }
+    }
+
+    bulletHitEnemy(bullet, enemy) {
+        if (!bullet.active || !enemy.active) return;
+
+        bullet.deactivate();
+        this.scene.effectsManager.playHitEffect(bullet.x, bullet.y);
+
+        if (enemy.takeDamage) {
+            enemy.takeDamage(bullet.damage);
+        }
+    }
+
+    bulletHitBoss(boss, bullet) {
+        if (!bullet.active || !boss.active) return;
+
+        bullet.deactivate();
+        this.scene.effectsManager.playHitEffect(bullet.x, bullet.y);
+
+        if (boss.takeDamage) {
+            boss.takeDamage(bullet.damage);
+        }
+    }
+
+    enemyBulletHitPlayer(player, bullet) {
+        if (!bullet.active || player.isDead || player.isInvulnerable) return;
+
+        bullet.deactivate();
+        player.takeDamage(1);
+    }
+
+    enemyTouchPlayer(player, enemy) {
+        if (!enemy.active || player.isDead || player.isInvulnerable) return;
+        player.takeDamage(1);
+    }
+
+    setupBossCollision(boss) {
+        const scene = this.scene;
+
+        scene.physics.add.overlap(
+            scene.weaponSystem.playerBullets,
+            boss,
+            this.bulletHitBoss.bind(this)
+        );
+
+        scene.physics.add.overlap(
+            scene.player,
+            boss,
+            this.enemyTouchPlayer.bind(this)
+        );
+    }
+}
