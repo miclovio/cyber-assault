@@ -12,10 +12,11 @@ const LEVEL_DATA = {
         height: GAME_HEIGHT,
         playerStart: { x: 100, y: 350 },
         backgrounds: [
-            { key: 'l1-bg',   speed: 0.05 },
-            { key: 'l1-far',  speed: 0.15 },
-            { key: 'l1-mid',  speed: 0.3 },
-            { key: 'l1-wall', speed: 0.4, alpha: 0.6 }
+            { key: 'l1-bg',   speed: 0.05, tileScale: 3 },
+            { key: 'l1-far',  speed: 0.15, tileScale: 4 },
+            { key: 'l1-mid',  speed: 0.3,  tileScale: 3 },
+            { key: 'l1-wall', speed: 0.4,  tileScale: 3, alpha: 0.6 },
+            { key: 'l1-fore', speed: 0.55, tileScale: 3, alignBottom: true }
         ],
         platformTile: 'l1-floor',
         platforms: [
@@ -130,12 +131,11 @@ const LEVEL_DATA = {
         height: GAME_HEIGHT,
         playerStart: { x: 100, y: 350 },
         backgrounds: [
-            { key: 'l2-bg',    speed: 0.05 },
-            { key: 'l2-walls', speed: 0.2 },
-            { key: 'l2-tiles', speed: 0.35, alpha: 0.4 }
+            { key: 'l2-bg',   speed: 0.05, tint: 0x8877bb },
+            { key: 'l2-mid',  speed: 0.15, tint: 0x7766aa },
+            { key: 'l2-fore', speed: 0.35, tint: 0x665599 }
         ],
         platformTile: 'l2-platform',
-        platformTint: 0x5533aa,
         platforms: [
             // Ground sections with 150px pits
             { x: 0,    y: 420, w: 700,  h: 30 },
@@ -197,8 +197,7 @@ const LEVEL_DATA = {
             ]},
             { x: 1300, enemies: [
                 { type: 'grunt', x: 1500, y: 380, config: {} },
-                { type: 'grunt', x: 1600, y: 280, config: { patrolDir: -1, patrolRange: 60 } },
-                { type: 'ghost', x: 1700, y: 200, config: {} }
+                { type: 'grunt', x: 1600, y: 280, config: { patrolDir: -1, patrolRange: 60 } }
             ]},
             { x: 1900, enemies: [
                 { type: 'heavy', x: 2100, y: 370, config: {} },
@@ -215,7 +214,6 @@ const LEVEL_DATA = {
             { x: 3800, enemies: [
                 { type: 'grunt', x: 4000, y: 380, config: {} },
                 { type: 'heavy', x: 4100, y: 370, config: { patrolDir: -1 } },
-                { type: 'ghost', x: 4200, y: 200, config: {} },
                 { type: 'flyer', x: 4300, y: 160, config: { moveDir: -1 } }
             ]},
             { x: 4400, enemies: [
@@ -229,8 +227,7 @@ const LEVEL_DATA = {
             ]},
             { x: 5800, enemies: [
                 { type: 'heavy', x: 6000, y: 370, config: { patrolDir: -1 } },
-                { type: 'heavy', x: 6100, y: 370, config: {} },
-                { type: 'ghost', x: 6200, y: 150, config: {} }
+                { type: 'heavy', x: 6100, y: 370, config: {} }
             ]},
             { x: 6400, enemies: [
                 { type: 'heavy', x: 6500, y: 370, config: {} },
@@ -254,18 +251,20 @@ const LEVEL_DATA = {
     },
 
     // ========================================================================
-    // LEVEL 3 - Bio-Organic Lab
+    // LEVEL 3 - Lava Pit
     // ========================================================================
     3: {
-        name: 'Bio-Organic Lab',
+        name: 'Rocky Planet',
         width: 8000,
         height: GAME_HEIGHT,
         playerStart: { x: 100, y: 350 },
         backgrounds: [
-            { key: 'l3-bg', speed: 0.05 }
+            { key: 'l3-back', speed: 0.05, tileScale: 2 },
+            { key: 'l3-mid',  speed: 0.15, tileScale: 2, alignBottom: true },
+            { key: 'l3-near', speed: 0.3,  tileScale: 2, alignBottom: true }
         ],
         platformTile: 'l3-platform',
-        platformTint: 0xcc55aa,
+        platformTint: 0x995544,
         platforms: [
             // Organic ground - irregular layout
             { x: 0,    y: 420, w: 600,  h: 30 },
@@ -328,8 +327,7 @@ const LEVEL_DATA = {
             { x: 1700, enemies: [
                 { type: 'heavy', x: 1900, y: 370, config: {} },
                 { type: 'flying_eye', x: 2000, y: 160, config: { moveDir: -1 } },
-                { type: 'flying_eye', x: 2050, y: 200, config: { moveDir: -1 } },
-                { type: 'ghost', x: 2100, y: 200, config: {} }
+                { type: 'flying_eye', x: 2050, y: 200, config: { moveDir: -1 } }
             ]},
             { x: 2300, enemies: [
                 { type: 'flying_eye', x: 2500, y: 150, config: { moveDir: -1 } },
@@ -339,7 +337,6 @@ const LEVEL_DATA = {
             ]},
             { x: 2900, enemies: [
                 { type: 'heavy', x: 3100, y: 370, config: { patrolDir: -1 } },
-                { type: 'ghost', x: 3200, y: 180, config: {} },
                 { type: 'flying_eye', x: 3300, y: 160, config: { moveDir: -1 } },
                 { type: 'flying_eye', x: 3350, y: 200, config: { moveDir: 1 } }
             ]},
@@ -353,8 +350,7 @@ const LEVEL_DATA = {
             { x: 4200, enemies: [
                 { type: 'heavy', x: 4400, y: 370, config: {} },
                 { type: 'heavy', x: 4500, y: 370, config: { patrolDir: -1 } },
-                { type: 'flying_eye', x: 4600, y: 160, config: { moveDir: -1 } },
-                { type: 'ghost', x: 4700, y: 200, config: {} }
+                { type: 'flying_eye', x: 4600, y: 160, config: { moveDir: -1 } }
             ]},
             { x: 4800, enemies: [
                 { type: 'flying_eye', x: 5000, y: 150, config: { moveDir: -1 } },
@@ -366,15 +362,13 @@ const LEVEL_DATA = {
             { x: 5400, enemies: [
                 { type: 'heavy', x: 5600, y: 370, config: {} },
                 { type: 'grunt', x: 5700, y: 380, config: { patrolDir: -1 } },
-                { type: 'ghost', x: 5800, y: 180, config: {} },
                 { type: 'flying_eye', x: 5900, y: 160, config: { moveDir: -1 } }
             ]},
             { x: 6000, enemies: [
                 { type: 'flying_eye', x: 6200, y: 150, config: { moveDir: -1 } },
                 { type: 'flying_eye', x: 6250, y: 190, config: { moveDir: 1 } },
                 { type: 'flying_eye', x: 6300, y: 230, config: { moveDir: -1 } },
-                { type: 'heavy', x: 6400, y: 370, config: { patrolDir: -1 } },
-                { type: 'ghost', x: 6500, y: 200, config: {} }
+                { type: 'heavy', x: 6400, y: 370, config: { patrolDir: -1 } }
             ]}
         ],
         checkpoints: [
@@ -401,7 +395,7 @@ const LEVEL_DATA = {
         height: GAME_HEIGHT,
         playerStart: { x: 100, y: 350 },
         backgrounds: [
-            { key: 'l4-bg',    speed: 0.02 },
+            { key: 'l4-bg',    speed: 0.02, tileScale: 3 },
             { key: 'l4-stars', speed: 0.15 }
         ],
         platformTile: 'l1-floor',
