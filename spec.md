@@ -35,7 +35,7 @@
 
 1. **Industrial Base** - Grunts + Flyers, Boss: Siege Tank (30 HP)
 2. **Underground Caverns** - Heavies + Ghosts, Boss: Assault Mech (40 HP)
-3. **Bio-Organic Lab** - Eye Demon swarms, Boss: Infernal Skull (35 HP)
+3. **Lava Pit** - Eye Demon swarms, Boss: Infernal Skull (35 HP)
 4. **Space Station** - All types + Turrets, Boss: Omega Sentinel (50 HP)
 
 ## Bosses

@@ -12,9 +12,9 @@ class MenuScene extends Phaser.Scene {
         const h = GAME_HEIGHT;
 
         // Parallax background layers
-        this.bgLayer = this.add.tileSprite(0, 0, w, h, 'l1-bg').setOrigin(0).setScrollFactor(0);
-        this.farLayer = this.add.tileSprite(0, 0, w, h, 'l1-far').setOrigin(0).setScrollFactor(0);
-        this.midLayer = this.add.tileSprite(0, 0, w, h, 'l1-mid').setOrigin(0).setScrollFactor(0);
+        this.bgLayer = this.add.tileSprite(0, 0, w, h, 'l1-bg').setOrigin(0).setScrollFactor(0).setTileScale(3, 3);
+        this.farLayer = this.add.tileSprite(0, 0, w, h, 'l1-far').setOrigin(0).setScrollFactor(0).setTileScale(4, 4);
+        this.midLayer = this.add.tileSprite(0, 0, w, h, 'l1-mid').setOrigin(0).setScrollFactor(0).setTileScale(3, 3);
 
         // Dark overlay
         this.add.rectangle(w / 2, h / 2, w, h, 0x000000, 0.5);
@@ -73,9 +73,9 @@ class MenuScene extends Phaser.Scene {
     }
 
     update() {
-        // Scroll backgrounds
-        this.bgLayer.tilePositionX += 0.1;
-        this.farLayer.tilePositionX += 0.3;
-        this.midLayer.tilePositionX += 0.6;
+        // Scroll backgrounds (divided by tileScale)
+        this.bgLayer.tilePositionX += 0.1 / 3;
+        this.farLayer.tilePositionX += 0.3 / 4;
+        this.midLayer.tilePositionX += 0.6 / 3;
     }
 }

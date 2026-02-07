@@ -143,17 +143,18 @@ class PreloadScene extends Phaser.Scene {
         this.load.image('l1-foreground', `${bulk}/foreground.png`);
 
         // Level 2 - Caverns
-        const cav = 'Assets/Environments/caverns-files-web/layers';
-        this.load.image('l2-bg', `${cav}/background.png`);
-        this.load.image('l2-walls', `${cav}/back-walls.png`);
-        this.load.image('l2-tiles', `${cav}/tiles.png`);
-        this.load.image('l2-platform', 'Assets/Environments/bulkhead-walls/v2/PNG/floor.png');
+        const cav2 = 'Assets/Environments/caverns2';
+        this.load.image('l2-bg', `${cav2}/background1.png`);
+        this.load.image('l2-mid', `${cav2}/background3.png`);
+        this.load.image('l2-fore', `${cav2}/background4b.png`);
+        this.load.image('l2-platform', 'Assets/Environments/Floor/floor.png');
 
-        // Level 3 - Living Tissue
-        const tissue = 'Assets/Environments/Living-Tissue-Platform-Files/PNG/layers';
-        this.load.image('l3-bg', `${tissue}/bakground.png`);
-        this.load.image('l3-tiles', `${tissue}/tileset.png`);
-        this.load.image('l3-platform', 'Assets/Environments/lava-background/PNG/lava-tile.png');
+        // Level 3 - Rocky Pass
+        const rocky = 'Assets/Environments/Rocky Pass Files/PNG';
+        this.load.image('l3-back', `${rocky}/back.png`);
+        this.load.image('l3-mid', `${rocky}/middle.png`);
+        this.load.image('l3-near', `${rocky}/near.png`);
+        this.load.image('l3-platform', 'Assets/Environments/bulkhead-walls/v2/PNG/floor.png');
 
         // Level 4 - Space (Blue Version - vibrant nebula)
         const space = 'Assets/Environments/space_background_pack/Blue Version/layered';

@@ -110,12 +110,15 @@ class GameScene extends Phaser.Scene {
     createPlatforms(levelData) {
         const tileKey = levelData.platformTile;
         const tileTint = levelData.platformTint;
+        const texH = this.textures.get(tileKey).getSourceImage().height;
 
         levelData.platforms.forEach(p => {
             // Visual tileSprite (centered)
             const visual = this.add.tileSprite(p.x + p.w / 2, p.y + p.h / 2, p.w, p.h, tileKey);
             visual.setDepth(1);
             if (tileTint) visual.setTint(tileTint);
+            // Scale texture to fit platform height (prevent vertical tiling)
+            if (texH < p.h) visual.setTileScale(1, p.h / texH);
 
             // Invisible physics rectangle (origin 0.5 properly initialized unlike Zone)
             const rect = this.add.rectangle(p.x + p.w / 2, p.y + p.h / 2, p.w, p.h);
