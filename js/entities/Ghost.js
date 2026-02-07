@@ -14,15 +14,15 @@ class Ghost extends EnemyBase {
         this.floatSpeed = cfg.floatSpeed;
         this.spawnTime = scene.time.now;
 
-        // Ghosts ignore platform collisions
-        this.body.checkCollision.none = true;
+        // Mark as ghost so CollisionManager can skip platform collisions
+        this.isGhost = true;
 
         this.play('ghost-float');
         this.setAlpha(0.7);
     }
 
     update(time) {
-        if (!this.active || !this.isOnScreen()) return;
+        if (!this.active) return;
 
         // Float toward player
         if (this.scene.player && !this.scene.player.isDead) {
