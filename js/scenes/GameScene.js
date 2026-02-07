@@ -36,7 +36,7 @@ class GameScene extends Phaser.Scene {
         // Setup parallax backgrounds
         this.parallaxManager.setup(levelData);
 
-        // Create platforms
+        // Create platforms (staticGroup for proper collider support)
         this.platforms = this.physics.add.staticGroup();
         this.createPlatforms(levelData);
 
@@ -112,16 +112,15 @@ class GameScene extends Phaser.Scene {
         const tileTint = levelData.platformTint;
 
         levelData.platforms.forEach(p => {
-            // Visual tileSprite
+            // Visual tileSprite (centered)
             const visual = this.add.tileSprite(p.x + p.w / 2, p.y + p.h / 2, p.w, p.h, tileKey);
             visual.setDepth(1);
             if (tileTint) visual.setTint(tileTint);
 
-            // Physics collision rectangle (add to static group)
-            const block = this.add.rectangle(p.x + p.w / 2, p.y + p.h / 2, p.w, p.h);
-            block.setVisible(false);
-            this.physics.add.existing(block, true);
-            this.platforms.add(block);
+            // Invisible physics rectangle (origin 0.5 properly initialized unlike Zone)
+            const rect = this.add.rectangle(p.x + p.w / 2, p.y + p.h / 2, p.w, p.h);
+            rect.setVisible(false);
+            this.platforms.add(rect);
         });
     }
 
@@ -204,6 +203,9 @@ class GameScene extends Phaser.Scene {
         // Clear remaining enemies
         this.levelManager.clearEnemies();
 
+        // Set checkpoint inside arena so respawn works with locked camera
+        this.player.setCheckpoint(arenaStart + 60, 380);
+
         // Add boss platform if needed
         if (this.bossData.type !== 'FIRESKULL' && this.bossData.type !== 'SENTINEL') {
             const arenaW = arenaEnd - arenaStart;
@@ -211,7 +213,6 @@ class GameScene extends Phaser.Scene {
                 LEVEL_DATA[this.currentLevel].platformTile).setDepth(1);
             const floor = this.add.rectangle(arenaStart + arenaW / 2, 420, arenaW, 30);
             floor.setVisible(false);
-            this.physics.add.existing(floor, true);
             this.platforms.add(floor);
         }
 
@@ -242,6 +243,9 @@ class GameScene extends Phaser.Scene {
         // Null out bossData to prevent re-triggering startBossFight
         this.bossData = null;
 
+        // Notify HUD to hide boss HP bar
+        this.events.emit('boss-defeated');
+
         // Victory music
         this.sound.stopAll();
         this.sound.play('music-victory', { loop: false, volume: 0.5 });
@@ -250,28 +254,73 @@ class GameScene extends Phaser.Scene {
         this.player.isInvulnerable = true;
         this.player.invulnTimer = 10000;
         this.player.setVelocityX(0);
-        this.player.setVelocityY(-350);
+        this.player.setVelocityY(-500);
         this.player.play('player-jump-gun');
         this.player.facingRight = true;
         this.player.setFlipX(false);
 
-        // "YES!" speech bubble pops in at peak of jump
+        // Freeze player at peak of jump
+        this.time.delayedCall(350, () => {
+            this.player.setVelocity(0, 0);
+            this.player.body.allowGravity = false;
+        });
+
+        // Speech bubble with random quip pops in at peak of jump
         this.time.delayedCall(400, () => {
-            const yesText = this.add.text(this.player.x, this.player.y - 50, 'YES!', {
-                fontSize: '42px',
+            const quips = ['Yes!', 'Too EZ', 'Excellent', 'Away with\nyou Demon!'];
+            const quip = quips[Math.floor(Math.random() * quips.length)];
+            const fontSize = '16px';
+            const bw = 120;
+            const bh = 50;
+
+            const bx = this.player.x + 30;
+            const by = this.player.y - 40;
+
+            // Speech bubble background (drawn centered on origin so scale works)
+            const bubble = this.add.graphics().setDepth(49).setPosition(bx, by).setScale(0);
+            bubble.fillStyle(0xffffff, 1);
+            bubble.fillRoundedRect(-bw / 2, -bh / 2, bw, bh, 12);
+            // Tail pointing down-left toward player
+            bubble.fillTriangle(-20, bh / 2 - 4, -30, bh / 2 + 18, -5, bh / 2 - 4);
+
+            // Text inside bubble
+            const yesText = this.add.text(bx, by, quip, {
+                fontSize: fontSize,
                 fontFamily: 'Arial Black, Arial',
-                color: '#FFD700',
-                stroke: '#000000',
-                strokeThickness: 6
+                color: '#000000',
+                align: 'center'
             }).setOrigin(0.5).setDepth(50).setScale(0);
 
             this.tweens.add({
-                targets: yesText,
-                scaleX: 1.2,
-                scaleY: 1.2,
-                y: yesText.y - 30,
-                duration: 600,
+                targets: [bubble, yesText],
+                scaleX: 1,
+                scaleY: 1,
+                duration: 400,
                 ease: 'Back.easeOut'
+            });
+        });
+
+        // "LEVEL COMPLETE" text drops in after celebration
+        this.time.delayedCall(1200, () => {
+            const cam = this.cameras.main;
+            const cx = cam.scrollX + GAME_WIDTH / 2;
+            const cy = cam.scrollY + GAME_HEIGHT / 2 - 40;
+
+            const completeText = this.add.text(cx, cy - 100, 'LEVEL COMPLETE', {
+                fontSize: '48px',
+                fontFamily: 'monospace',
+                color: '#00ffff',
+                fontStyle: 'bold',
+                stroke: '#003333',
+                strokeThickness: 6
+            }).setOrigin(0.5).setDepth(50).setAlpha(0);
+
+            this.tweens.add({
+                targets: completeText,
+                y: cy,
+                alpha: 1,
+                duration: 800,
+                ease: 'Bounce.easeOut'
             });
         });
 

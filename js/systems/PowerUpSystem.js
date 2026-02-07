@@ -28,12 +28,15 @@ class PowerUpSystem {
     createPowerUp(x, y, type) {
         const def = POWERUP_TYPES[type];
 
-        // Use a simple graphics-based sprite
-        const gfx = this.scene.add.graphics();
-        gfx.fillStyle(def.color, 0.8);
-        gfx.fillCircle(12, 12, 12);
-        gfx.generateTexture('powerup-' + type, 24, 24);
-        gfx.destroy();
+        // Use a simple graphics-based sprite (generate texture once per type)
+        const texKey = 'powerup-' + type;
+        if (!this.scene.textures.exists(texKey)) {
+            const gfx = this.scene.add.graphics();
+            gfx.fillStyle(def.color, 0.8);
+            gfx.fillCircle(12, 12, 12);
+            gfx.generateTexture(texKey, 24, 24);
+            gfx.destroy();
+        }
 
         const powerUp = this.scene.physics.add.sprite(x, y - 10, 'powerup-' + type);
         powerUp.setDepth(5);

@@ -41,8 +41,9 @@ class EnemyBase extends Phaser.Physics.Arcade.Sprite {
             this.scene.player.addScore(this.scoreValue);
         }
 
-        // Death effect
+        // Death effect + small screen shake
         this.scene.effectsManager.playEnemyDeath(this.x, this.y);
+        this.scene.cameras.main.shake(80, 0.004);
 
         // Chance to drop power-up
         if (Math.random() < 0.25) {

@@ -22,12 +22,12 @@ const PLAYER_CONFIG = {
 };
 
 const ENEMY_CONFIG = {
-    GRUNT: { hp: 1, speed: 60, score: 100, fireRate: 2000, detectionRange: 400 },
-    FLYER: { hp: 1, speed: 80, score: 150, amplitude: 50, frequency: 0.003, diveSpeed: 200 },
-    FLYING_EYE: { hp: 2, speed: 100, score: 200, amplitude: 40, frequency: 0.004, diveSpeed: 250 },
-    HEAVY: { hp: 3, speed: 40, score: 300, fireRate: 1500, burstCount: 3, burstDelay: 200 },
-    GHOST: { hp: 2, speed: 50, score: 250, floatSpeed: 80 },
-    TURRET: { hp: 5, speed: 0, score: 200, fireRate: 1200, detectionRange: 500 }
+    GRUNT: { hp: 1, speed: 60, score: 150, fireRate: 1800, detectionRange: 400 },
+    FLYER: { hp: 1, speed: 80, score: 200, amplitude: 50, frequency: 0.003, diveSpeed: 220 },
+    FLYING_EYE: { hp: 2, speed: 100, score: 250, amplitude: 40, frequency: 0.004, diveSpeed: 250 },
+    HEAVY: { hp: 3, speed: 40, score: 400, fireRate: 1500, burstCount: 3, burstDelay: 200 },
+    GHOST: { hp: 2, speed: 55, score: 300, floatSpeed: 90 },
+    TURRET: { hp: 5, speed: 0, score: 250, fireRate: 1400, detectionRange: 500 }
 };
 
 const BOSS_CONFIG = {

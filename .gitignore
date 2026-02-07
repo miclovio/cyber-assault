@@ -4,6 +4,11 @@ Assets/
 # Claude config
 .claude/
 
+# Node
+node_modules/
+package.json
+package-lock.json
+
 # Large files
 *.zip
 NUL

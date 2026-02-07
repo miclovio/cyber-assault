@@ -77,6 +77,14 @@ class EffectsManager {
         });
     }
 
+    // Brief freeze-frame for impactful hits
+    hitFreeze(duration) {
+        this.scene.physics.world.timeScale = 10; // slow to 1/10 speed
+        this.scene.time.delayedCall(duration || 50, () => {
+            this.scene.physics.world.timeScale = 1;
+        });
+    }
+
     playBossExplosionChain(x, y, width, height) {
         const total = 10;
         for (let i = 0; i < total; i++) {
