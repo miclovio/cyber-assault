@@ -109,6 +109,10 @@ class VictoryScene extends Phaser.Scene {
             });
         });
 
+        // Music (may already be playing from boss defeat - restart it looping)
+        this.sound.stopAll();
+        this.sound.play('music-victory', { loop: true, volume: 0.5 });
+
         this.cameras.main.fadeIn(1000, 0, 0, 0);
     }
 }

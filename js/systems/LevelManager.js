@@ -81,6 +81,9 @@ class LevelManager {
             case 'heavy':
                 enemy = new Heavy(this.scene, x, y, config);
                 break;
+            case 'slime':
+                enemy = new Turret(this.scene, x, y, { ...config, variant: 'slime' });
+                break;
             case 'ghost':
                 enemy = new Ghost(this.scene, x, y, config);
                 break;
