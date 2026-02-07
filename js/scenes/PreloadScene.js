@@ -104,6 +104,10 @@ class PreloadScene extends Phaser.Scene {
 
         // Turret (Metal-Slug single sprite)
         this.load.image('turret', 'Assets/Characters/Battle Sprites/Mechanic/Metal-Slug.png');
+
+        // Slime (Living Pack 1)
+        const slimeBase = 'Assets/Characters/Battle Sprites/Living Pack 1/Slime/Sprites';
+        for (let i = 1; i <= 4; i++) this.load.image(`slime${i}`, `${slimeBase}/slime${i}.png`);
     }
 
     loadBossAssets() {
@@ -150,11 +154,12 @@ class PreloadScene extends Phaser.Scene {
         this.load.image('l3-tiles', `${tissue}/tileset.png`);
         this.load.image('l3-platform', 'Assets/Environments/lava-background/PNG/lava-tile.png');
 
-        // Level 4 - Space
-        const space = 'Assets/Environments/space_background_pack/Blue Version/layered';
-        this.load.image('l4-bg', `${space}/blue-back.png`);
-        this.load.image('l4-stars', `${space}/blue-stars.png`);
-        this.load.image('l4-planet', `${space}/prop-planet-big.png`);
+        // Level 4 - Space (Old Version - deep nebula)
+        const space = 'Assets/Environments/space_background_pack/Old Version/layers';
+        this.load.image('l4-bg', `${space}/parallax-space-backgound.png`);
+        this.load.image('l4-stars', `${space}/parallax-space-stars.png`);
+        this.load.image('l4-planets', `${space}/parallax-space-far-planets.png`);
+        this.load.image('l4-ring', `${space}/parallax-space-ring-planet.png`);
     }
 
     loadEffectsAssets() {
@@ -209,6 +214,16 @@ class PreloadScene extends Phaser.Scene {
         this.load.audio('sfx-jump', `${snd}/jump.wav`);
         this.load.audio('sfx-laser', `${snd}/laser.wav`);
         this.load.audio('sfx-pickup', `${snd}/pickup.wav`);
+
+        // Music
+        const mus = 'Assets/Music';
+        this.load.audio('music-intro', `${mus}/Intro.ogg`);
+        this.load.audio('music-level1', `${mus}/Level 1.ogg`);
+        this.load.audio('music-level2', `${mus}/Level 2.ogg`);
+        this.load.audio('music-level3', `${mus}/Level 3.ogg`);
+        this.load.audio('music-level4', `${mus}/Level 4.ogg`);
+        this.load.audio('music-gameover', `${mus}/Game Over.ogg`);
+        this.load.audio('music-victory', `${mus}/Victory.ogg`);
     }
 
     create() {
@@ -244,6 +259,9 @@ class PreloadScene extends Phaser.Scene {
 
         // Heavy animation
         this.anims.create({ key: 'heavy-walk', frames: this.frameKeys('heavy', 1, 7), frameRate: 6, repeat: -1 });
+
+        // Slime animation
+        this.anims.create({ key: 'slime-idle', frames: this.frameKeys('slime', 1, 4), frameRate: 6, repeat: -1 });
 
         // Ghost animation
         this.anims.create({ key: 'ghost-float', frames: this.frameKeys('ghost', 1, 6), frameRate: 8, repeat: -1 });

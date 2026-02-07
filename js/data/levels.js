@@ -400,11 +400,13 @@ const LEVEL_DATA = {
         height: GAME_HEIGHT,
         playerStart: { x: 100, y: 350 },
         backgrounds: [
-            { key: 'l4-bg',     speed: 0.03 },
-            { key: 'l4-stars',  speed: 0.1 },
-            { key: 'l4-planet', speed: 0.15, alpha: 0.6 }
+            { key: 'l4-bg',      speed: 0.03 },
+            { key: 'l4-stars',   speed: 0.08 },
+            { key: 'l4-planets', speed: 0.12, alpha: 0.7 },
+            { key: 'l4-ring',    speed: 0.18, alpha: 0.6 }
         ],
         platformTile: 'l1-floor',
+        platformTint: 0x6688cc,
         platforms: [
             // Space station structure - mix of all platform styles
             { x: 0,    y: 420, w: 700,  h: 30 },
@@ -452,55 +454,49 @@ const LEVEL_DATA = {
             { x: 300, enemies: [
                 { type: 'grunt', x: 500, y: 380, config: {} },
                 { type: 'flyer', x: 550, y: 180, config: { moveDir: -1 } },
-                { type: 'turret', x: 600, y: 300, config: {} }
+                { type: 'slime', x: 600, y: 300, config: {} }
             ]},
             { x: 700, enemies: [
                 { type: 'grunt', x: 900, y: 380, config: { patrolDir: -1 } },
                 { type: 'grunt', x: 1000, y: 260, config: { patrolRange: 60 } },
                 { type: 'flyer', x: 1050, y: 160, config: { moveDir: -1 } },
-                { type: 'turret', x: 1100, y: 380, config: {} }
+                { type: 'slime', x: 1100, y: 380, config: {} }
             ]},
             { x: 1200, enemies: [
                 { type: 'heavy', x: 1400, y: 370, config: {} },
-                { type: 'ghost', x: 1500, y: 180, config: {} },
                 { type: 'flyer', x: 1550, y: 150, config: { moveDir: -1 } },
-                { type: 'turret', x: 1600, y: 280, config: {} }
+                { type: 'slime', x: 1600, y: 280, config: {} }
             ]},
             { x: 1700, enemies: [
                 { type: 'grunt', x: 1900, y: 380, config: {} },
                 { type: 'heavy', x: 2000, y: 370, config: { patrolDir: -1 } },
                 { type: 'flying_eye', x: 2100, y: 160, config: { moveDir: -1 } },
-                { type: 'flying_eye', x: 2150, y: 200, config: { moveDir: 1 } },
-                { type: 'ghost', x: 2200, y: 200, config: {} }
+                { type: 'flying_eye', x: 2150, y: 200, config: { moveDir: 1 } }
             ]},
             { x: 2300, enemies: [
                 { type: 'heavy', x: 2500, y: 370, config: {} },
-                { type: 'turret', x: 2600, y: 280, config: {} },
+                { type: 'slime', x: 2600, y: 280, config: {} },
                 { type: 'flyer', x: 2700, y: 160, config: { moveDir: -1 } },
-                { type: 'ghost', x: 2800, y: 200, config: {} },
                 { type: 'grunt', x: 2900, y: 380, config: { patrolDir: -1 } }
             ]},
             { x: 3000, enemies: [
                 { type: 'heavy', x: 3200, y: 370, config: { patrolDir: -1 } },
                 { type: 'heavy', x: 3300, y: 370, config: {} },
-                { type: 'turret', x: 3400, y: 260, config: {} },
-                { type: 'flying_eye', x: 3500, y: 160, config: { moveDir: -1 } },
-                { type: 'ghost', x: 3600, y: 180, config: {} }
+                { type: 'slime', x: 3400, y: 260, config: {} },
+                { type: 'flying_eye', x: 3500, y: 160, config: { moveDir: -1 } }
             ]},
             { x: 3700, enemies: [
                 { type: 'grunt', x: 3900, y: 380, config: {} },
                 { type: 'grunt', x: 4000, y: 380, config: { patrolDir: -1 } },
                 { type: 'heavy', x: 4100, y: 370, config: {} },
-                { type: 'turret', x: 4200, y: 300, config: {} },
+                { type: 'slime', x: 4200, y: 300, config: {} },
                 { type: 'flyer', x: 4250, y: 160, config: { moveDir: -1 } },
                 { type: 'flying_eye', x: 4300, y: 200, config: { moveDir: 1 } }
             ]},
             { x: 4400, enemies: [
                 { type: 'heavy', x: 4600, y: 370, config: {} },
                 { type: 'heavy', x: 4700, y: 370, config: { patrolDir: -1 } },
-                { type: 'ghost', x: 4800, y: 180, config: {} },
-                { type: 'ghost', x: 4850, y: 220, config: {} },
-                { type: 'turret', x: 4900, y: 280, config: {} },
+                { type: 'slime', x: 4900, y: 280, config: {} },
                 { type: 'flyer', x: 4950, y: 150, config: { moveDir: -1 } }
             ]},
             { x: 5000, enemies: [
@@ -509,14 +505,12 @@ const LEVEL_DATA = {
                 { type: 'heavy', x: 5400, y: 370, config: {} },
                 { type: 'flying_eye', x: 5500, y: 160, config: { moveDir: -1 } },
                 { type: 'flying_eye', x: 5550, y: 200, config: { moveDir: 1 } },
-                { type: 'turret', x: 5600, y: 300, config: {} }
+                { type: 'slime', x: 5600, y: 300, config: {} }
             ]},
             { x: 5700, enemies: [
                 { type: 'heavy', x: 5900, y: 370, config: { patrolDir: -1 } },
                 { type: 'heavy', x: 6000, y: 370, config: {} },
-                { type: 'ghost', x: 6100, y: 160, config: {} },
-                { type: 'ghost', x: 6150, y: 200, config: {} },
-                { type: 'turret', x: 6200, y: 280, config: {} },
+                { type: 'slime', x: 6200, y: 280, config: {} },
                 { type: 'flying_eye', x: 6300, y: 150, config: { moveDir: -1 } },
                 { type: 'flyer', x: 6350, y: 190, config: { moveDir: 1 } }
             ]},
@@ -524,8 +518,7 @@ const LEVEL_DATA = {
                 { type: 'heavy', x: 6600, y: 370, config: {} },
                 { type: 'heavy', x: 6700, y: 370, config: { patrolDir: -1 } },
                 { type: 'grunt', x: 6800, y: 380, config: {} },
-                { type: 'turret', x: 6850, y: 260, config: {} },
-                { type: 'ghost', x: 6900, y: 180, config: {} },
+                { type: 'slime', x: 6850, y: 260, config: {} },
                 { type: 'flying_eye', x: 6950, y: 160, config: { moveDir: -1 } }
             ]}
         ],

@@ -99,6 +99,10 @@ class GameScene extends Phaser.Scene {
             this.events.emit('player-weapon-changed', this.player.currentWeapon);
         });
 
+        // Music
+        this.sound.stopAll();
+        this.sound.play(`music-level${this.currentLevel}`, { loop: true, volume: 0.4 });
+
         // Fade in
         this.cameras.main.fadeIn(500, 0, 0, 0);
     }
@@ -237,6 +241,10 @@ class GameScene extends Phaser.Scene {
     onBossDefeated() {
         // Null out bossData to prevent re-triggering startBossFight
         this.bossData = null;
+
+        // Victory music
+        this.sound.stopAll();
+        this.sound.play('music-victory', { loop: false, volume: 0.5 });
 
         // Player celebration - stop input, make invulnerable, victory jump
         this.player.isInvulnerable = true;

@@ -48,7 +48,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 break;
             case 'MECH':
                 this.body.setSize(40, 50);
-                this.body.setOffset(10, 6);
+                this.body.setOffset(28, 30);
                 this.setScale(2);
                 this.play('mech-walk');
                 this.attackPatterns = [
@@ -73,6 +73,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 this.body.setSize(48, 48);
                 this.body.allowGravity = false;
                 this.setScale(2.5);
+                this.setCrop(0, 0, 124, 85);
                 this.attackPatterns = [
                     this.sentinelLaser.bind(this),
                     this.sentinelSpread.bind(this),
@@ -130,11 +131,17 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 break;
 
             case 'MECH':
-                // Walk toward player, but stay in arena
+                // Walk toward player, but keep distance and stay in arena
                 if (this.scene.player) {
-                    this.moveDir = this.scene.player.x < this.x ? -1 : 1;
+                    const dist = Math.abs(this.scene.player.x - this.x);
+                    if (dist > 120) {
+                        this.moveDir = this.scene.player.x < this.x ? -1 : 1;
+                        this.setVelocityX(this.speed * this.moveDir);
+                    } else {
+                        this.setVelocityX(0);
+                        this.moveDir = this.scene.player.x < this.x ? -1 : 1;
+                    }
                 }
-                this.setVelocityX(this.speed * this.moveDir);
                 // Clamp to arena
                 if (this.arenaStart && this.x < this.arenaStart + 40) this.x = this.arenaStart + 40;
                 if (this.arenaEnd && this.x > this.arenaEnd - 40) this.x = this.arenaEnd - 40;
@@ -261,23 +268,24 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
 
     // === MECH ATTACKS ===
     mechShoot() {
+        // Fire from gun level (lower half of sprite)
         this.scene.weaponSystem.fireEnemyBullet(
-            this.x, this.y - 20,
+            this.x, this.y + 40,
             this.scene.player.x, this.scene.player.y,
             300, 1
         );
     }
 
     mechStomp() {
-        // Ground shockwave - shoot bullets along ground
+        // Ground shockwave - shoot bullets along ground at feet level
         for (let i = 0; i < 4; i++) {
             this.scene.time.delayedCall(i * 100, () => {
                 if (!this.active) return;
                 this.scene.weaponSystem.fireEnemyBulletAngle(
-                    this.x - 20 - i * 40, this.y + 20, Math.PI, 150, 1
+                    this.x - 20 - i * 40, this.y + 70, Math.PI, 150, 1
                 );
                 this.scene.weaponSystem.fireEnemyBulletAngle(
-                    this.x + 20 + i * 40, this.y + 20, 0, 150, 1
+                    this.x + 20 + i * 40, this.y + 70, 0, 150, 1
                 );
             });
         }
@@ -285,10 +293,10 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     }
 
     mechMissile() {
-        // Arc shots upward then down
+        // Arc shots upward from shoulders
         for (let i = -1; i <= 1; i++) {
             this.scene.weaponSystem.fireEnemyBulletAngle(
-                this.x, this.y - 30,
+                this.x, this.y,
                 -Math.PI / 2 + i * 0.4,
                 200, 1
             );
