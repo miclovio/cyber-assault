@@ -30,14 +30,16 @@ class LevelManager {
             }
         });
 
-        // Check checkpoints
-        const playerX = this.scene.player.x;
-        this.checkpoints.forEach((cp, index) => {
-            if (!this.activatedCheckpoints.has(index) && playerX >= cp.x) {
-                this.activatedCheckpoints.add(index);
-                this.scene.player.setCheckpoint(cp.x, cp.y);
-            }
-        });
+        // Check checkpoints (only when player is alive)
+        if (this.scene.player && !this.scene.player.isDead) {
+            const playerX = this.scene.player.x;
+            this.checkpoints.forEach((cp, index) => {
+                if (!this.activatedCheckpoints.has(index) && playerX >= cp.x) {
+                    this.activatedCheckpoints.add(index);
+                    this.scene.player.setCheckpoint(cp.x, cp.y);
+                }
+            });
+        }
 
         // Update active enemies
         this.enemies.getChildren().forEach(enemy => {
@@ -104,6 +106,10 @@ class LevelManager {
             if (e.active) {
                 e.setActive(false);
                 e.setVisible(false);
+                if (e.body) {
+                    e.body.stop();
+                    e.body.enable = false;
+                }
             }
         });
     }

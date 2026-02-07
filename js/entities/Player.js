@@ -266,6 +266,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.state = 'die';
         this.play('player-die');
 
+        // Screen shake + flash on death
+        this.scene.cameras.main.shake(300, 0.015);
+        this.scene.effectsManager.screenFlash(200);
+
         // Lose weapon upgrade
         this.currentWeapon = 'PULSE';
 

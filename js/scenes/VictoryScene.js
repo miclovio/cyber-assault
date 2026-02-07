@@ -77,7 +77,7 @@ class VictoryScene extends Phaser.Scene {
 
         // Credits
         const credits = [
-            'A CYBER ASSAULT PRODUCTION',
+            'A OUTMANUEVER PRODUCTION',
             '',
             'THANK YOU FOR PLAYING'
         ];
@@ -109,9 +109,9 @@ class VictoryScene extends Phaser.Scene {
             });
         });
 
-        // Music (may already be playing from boss defeat - restart it looping)
+        // Music - play intro theme for mission complete screen
         this.sound.stopAll();
-        this.sound.play('music-victory', { loop: true, volume: 0.5 });
+        this.sound.play('music-intro', { loop: true, volume: 0.5 });
 
         this.cameras.main.fadeIn(1000, 0, 0, 0);
     }

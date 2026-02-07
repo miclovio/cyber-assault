@@ -134,19 +134,20 @@ const LEVEL_DATA = {
             { key: 'l2-walls', speed: 0.2 },
             { key: 'l2-tiles', speed: 0.35, alpha: 0.4 }
         ],
-        platformTile: 'l2-tiles',
+        platformTile: 'l2-platform',
+        platformTint: 0x5533aa,
         platforms: [
-            // Ground sections with gaps for vertical challenge
-            { x: 0,    y: 420, w: 800,  h: 30 },
-            { x: 900,  y: 420, w: 400,  h: 30 },
-            { x: 1400, y: 420, w: 600,  h: 30 },
-            { x: 2100, y: 420, w: 500,  h: 30 },
-            { x: 2700, y: 420, w: 800,  h: 30 },
-            { x: 3600, y: 420, w: 400,  h: 30 },
-            { x: 4100, y: 420, w: 600,  h: 30 },
-            { x: 4800, y: 420, w: 500,  h: 30 },
-            { x: 5400, y: 420, w: 800,  h: 30 },
-            { x: 6300, y: 420, w: 400,  h: 30 },
+            // Ground sections with 150px pits
+            { x: 0,    y: 420, w: 700,  h: 30 },
+            { x: 850,  y: 420, w: 400,  h: 30 },
+            { x: 1400, y: 420, w: 550,  h: 30 },
+            { x: 2100, y: 420, w: 450,  h: 30 },
+            { x: 2700, y: 420, w: 750,  h: 30 },
+            { x: 3600, y: 420, w: 350,  h: 30 },
+            { x: 4100, y: 420, w: 550,  h: 30 },
+            { x: 4800, y: 420, w: 450,  h: 30 },
+            { x: 5400, y: 420, w: 750,  h: 30 },
+            { x: 6300, y: 420, w: 350,  h: 30 },
             { x: 6800, y: 420, w: 1200, h: 30 },
 
             // Vertical platforming sections (staircase patterns)
@@ -238,9 +239,9 @@ const LEVEL_DATA = {
             ]}
         ],
         checkpoints: [
-            { x: 2000, y: 380 },
-            { x: 4000, y: 380 },
-            { x: 6000, y: 380 }
+            { x: 1800, y: 380 },
+            { x: 3800, y: 380 },
+            { x: 5800, y: 380 }
         ],
         boss: {
             type: 'MECH',
@@ -400,13 +401,11 @@ const LEVEL_DATA = {
         height: GAME_HEIGHT,
         playerStart: { x: 100, y: 350 },
         backgrounds: [
-            { key: 'l4-bg',      speed: 0.03 },
-            { key: 'l4-stars',   speed: 0.08 },
-            { key: 'l4-planets', speed: 0.12, alpha: 0.7 },
-            { key: 'l4-ring',    speed: 0.18, alpha: 0.6 }
+            { key: 'l4-bg',    speed: 0.02 },
+            { key: 'l4-stars', speed: 0.15 }
         ],
         platformTile: 'l1-floor',
-        platformTint: 0x6688cc,
+        platformTint: 0x4466dd,
         platforms: [
             // Space station structure - mix of all platform styles
             { x: 0,    y: 420, w: 700,  h: 30 },

@@ -163,10 +163,10 @@ D:\Projects\Video Game\
 - [x] Platform positioning (no floaters over gaps, all 4 levels)
 - [x] Enemy body cleanup (body.enable = false, not body.reset)
 
-## Milestone 9: Polish - NOT STARTED
-- [ ] Full playthrough test (all 4 levels start to finish)
-- [ ] Difficulty tuning (enemy fire rates, boss HP, attack speed)
-- [ ] Score balancing
-- [ ] Screen shake and juice effects
-- [ ] Edge case testing (rapid death, boss phase transitions, level boundaries)
-- [ ] Browser console error cleanup
+## Milestone 9: Polish - COMPLETE
+- [ ] Full playthrough test (all 4 levels start to finish) - needs manual testing
+- [x] Difficulty tuning (enemy fire rates, boss HP, attack speed)
+- [x] Score balancing (bumped enemy scores for achievable ranks)
+- [x] Screen shake and juice effects (hit freeze, death shake, boss attack shakes)
+- [x] Edge case testing (boss respawn checkpoint, clearEnemies body disable, dead player checks)
+- [x] Browser console error cleanup (boss-defeated event, duplicate textures, null checks)

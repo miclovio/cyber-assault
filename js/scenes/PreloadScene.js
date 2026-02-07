@@ -147,6 +147,7 @@ class PreloadScene extends Phaser.Scene {
         this.load.image('l2-bg', `${cav}/background.png`);
         this.load.image('l2-walls', `${cav}/back-walls.png`);
         this.load.image('l2-tiles', `${cav}/tiles.png`);
+        this.load.image('l2-platform', 'Assets/Environments/bulkhead-walls/v2/PNG/floor.png');
 
         // Level 3 - Living Tissue
         const tissue = 'Assets/Environments/Living-Tissue-Platform-Files/PNG/layers';
@@ -154,12 +155,10 @@ class PreloadScene extends Phaser.Scene {
         this.load.image('l3-tiles', `${tissue}/tileset.png`);
         this.load.image('l3-platform', 'Assets/Environments/lava-background/PNG/lava-tile.png');
 
-        // Level 4 - Space (Old Version - deep nebula)
-        const space = 'Assets/Environments/space_background_pack/Old Version/layers';
-        this.load.image('l4-bg', `${space}/parallax-space-backgound.png`);
-        this.load.image('l4-stars', `${space}/parallax-space-stars.png`);
-        this.load.image('l4-planets', `${space}/parallax-space-far-planets.png`);
-        this.load.image('l4-ring', `${space}/parallax-space-ring-planet.png`);
+        // Level 4 - Space (Blue Version - vibrant nebula)
+        const space = 'Assets/Environments/space_background_pack/Blue Version/layered';
+        this.load.image('l4-bg', `${space}/blue-back.png`);
+        this.load.image('l4-stars', `${space}/blue-stars.png`);
     }
 
     loadEffectsAssets() {

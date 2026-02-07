@@ -185,6 +185,9 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     }
 
     executeAttack() {
+        // Don't attack if player is dead
+        if (!this.scene.player || this.scene.player.isDead) return;
+
         const patternIndex = Math.min(this.phase - 1, this.attackPatterns.length - 1);
 
         // In higher phases, mix in more patterns
@@ -206,6 +209,9 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
 
         this.scene.events.emit('boss-hp-changed', this.hp, this.maxHp);
 
+        // Hit freeze on boss hits for impact feel
+        this.scene.effectsManager.hitFreeze(30);
+
         if (this.hp <= 0) {
             this.defeat();
         }
@@ -226,6 +232,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         // Visual explosions (fire and forget - no callback dependency)
         this.scene.effectsManager.playBossExplosionChain(this.x, this.y, 100, 80);
         this.scene.effectsManager.screenFlash(500);
+        this.scene.cameras.main.shake(500, 0.015);
 
         // Hide boss after brief delay via defeatTimer (managed in update)
         this.defeatTimer = 2000;
@@ -320,6 +327,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 this.x, this.y, angle, 180, 1
             );
         }
+        this.scene.cameras.main.shake(150, 0.008);
     }
 
     skullCharge() {
@@ -364,6 +372,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 this.x, this.y, angle, 150, 1
             );
         }
+        this.scene.cameras.main.shake(200, 0.01);
     }
 
     sentinelBarrage() {
