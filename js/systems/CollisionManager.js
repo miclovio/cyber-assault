@@ -25,9 +25,11 @@ class CollisionManager {
             bullet.deactivate();
         });
 
-        // Enemies vs Platforms
+        // Enemies vs Platforms (ghosts phase through)
         if (scene.levelManager) {
-            scene.physics.add.collider(scene.levelManager.enemies, platforms);
+            scene.physics.add.collider(scene.levelManager.enemies, platforms, null, (enemy) => {
+                return !enemy.isGhost;
+            });
         }
 
         // PowerUps vs Platforms

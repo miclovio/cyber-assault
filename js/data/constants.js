@@ -26,7 +26,7 @@ const ENEMY_CONFIG = {
     FLYER: { hp: 1, speed: 80, score: 150, amplitude: 50, frequency: 0.003, diveSpeed: 200 },
     FLYING_EYE: { hp: 2, speed: 100, score: 200, amplitude: 40, frequency: 0.004, diveSpeed: 250 },
     HEAVY: { hp: 3, speed: 40, score: 300, fireRate: 1500, burstCount: 3, burstDelay: 200 },
-    GHOST: { hp: 2, speed: 50, score: 250, floatSpeed: 40 },
+    GHOST: { hp: 2, speed: 50, score: 250, floatSpeed: 80 },
     TURRET: { hp: 5, speed: 0, score: 200, fireRate: 1200, detectionRange: 500 }
 };
 

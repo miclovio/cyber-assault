@@ -189,12 +189,10 @@ const LEVEL_DATA = {
         ],
         enemyTriggers: [
             { x: 300, enemies: [
-                { type: 'grunt', x: 500, y: 380, config: {} },
-                { type: 'ghost', x: 450, y: 200, config: {} }
+                { type: 'grunt', x: 500, y: 380, config: {} }
             ]},
             { x: 800, enemies: [
-                { type: 'heavy', x: 1000, y: 370, config: { patrolDir: -1 } },
-                { type: 'ghost', x: 1100, y: 180, config: {} }
+                { type: 'heavy', x: 1000, y: 370, config: { patrolDir: -1 } }
             ]},
             { x: 1300, enemies: [
                 { type: 'grunt', x: 1500, y: 380, config: {} },
@@ -203,19 +201,15 @@ const LEVEL_DATA = {
             ]},
             { x: 1900, enemies: [
                 { type: 'heavy', x: 2100, y: 370, config: {} },
-                { type: 'ghost', x: 2200, y: 160, config: {} },
                 { type: 'flyer', x: 2300, y: 180, config: { moveDir: -1 } }
             ]},
             { x: 2500, enemies: [
                 { type: 'grunt', x: 2800, y: 380, config: { patrolDir: -1 } },
-                { type: 'heavy', x: 2900, y: 370, config: {} },
-                { type: 'ghost', x: 2850, y: 150, config: {} },
-                { type: 'ghost', x: 3000, y: 200, config: {} }
+                { type: 'heavy', x: 2900, y: 370, config: {} }
             ]},
             { x: 3200, enemies: [
                 { type: 'heavy', x: 3400, y: 370, config: { patrolDir: -1 } },
-                { type: 'grunt', x: 3500, y: 380, config: {} },
-                { type: 'ghost', x: 3600, y: 170, config: {} }
+                { type: 'grunt', x: 3500, y: 380, config: {} }
             ]},
             { x: 3800, enemies: [
                 { type: 'grunt', x: 4000, y: 380, config: {} },
@@ -225,26 +219,21 @@ const LEVEL_DATA = {
             ]},
             { x: 4400, enemies: [
                 { type: 'heavy', x: 4600, y: 370, config: {} },
-                { type: 'heavy', x: 4700, y: 370, config: { patrolDir: -1 } },
-                { type: 'ghost', x: 4800, y: 180, config: {} }
+                { type: 'heavy', x: 4700, y: 370, config: { patrolDir: -1 } }
             ]},
             { x: 5000, enemies: [
                 { type: 'grunt', x: 5200, y: 380, config: {} },
                 { type: 'grunt', x: 5300, y: 380, config: { patrolDir: -1 } },
-                { type: 'ghost', x: 5400, y: 160, config: {} },
-                { type: 'ghost', x: 5500, y: 220, config: {} },
                 { type: 'flyer', x: 5600, y: 180, config: { moveDir: -1 } }
             ]},
             { x: 5800, enemies: [
                 { type: 'heavy', x: 6000, y: 370, config: { patrolDir: -1 } },
                 { type: 'heavy', x: 6100, y: 370, config: {} },
-                { type: 'ghost', x: 6200, y: 150, config: {} },
-                { type: 'ghost', x: 6300, y: 200, config: {} }
+                { type: 'ghost', x: 6200, y: 150, config: {} }
             ]},
             { x: 6400, enemies: [
                 { type: 'heavy', x: 6500, y: 370, config: {} },
                 { type: 'grunt', x: 6600, y: 380, config: { patrolDir: -1 } },
-                { type: 'ghost', x: 6700, y: 180, config: {} },
                 { type: 'flyer', x: 6800, y: 160, config: { moveDir: -1 } }
             ]}
         ],
@@ -256,7 +245,7 @@ const LEVEL_DATA = {
         boss: {
             type: 'MECH',
             x: 7500,
-            y: 340,
+            y: 300,
             arenaStart: 7000,
             arenaEnd: 7900,
             name: 'ASSAULT MECH'
@@ -272,10 +261,10 @@ const LEVEL_DATA = {
         height: GAME_HEIGHT,
         playerStart: { x: 100, y: 350 },
         backgrounds: [
-            { key: 'l3-bg',    speed: 0.05, tint: 0x44ff44 },
-            { key: 'l3-tiles', speed: 0.3, alpha: 0.3 }
+            { key: 'l3-bg', speed: 0.05 }
         ],
-        platformTile: 'l3-tiles',
+        platformTile: 'l3-platform',
+        platformTint: 0xcc55aa,
         platforms: [
             // Organic ground - irregular layout
             { x: 0,    y: 420, w: 600,  h: 30 },

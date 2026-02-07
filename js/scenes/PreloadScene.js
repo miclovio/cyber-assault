@@ -148,6 +148,7 @@ class PreloadScene extends Phaser.Scene {
         const tissue = 'Assets/Environments/Living-Tissue-Platform-Files/PNG/layers';
         this.load.image('l3-bg', `${tissue}/bakground.png`);
         this.load.image('l3-tiles', `${tissue}/tileset.png`);
+        this.load.image('l3-platform', 'Assets/Environments/lava-background/PNG/lava-tile.png');
 
         // Level 4 - Space
         const space = 'Assets/Environments/space_background_pack/Blue Version/layered';

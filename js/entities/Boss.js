@@ -82,8 +82,19 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    update(time) {
-        if (!this.active || this.isDefeated) return;
+    update(time, delta) {
+        // Handle defeat animation countdown
+        if (this.isDefeated) {
+            if (this.defeatTimer > 0) {
+                this.defeatTimer -= delta || 16;
+                if (this.defeatTimer <= 0) {
+                    this.setActive(false);
+                    this.setVisible(false);
+                }
+            }
+            return;
+        }
+        if (!this.active) return;
 
         // Update phase based on HP
         const hpPercent = this.hp / this.maxHp;
@@ -179,6 +190,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     }
 
     takeDamage(amount) {
+        if (this.isDefeated) return;
         this.hp -= amount;
         this.setTintFill(0xffffff);
         this.scene.time.delayedCall(80, () => {
@@ -193,23 +205,23 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     }
 
     defeat() {
+        if (this.isDefeated) return;
         this.isDefeated = true;
         this.setVelocity(0, 0);
         this.body.allowGravity = false;
+        if (this.body) this.body.enable = false;
 
-        // Chain explosions
-        this.scene.effectsManager.playBossExplosionChain(
-            this.x, this.y, 100, 80,
-            () => {
-                this.scene.effectsManager.screenFlash(500);
-                if (this.scene.player) {
-                    this.scene.player.addScore(this.scoreValue);
-                }
-                this.setActive(false);
-                this.setVisible(false);
-                this.scene.events.emit('boss-defeated');
-            }
-        );
+        // Award score immediately
+        if (this.scene.player) {
+            this.scene.player.addScore(this.scoreValue);
+        }
+
+        // Visual explosions (fire and forget - no callback dependency)
+        this.scene.effectsManager.playBossExplosionChain(this.x, this.y, 100, 80);
+        this.scene.effectsManager.screenFlash(500);
+
+        // Hide boss after brief delay via defeatTimer (managed in update)
+        this.defeatTimer = 2000;
     }
 
     // === TANK ATTACKS ===

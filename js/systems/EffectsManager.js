@@ -77,23 +77,17 @@ class EffectsManager {
         });
     }
 
-    playBossExplosionChain(x, y, width, height, callback) {
-        let count = 0;
+    playBossExplosionChain(x, y, width, height) {
         const total = 10;
-        const timer = this.scene.time.addEvent({
-            delay: 200,
-            repeat: total - 1,
-            callback: () => {
-                const rx = x + (Math.random() - 0.5) * width;
-                const ry = y + (Math.random() - 0.5) * height;
+        for (let i = 0; i < total; i++) {
+            const delay = i * 200;
+            const rx = x + (Math.random() - 0.5) * width;
+            const ry = y + (Math.random() - 0.5) * height;
+            this.scene.time.delayedCall(delay, () => {
                 this.playLargeExplosion(rx, ry);
                 this.scene.cameras.main.shake(100, 0.005);
-                count++;
-                if (count >= total && callback) {
-                    callback();
-                }
-            }
-        });
+            });
+        }
     }
 
     screenFlash(duration) {
