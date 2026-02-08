@@ -123,6 +123,7 @@ class GameScene extends Phaser.Scene {
             // Invisible physics rectangle (origin 0.5 properly initialized unlike Zone)
             const rect = this.add.rectangle(p.x + p.w / 2, p.y + p.h / 2, p.w, p.h);
             rect.setVisible(false);
+            if (p.h <= 20) rect.isOneWay = true;
             this.platforms.add(rect);
         });
     }

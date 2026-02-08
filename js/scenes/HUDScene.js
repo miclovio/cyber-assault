@@ -10,47 +10,74 @@ class HUDScene extends Phaser.Scene {
     create() {
         const margin = 10;
 
+        // Dark backing panel
+        const panel = this.add.graphics();
+        panel.fillStyle(0x000000, 0.5);
+        panel.fillRoundedRect(4, 4, 180, 64, 6);
+
         // Score text
         this.scoreText = this.add.text(margin, margin, 'SCORE: 0', {
-            fontSize: '16px', fontFamily: 'monospace', color: '#ffffff', fontStyle: 'bold'
+            fontSize: '16px', fontFamily: 'monospace', color: '#ffffff', fontStyle: 'bold',
+            stroke: '#000000', strokeThickness: 3,
+            shadow: { offsetX: 1, offsetY: 1, color: '#000000', blur: 2, fill: true }
         });
 
         // Lives display
         this.livesText = this.add.text(margin, 30, 'LIVES: 3', {
-            fontSize: '14px', fontFamily: 'monospace', color: '#00ff00'
+            fontSize: '14px', fontFamily: 'monospace', color: '#00ff00', fontStyle: 'bold',
+            stroke: '#003300', strokeThickness: 3,
+            shadow: { offsetX: 1, offsetY: 1, color: '#000000', blur: 3, fill: true }
         });
 
+        // Health bar shadow
+        this.add.rectangle(margin + 22, 59, 102, 12, 0x000000, 0.5).setOrigin(0, 0.5);
+        // Health bar border
+        this.add.rectangle(margin + 20, 57, 106, 16, 0x111111).setOrigin(0, 0.5);
         // Health bar background
-        this.add.rectangle(margin + 50, 55, 102, 12, 0x333333).setOrigin(0, 0.5);
-        this.healthBar = this.add.rectangle(margin + 51, 55, 100, 10, 0x00ff00).setOrigin(0, 0.5);
+        this.add.rectangle(margin + 22, 57, 102, 12, 0x333333).setOrigin(0, 0.5);
+        this.healthBar = this.add.rectangle(margin + 23, 57, 100, 10, 0x00ff00).setOrigin(0, 0.5);
 
-        this.add.text(margin, 55, 'HP', {
-            fontSize: '12px', fontFamily: 'monospace', color: '#888888'
+        this.add.text(margin, 57, 'HP', {
+            fontSize: '12px', fontFamily: 'monospace', color: '#aaaaaa', fontStyle: 'bold',
+            stroke: '#000000', strokeThickness: 3,
+            shadow: { offsetX: 1, offsetY: 1, color: '#000000', blur: 2, fill: true }
         }).setOrigin(0, 0.5);
 
         // Weapon indicator
         this.weaponText = this.add.text(GAME_WIDTH - margin, margin, 'PULSE RIFLE', {
-            fontSize: '14px', fontFamily: 'monospace', color: '#00ffff'
+            fontSize: '14px', fontFamily: 'monospace', color: '#00ffff', fontStyle: 'bold',
+            stroke: '#003333', strokeThickness: 3,
+            shadow: { offsetX: 1, offsetY: 1, color: '#000000', blur: 2, fill: true }
         }).setOrigin(1, 0);
 
         // Level indicator
         this.levelText = this.add.text(GAME_WIDTH / 2, margin, 'LEVEL 1', {
-            fontSize: '14px', fontFamily: 'monospace', color: '#888888'
+            fontSize: '14px', fontFamily: 'monospace', color: '#888888', fontStyle: 'bold',
+            stroke: '#000000', strokeThickness: 3,
+            shadow: { offsetX: 1, offsetY: 1, color: '#000000', blur: 2, fill: true }
         }).setOrigin(0.5, 0);
 
         // Boss HP bar (hidden initially)
-        this.bossBarBg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 30, 302, 16, 0x333333);
-        this.bossBar = this.add.rectangle(GAME_WIDTH / 2 - 149, GAME_HEIGHT - 30, 298, 12, 0xff0000).setOrigin(0, 0.5);
-        this.bossLabel = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 50, 'BOSS', {
-            fontSize: '12px', fontFamily: 'monospace', color: '#ff4444', fontStyle: 'bold'
+        this.bossBarShadow = this.add.rectangle(GAME_WIDTH / 2 + 2, 42, 302, 16, 0x000000, 0.5);
+        this.bossBarBorder = this.add.rectangle(GAME_WIDTH / 2, 40, 306, 20, 0x111111);
+        this.bossBarBg = this.add.rectangle(GAME_WIDTH / 2, 40, 302, 16, 0x333333);
+        this.bossBar = this.add.rectangle(GAME_WIDTH / 2 - 149, 40, 298, 12, 0xff0000).setOrigin(0, 0.5);
+        this.bossLabel = this.add.text(GAME_WIDTH / 2, 24, 'BOSS', {
+            fontSize: '12px', fontFamily: 'monospace', color: '#ff4444', fontStyle: 'bold',
+            stroke: '#330000', strokeThickness: 3,
+            shadow: { offsetX: 1, offsetY: 1, color: '#000000', blur: 2, fill: true }
         }).setOrigin(0.5);
+        this.bossBarShadow.setVisible(false);
+        this.bossBarBorder.setVisible(false);
         this.bossBarBg.setVisible(false);
         this.bossBar.setVisible(false);
         this.bossLabel.setVisible(false);
 
         // Extra life notification
         this.extraLifeText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 50, '1UP!', {
-            fontSize: '32px', fontFamily: 'monospace', color: '#ff00ff', fontStyle: 'bold'
+            fontSize: '32px', fontFamily: 'monospace', color: '#ff00ff', fontStyle: 'bold',
+            stroke: '#330033', strokeThickness: 4,
+            shadow: { offsetX: 2, offsetY: 2, color: '#000000', blur: 3, fill: true }
         }).setOrigin(0.5).setAlpha(0);
 
         // Listen for game events
@@ -114,6 +141,8 @@ class HUDScene extends Phaser.Scene {
     }
 
     showBossBar(bossName) {
+        this.bossBarShadow.setVisible(true);
+        this.bossBarBorder.setVisible(true);
         this.bossBarBg.setVisible(true);
         this.bossBar.setVisible(true);
         this.bossLabel.setVisible(true);
@@ -122,7 +151,9 @@ class HUDScene extends Phaser.Scene {
 
         // Warning flash
         const warning = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'WARNING!', {
-            fontSize: '36px', fontFamily: 'monospace', color: '#ff0000', fontStyle: 'bold'
+            fontSize: '36px', fontFamily: 'monospace', color: '#ff0000', fontStyle: 'bold',
+            stroke: '#330000', strokeThickness: 5,
+            shadow: { offsetX: 2, offsetY: 2, color: '#000000', blur: 4, fill: true }
         }).setOrigin(0.5);
 
         this.tweens.add({
@@ -141,6 +172,8 @@ class HUDScene extends Phaser.Scene {
     }
 
     hideBossBar() {
+        this.bossBarShadow.setVisible(false);
+        this.bossBarBorder.setVisible(false);
         this.bossBarBg.setVisible(false);
         this.bossBar.setVisible(false);
         this.bossLabel.setVisible(false);

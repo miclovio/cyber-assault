@@ -11,8 +11,13 @@ class CollisionManager {
         const scene = this.scene;
         const player = scene.player;
 
-        // Player vs Platforms
-        scene.physics.add.collider(player, platforms);
+        // Player vs Platforms (one-way for thin platforms)
+        scene.physics.add.collider(player, platforms, null, (player, platform) => {
+            if (platform.isOneWay) {
+                return player.body.velocity.y >= 0 && player.body.bottom <= platform.body.y + 10;
+            }
+            return true;
+        });
 
         // Player bullets vs Platforms
         scene.physics.add.collider(scene.weaponSystem.playerBullets, platforms, (bullet) => {
@@ -25,10 +30,14 @@ class CollisionManager {
             bullet.deactivate();
         });
 
-        // Enemies vs Platforms (ghosts phase through)
+        // Enemies vs Platforms (ghosts phase through, one-way platforms)
         if (scene.levelManager) {
-            scene.physics.add.collider(scene.levelManager.enemies, platforms, null, (enemy) => {
-                return !enemy.isGhost;
+            scene.physics.add.collider(scene.levelManager.enemies, platforms, null, (enemy, platform) => {
+                if (enemy.isGhost) return false;
+                if (platform.isOneWay) {
+                    return enemy.body.velocity.y >= 0 && enemy.body.bottom <= platform.body.y + 10;
+                }
+                return true;
             });
         }
 

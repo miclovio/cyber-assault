@@ -13,6 +13,28 @@ class ParallaxManager {
 
         const bgLayers = levelData.backgrounds;
         bgLayers.forEach((layerDef, index) => {
+            // Gradient layers: smooth full-resolution background
+            if (layerDef.gradient) {
+                const texKey = `_gradient_${index}`;
+                const canvas = this.scene.textures.createCanvas(texKey, GAME_WIDTH, GAME_HEIGHT);
+                const ctx = canvas.getContext();
+                const grad = ctx.createLinearGradient(0, 0, 0, GAME_HEIGHT);
+                const stops = layerDef.gradient;
+                for (let i = 0; i < stops.length; i++) {
+                    grad.addColorStop(i / (stops.length - 1), stops[i]);
+                }
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+                canvas.refresh();
+
+                const layer = this.scene.add.image(0, 0, texKey).setOrigin(0, 0);
+                layer.setScrollFactor(0);
+                layer.setDepth(-10 + index);
+
+                this.layers.push({ sprite: layer, speed: 0, tileScale: 1 });
+                return;
+            }
+
             const scale = layerDef.tileScale || 1;
 
             // For bottom-aligned layers, size to scaled texture height

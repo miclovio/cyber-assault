@@ -27,7 +27,8 @@ const ENEMY_CONFIG = {
     FLYING_EYE: { hp: 2, speed: 100, score: 250, amplitude: 40, frequency: 0.004, diveSpeed: 250 },
     HEAVY: { hp: 3, speed: 40, score: 400, fireRate: 1500, burstCount: 3, burstDelay: 200 },
     GHOST: { hp: 2, speed: 55, score: 300, floatSpeed: 90 },
-    TURRET: { hp: 5, speed: 0, score: 250, fireRate: 1400, detectionRange: 500 }
+    TURRET: { hp: 5, speed: 0, score: 250, fireRate: 1400, detectionRange: 500 },
+    GREY_MECH: { hp: 6, speed: 35, score: 800, fireRate: 2000, burstCount: 4, burstDelay: 180, detectionRange: 450 }
 };
 
 const BOSS_CONFIG = {

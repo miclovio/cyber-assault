@@ -34,6 +34,7 @@ class Heavy extends EnemyBase {
 
             if (this.body.blocked.left) this.patrolDir = 1;
             if (this.body.blocked.right) this.patrolDir = -1;
+            if (this.isNearEdge()) this.patrolDir *= -1;
         }
 
         // Burst fire

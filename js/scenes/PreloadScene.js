@@ -108,6 +108,11 @@ class PreloadScene extends Phaser.Scene {
         // Slime (Living Pack 1)
         const slimeBase = 'Assets/Characters/Battle Sprites/Living Pack 1/Slime/Sprites';
         for (let i = 1; i <= 4; i++) this.load.image(`slime${i}`, `${slimeBase}/slime${i}.png`);
+
+        // Grey Mech
+        const greyMechBase = 'Assets/Characters/Mechs/SpriteSheets/Grey_1';
+        this.load.spritesheet('grey-mech-idle', `${greyMechBase}/Gr1_Idle.png`, { frameWidth: 80, frameHeight: 80 });
+        this.load.spritesheet('grey-mech-alert', `${greyMechBase}/Gr1_Idle2.png`, { frameWidth: 80, frameHeight: 80 });
     }
 
     loadBossAssets() {
@@ -265,6 +270,10 @@ class PreloadScene extends Phaser.Scene {
 
         // Ghost animation
         this.anims.create({ key: 'ghost-float', frames: this.frameKeys('ghost', 1, 6), frameRate: 8, repeat: -1 });
+
+        // Grey Mech animations
+        this.anims.create({ key: 'grey-mech-walk', frames: this.anims.generateFrameNumbers('grey-mech-idle', { start: 0, end: 12 }), frameRate: 6, repeat: -1 });
+        this.anims.create({ key: 'grey-mech-attack', frames: this.anims.generateFrameNumbers('grey-mech-alert', { start: 0, end: 12 }), frameRate: 8, repeat: -1 });
 
         // Boss animations
         this.anims.create({ key: 'tank-move', frames: this.frameKeys('tank', 1, 4), frameRate: 6, repeat: -1 });
