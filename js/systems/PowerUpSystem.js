@@ -85,8 +85,9 @@ class PowerUpSystem {
         if (def.weapon) {
             player.switchWeapon(def.weapon);
         } else if (type === 'SHIELD') {
-            player.hasShield = true;
-            this.scene.events.emit('player-shield', true);
+            player.shieldHits = 2;
+            player.showShieldBubble();
+            this.scene.events.emit('player-shield-changed', 2);
         } else if (type === 'HEALTH') {
             player.hp = Math.min(player.hp + 1, PLAYER_CONFIG.MAX_HP);
             this.scene.events.emit('player-hp-changed', player.hp);

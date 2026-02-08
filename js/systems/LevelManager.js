@@ -15,12 +15,15 @@ class LevelManager {
     setup(levelData) {
         this.triggers = levelData.enemyTriggers || [];
         this.checkpoints = levelData.checkpoints || [];
+        this.fixedDrops = levelData.fixedDrops || [];
         this.enemyTint = levelData.enemyTint || null;
         this.activatedTriggers.clear();
         this.activatedCheckpoints.clear();
+        this.activatedDrops = new Set();
     }
 
     update() {
+        if (this.scene.bossActive) return;
         const camRight = this.scene.cameras.main.scrollX + GAME_WIDTH;
 
         // Check enemy spawn triggers
@@ -30,6 +33,17 @@ class LevelManager {
                 this.spawnEnemyGroup(trigger);
             }
         });
+
+        // Check fixed drops
+        if (this.scene.player && !this.scene.player.isDead) {
+            const px = this.scene.player.x;
+            this.fixedDrops.forEach((drop, index) => {
+                if (!this.activatedDrops.has(index) && px >= drop.x) {
+                    this.activatedDrops.add(index);
+                    this.scene.powerUpSystem.createPowerUp(drop.x, drop.y, drop.type);
+                }
+            });
+        }
 
         // Check checkpoints (only when player is alive)
         if (this.scene.player && !this.scene.player.isDead) {
@@ -112,7 +126,12 @@ class LevelManager {
 
         if (this.enemyTint) {
             enemy.baseTint = this.enemyTint;
-            enemy.setTint(this.enemyTint);
+            if (enemy.isSlime) {
+                enemy.baseTint = 0x9966ff;
+                enemy.setTint(0x9966ff);
+            } else {
+                enemy.setTint(this.enemyTint);
+            }
         }
         this.enemies.add(enemy);
         return enemy;

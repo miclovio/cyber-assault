@@ -12,7 +12,7 @@ const WEAPONS = {
         damage: 1,
         bulletSpeed: 500,
         bulletKey: 'bullet1',
-        color: 0x00ffff
+        color: 0xffff00
     },
     SPREAD: {
         name: 'Spread Shot',
@@ -28,13 +28,13 @@ const WEAPONS = {
     LASER: {
         name: 'Laser',
         key: 'L',
-        fireRate: 100,
+        fireRate: 20,
         bulletCount: 1,
         spread: 0,
         damage: 2,
         bulletSpeed: 700,
         bulletKey: 'bullet1',
-        color: 0xff0000
+        color: 0x00ffff
     },
     RAPID: {
         name: 'Rapid Fire',
@@ -51,7 +51,7 @@ const WEAPONS = {
 
 const POWERUP_TYPES = {
     SPREAD: { weapon: 'SPREAD', label: 'S', color: 0xff6600, dropRate: 0.30 },
-    LASER:  { weapon: 'LASER',  label: 'L', color: 0xff0000, dropRate: 0.20 },
+    LASER:  { weapon: 'LASER',  label: 'L', color: 0x00ffff, dropRate: 0.20 },
     RAPID:  { weapon: 'RAPID',  label: 'R', color: 0xffff00, dropRate: 0.25 },
     SHIELD: { weapon: null,     label: 'B', color: 0x0088ff, dropRate: 0.10 },
     HEALTH: { weapon: null,     label: '+', color: 0x00ff00, dropRate: 0.10 },

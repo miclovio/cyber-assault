@@ -63,17 +63,20 @@ class EffectsManager {
         });
     }
 
-    playHitEffect(x, y) {
-        // Simple flash effect using a rectangle
-        const flash = this.scene.add.rectangle(x, y, 8, 8, 0xffffff);
-        flash.setDepth(25);
+    playHitEffect(x, y, angle) {
+        const key = Math.random() < 0.5 ? 'wall-impact1' : 'wall-impact2';
+        const impact = this.scene.add.image(x, y, key);
+        impact.setDepth(25);
+        const baseScale = 1.2 + Math.random() * 0.6;
+        impact.setScale(baseScale);
+        if (angle !== undefined) impact.setRotation(angle);
         this.scene.tweens.add({
-            targets: flash,
-            scaleX: 2,
-            scaleY: 2,
+            targets: impact,
+            scaleX: baseScale * 2,
+            scaleY: baseScale * 2,
             alpha: 0,
-            duration: 150,
-            onComplete: () => flash.destroy()
+            duration: 200,
+            onComplete: () => impact.destroy()
         });
     }
 

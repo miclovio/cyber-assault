@@ -150,6 +150,46 @@ class GameScene extends Phaser.Scene {
         if (this.boss) {
             this.boss.update(time, delta);
 
+            // FAILSAFE: Direct inline player-bullet vs boss hit check
+            if (this.boss.active && !this.boss.isDefeated && this.weaponSystem) {
+                const bullets = this.weaponSystem.playerBullets.getChildren();
+                for (let i = 0; i < bullets.length; i++) {
+                    const b = bullets[i];
+                    if (!b.active) continue;
+                    const dx = b.x - this.boss.x;
+                    const dy = b.y - this.boss.y;
+                    const distSq = dx * dx + dy * dy;
+                    const hr = this.boss.hitRadius || 75;
+                    if (distSq < hr * hr) {
+                        b.setActive(false);
+                        b.setVisible(false);
+                        if (b.body) { b.body.stop(); b.body.enable = false; }
+                        this.effectsManager.playHitEffect(b.x, b.y, b.rotation);
+                        this.boss.takeDamage(b.damage || 1);
+                    }
+                }
+            }
+
+        // FAILSAFE: Direct inline enemy-bullet vs player hit check
+        if (this.weaponSystem && this.player && !this.player.isDead && !this.player.isInvulnerable) {
+            const px = this.player.x;
+            const py = this.player.y;
+            const hitW = 20; // half-width of player hit area
+            const hitH = 30; // half-height of player hit area
+            const eBullets = this.weaponSystem.enemyBullets.getChildren();
+            for (let i = 0; i < eBullets.length; i++) {
+                const b = eBullets[i];
+                if (!b.active) continue;
+                if (Math.abs(b.x - px) < hitW && Math.abs(b.y - py) < hitH) {
+                    b.setActive(false);
+                    b.setVisible(false);
+                    if (b.body) { b.body.stop(); b.body.enable = false; }
+                    this.player.takeDamage(1);
+                    break; // only one hit per frame
+                }
+            }
+        }
+
             // Detect boss defeat directly (no events/callbacks needed)
             if (this.boss.isDefeated && !this.boss.active && !this.sceneTransition) {
                 this.onBossDefeated();
@@ -204,13 +244,29 @@ class GameScene extends Phaser.Scene {
         this.player.setCollideWorldBounds(true);
         this.physics.world.setBounds(arenaStart, 0, arenaEnd - arenaStart, GAME_HEIGHT);
 
-        // Clear remaining enemies
+        // Clear remaining enemies and any in-flight enemy bullets
         this.levelManager.clearEnemies();
+        this.weaponSystem.enemyBullets.getChildren().forEach(b => {
+            if (b.active) b.deactivate();
+        });
 
         // Set checkpoint inside arena so respawn works with locked camera
         this.player.setCheckpoint(arenaStart + 60, 380);
 
         // Arena floor comes from level platform data (ground must cover arena range)
+
+        // Dark backdrop to make boss pop against the background
+        this.bossBackdrop = this.add.rectangle(
+            GAME_WIDTH / 2, GAME_HEIGHT / 2,
+            GAME_WIDTH, GAME_HEIGHT,
+            0x000000, 0
+        ).setDepth(1).setScrollFactor(0);
+        this.tweens.add({
+            targets: this.bossBackdrop,
+            fillAlpha: 0.8,
+            duration: 1500,
+            ease: 'Sine.easeIn'
+        });
 
         // Emit boss warning event (HUD shows WARNING!)
         this.events.emit('boss-start', this.bossData.name);
@@ -239,6 +295,16 @@ class GameScene extends Phaser.Scene {
         // Null out bossData to prevent re-triggering startBossFight
         this.bossData = null;
 
+        // Fade out boss backdrop
+        if (this.bossBackdrop) {
+            this.tweens.add({
+                targets: this.bossBackdrop,
+                fillAlpha: 0,
+                duration: 2000,
+                onComplete: () => { this.bossBackdrop.destroy(); this.bossBackdrop = null; }
+            });
+        }
+
         // Notify HUD to hide boss HP bar
         this.events.emit('boss-defeated');
 
@@ -251,44 +317,55 @@ class GameScene extends Phaser.Scene {
         this.player.invulnTimer = 10000;
         this.player.setVelocityX(0);
         this.player.setVelocityY(-500);
-        this.player.play('player-jump-gun');
+        this.player.play('player-jump');
         this.player.facingRight = true;
         this.player.setFlipX(false);
 
-        // Freeze player at peak of jump
+        // Freeze player at peak of jump in idle pose
         this.time.delayedCall(350, () => {
             this.player.setVelocity(0, 0);
             this.player.body.allowGravity = false;
+            this.player.play('player-idle');
         });
 
         // Speech bubble with random quip pops in at peak of jump
         this.time.delayedCall(400, () => {
             const quips = ['Yes!', 'Too EZ', 'Excellent', 'Away with\nyou Demon!'];
             const quip = quips[Math.floor(Math.random() * quips.length)];
-            const fontSize = '16px';
-            const bw = 120;
-            const bh = 50;
+            const bw = 130;
+            const bh = 52;
 
-            const bx = this.player.x + 30;
-            const by = this.player.y - 40;
+            const bx = this.player.x + 35;
+            const by = this.player.y - 45;
 
-            // Speech bubble background (drawn centered on origin so scale works)
+            // Speech bubble background
             const bubble = this.add.graphics().setDepth(49).setPosition(bx, by).setScale(0);
+            // Shadow
+            bubble.fillStyle(0x000000, 0.25);
+            bubble.fillRoundedRect(-bw / 2 + 3, -bh / 2 + 3, bw, bh, 14);
+            // Border
+            bubble.fillStyle(0x333333, 1);
+            bubble.fillRoundedRect(-bw / 2 - 2, -bh / 2 - 2, bw + 4, bh + 4, 14);
+            // Fill
             bubble.fillStyle(0xffffff, 1);
             bubble.fillRoundedRect(-bw / 2, -bh / 2, bw, bh, 12);
             // Tail pointing down-left toward player
-            bubble.fillTriangle(-20, bh / 2 - 4, -30, bh / 2 + 18, -5, bh / 2 - 4);
+            bubble.fillStyle(0x333333, 1);
+            bubble.fillTriangle(-18, bh / 2, -34, bh / 2 + 20, -3, bh / 2);
+            bubble.fillStyle(0xffffff, 1);
+            bubble.fillTriangle(-16, bh / 2 - 2, -30, bh / 2 + 16, -5, bh / 2 - 2);
 
             // Text inside bubble
-            const yesText = this.add.text(bx, by, quip, {
-                fontSize: fontSize,
-                fontFamily: 'Arial Black, Arial',
-                color: '#000000',
+            const quipText = this.add.text(bx, by, quip, {
+                fontSize: '15px',
+                fontFamily: 'monospace',
+                color: '#222222',
+                fontStyle: 'bold',
                 align: 'center'
             }).setOrigin(0.5).setDepth(50).setScale(0);
 
             this.tweens.add({
-                targets: [bubble, yesText],
+                targets: [bubble, quipText],
                 scaleX: 1,
                 scaleY: 1,
                 duration: 400,
@@ -339,7 +416,7 @@ class GameScene extends Phaser.Scene {
                 timer: 3000,
                 target: 'VictoryScene',
                 data: { score: this.player.score },
-                fadeR: 255, fadeG: 255, fadeB: 255
+                fadeR: 0, fadeG: 0, fadeB: 0
             };
         }
     }

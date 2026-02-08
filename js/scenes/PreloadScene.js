@@ -143,8 +143,11 @@ class PreloadScene extends Phaser.Scene {
         const skullBase = 'Assets/Characters/Fire-Skull-Files/Sprites/NoFire';
         for (let i = 1; i <= 4; i++) this.load.image(`fireskull${i}`, `${skullBase}/frame${i}.png`);
 
-        // Sentinel (single sprite)
-        this.load.image('sentinel', 'Assets/Characters/Battle Sprites/Mechanic/Sentinel.png');
+        // Sentinel (top-down boss)
+        const sentBase = 'Assets/Misc/top-down-boss/PNG/spritesheets';
+        this.load.spritesheet('sentinel-body', `${sentBase}/boss.png`, { frameWidth: 192, frameHeight: 144 });
+        this.load.spritesheet('sentinel-thrust', `${sentBase}/boss-thrust.png`, { frameWidth: 64, frameHeight: 48 });
+        this.load.spritesheet('sentinel-bolt', `${sentBase}/bolt.png`, { frameWidth: 8, frameHeight: 8 });
     }
 
     loadEnvironmentAssets() {
@@ -223,6 +226,9 @@ class PreloadScene extends Phaser.Scene {
         this.load.image('hud-bg', `${hud}/hud-bg.png`);
         this.load.image('stamina-bar', `${hud}/stamina-bar.png`);
         this.load.image('stamina-cell', `${hud}/stamina-cell.png`);
+
+        // Energy shield bubble
+        this.load.spritesheet('energy-shield', 'Assets/Misc/Grotto-escape-2-FX/spritesheets/energy-shield.png', { frameWidth: 51, frameHeight: 47 });
 
         // Gems spritesheet (for collectibles we'll use individual color tints)
         this.load.image('gem', 'Assets/Misc/gems/spritesheets/gems-spritesheet.png');
@@ -310,6 +316,9 @@ class PreloadScene extends Phaser.Scene {
         this.anims.create({ key: 'tank-move', frames: this.frameKeys('tank', 1, 4), frameRate: 6, repeat: -1 });
         this.anims.create({ key: 'mech-walk', frames: this.frameKeys('mech', 1, 10), frameRate: 8, repeat: -1 });
         this.anims.create({ key: 'fireskull-fly', frames: this.frameKeys('fireskull', 1, 4), frameRate: 8, repeat: -1 });
+        this.anims.create({ key: 'sentinel-idle', frames: this.anims.generateFrameNumbers('sentinel-body', { start: 0, end: 4 }), frameRate: 6, repeat: -1 });
+        this.anims.create({ key: 'sentinel-thrust-anim', frames: this.anims.generateFrameNumbers('sentinel-thrust', { start: 0, end: 3 }), frameRate: 10, repeat: -1 });
+        this.anims.create({ key: 'sentinel-bolt-anim', frames: this.anims.generateFrameNumbers('sentinel-bolt', { start: 0, end: 1 }), frameRate: 8, repeat: -1 });
 
         // Explosion animations
         this.anims.create({ key: 'explosion-a', frames: this.frameKeys('exp-a', 1, 8), frameRate: 15, repeat: 0 });
@@ -324,6 +333,9 @@ class PreloadScene extends Phaser.Scene {
 
         // Fire ball
         this.anims.create({ key: 'fire-ball', frames: this.frameKeys('fire-ball', 0, 2), frameRate: 10, repeat: -1 });
+
+        // Energy shield
+        this.anims.create({ key: 'energy-shield-anim', frames: this.anims.generateFrameNumbers('energy-shield', { start: 0, end: 7 }), frameRate: 10, repeat: -1 });
     }
 
     frameKeys(prefix, start, end) {

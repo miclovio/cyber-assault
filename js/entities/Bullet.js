@@ -9,7 +9,7 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
         this.isPlayerBullet = true;
     }
 
-    fire(x, y, dirX, dirY, speed, damage, textureKey, isPlayerBullet) {
+    fire(x, y, dirX, dirY, speed, damage, textureKey, isPlayerBullet, tintColor) {
         this.setTexture(textureKey || 'bullet1');
         this.body.enable = true;
         this.body.reset(x, y);
@@ -30,6 +30,8 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
 
         if (!isPlayerBullet) {
             this.setTint(0xff4444);
+        } else if (tintColor) {
+            this.setTint(tintColor);
         } else {
             this.clearTint();
         }
@@ -38,9 +40,25 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
     preUpdate(time, delta) {
         super.preUpdate(time, delta);
 
-        // Only check bounds for active bullets
         if (!this.active) return;
 
+        // Player bullet vs boss hit check (runs every frame per bullet)
+        if (this.isPlayerBullet) {
+            const boss = this.scene.boss;
+            if (boss && boss.active && !boss.isDefeated) {
+                const dx = this.x - boss.x;
+                const dy = this.y - boss.y;
+                const hr = boss.hitRadius || 75;
+                if (dx * dx + dy * dy < hr * hr) {
+                    this.scene.effectsManager.playHitEffect(this.x, this.y, this.rotation);
+                    boss.takeDamage(this.damage || 1);
+                    this.deactivate();
+                    return;
+                }
+            }
+        }
+
+        // Deactivate if off-camera
         const cam = this.scene.cameras.main;
         const margin = 100;
         if (this.x < cam.scrollX - margin || this.x > cam.scrollX + cam.width + margin ||
@@ -82,10 +100,10 @@ class BulletPool extends Phaser.Physics.Arcade.Group {
         }
     }
 
-    fireBullet(x, y, dirX, dirY, speed, damage, textureKey) {
+    fireBullet(x, y, dirX, dirY, speed, damage, textureKey, tintColor) {
         const bullet = this.getFirstDead(false);
         if (bullet) {
-            bullet.fire(x, y, dirX, dirY, speed, damage, textureKey, this.isPlayerPool);
+            bullet.fire(x, y, dirX, dirY, speed, damage, textureKey, this.isPlayerPool, tintColor);
         }
         return bullet;
     }
