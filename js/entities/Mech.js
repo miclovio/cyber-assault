@@ -5,10 +5,11 @@
 class Mech extends EnemyBase {
     constructor(scene, x, y, config) {
         const variant = (config && config.variant) || 'grey';
-        const baseConfig = variant === 'orange' ? ENEMY_CONFIG.ORANGE_MECH :
+        const baseConfig = variant === 'blue' ? ENEMY_CONFIG.BLUE_MECH :
+                           variant === 'orange' ? ENEMY_CONFIG.ORANGE_MECH :
                            variant === 'cyan' ? ENEMY_CONFIG.CYAN_MECH : ENEMY_CONFIG.GREY_MECH;
         const cfg = { ...baseConfig, ...config };
-        const idleKey = variant === 'cyan' ? 'cyan-mech-idle' : 'grey-mech-idle';
+        const idleKey = variant + '-mech-idle';
         super(scene, x, y, idleKey, cfg);
 
         this.variant = variant;

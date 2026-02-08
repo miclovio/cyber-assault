@@ -11,8 +11,8 @@ class Turret extends EnemyBase {
         this.isSlime = isSlime;
 
         if (isSlime) {
-            this.setScale(1.5);
-            this.body.setSize(30, 28);
+            this.setScale(1);
+            this.body.setSize(24, 22);
             this.play('slime-idle');
         } else {
             this.setScale(1.2);
@@ -37,6 +37,24 @@ class Turret extends EnemyBase {
         }
 
         // Shoot at player
-        this.shootAtPlayer(time);
+        if (this.isSlime) {
+            this.shootSlime(time);
+        } else {
+            this.shootAtPlayer(time);
+        }
+    }
+
+    shootSlime(time) {
+        if (time - this.lastFireTime < this.fireRate) return;
+        if (!this.canSeePlayer()) return;
+
+        this.lastFireTime = time;
+        // Fire horizontally at chest height — passes over crouching players
+        const bulletY = this.y - 30;
+        this.scene.weaponSystem.fireEnemyBullet(
+            this.x, bulletY,
+            this.scene.player.x, bulletY,
+            200, 1
+        );
     }
 }

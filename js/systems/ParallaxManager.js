@@ -38,6 +38,24 @@ class ParallaxManager {
                 return;
             }
 
+            // Prop layers: single non-tiling images that drift with parallax
+            if (layerDef.prop) {
+                const propScale = layerDef.scale || 2;
+                const layer = this.scene.add.image(layerDef.x, layerDef.y, layerDef.key);
+                layer.setScale(propScale);
+                layer.setScrollFactor(0);
+                layer.setDepth(-10 + index);
+                if (layerDef.alpha !== undefined) layer.setAlpha(layerDef.alpha);
+                this.layers.push({
+                    sprite: layer,
+                    speed: layerDef.speed || 0.1,
+                    tileScale: 1,
+                    isProp: true,
+                    baseX: layerDef.x
+                });
+                return;
+            }
+
             const scale = layerDef.tileScale || 1;
 
             // For bottom-aligned layers, size to scaled texture height
@@ -74,7 +92,11 @@ class ParallaxManager {
     update() {
         const camX = this.scene.cameras.main.scrollX;
         this.layers.forEach(layer => {
-            layer.sprite.tilePositionX = camX * layer.speed / layer.tileScale;
+            if (layer.isProp) {
+                layer.sprite.x = layer.baseX - camX * layer.speed;
+            } else {
+                layer.sprite.tilePositionX = camX * layer.speed / layer.tileScale;
+            }
         });
     }
 

@@ -410,7 +410,13 @@ const LEVEL_DATA = {
         playerStart: { x: 100, y: 350 },
         backgrounds: [
             { key: 'l4-bg',    speed: 0.02, tileScale: 3 },
-            { key: 'l4-stars', speed: 0.15 }
+            { key: 'l4-stars', speed: 0.15 },
+            { key: 'l4-planet-big',   prop: true, x: 650, y: 130, scale: 3,   speed: 0.05, alpha: 0.6 },
+            { key: 'l4-asteroid1',    prop: true, x: 350, y: 220, scale: 2.5, speed: 0.12 },
+            { key: 'l4-planet-small', prop: true, x: 500, y: 90,  scale: 2.5, speed: 0.08, alpha: 0.5 },
+            { key: 'l4-asteroid2',    prop: true, x: 200, y: 170, scale: 2,   speed: 0.1 },
+            { key: 'l4-asteroid1',    prop: true, x: 700, y: 300, scale: 1.8, speed: 0.18, alpha: 0.8 },
+            { key: 'l4-planet-small', prop: true, x: 100, y: 110, scale: 3.5, speed: 0.04, alpha: 0.4 }
         ],
         platformTile: 'l1-floor',
         platformTint: 0x4466dd,
@@ -457,76 +463,89 @@ const LEVEL_DATA = {
             { x: 6300, y: 320, w: 140, h: 20 },
             { x: 6550, y: 240, w: 100, h: 20 }
         ],
+        enemyTint: 0x6688ee,
         enemyTriggers: [
+            // Floor 0-700
             { x: 300, enemies: [
                 { type: 'grunt', x: 500, y: 380, config: {} },
+                { type: 'grunt', x: 530, y: 210, config: { patrolDir: -1, patrolRange: 40 } },
                 { type: 'flyer', x: 550, y: 180, config: { moveDir: -1 } },
-                { type: 'slime', x: 600, y: 300, config: {} }
+                { type: 'slime', x: 600, y: 400, config: {} }
             ]},
+            // Floor 800-1300
             { x: 700, enemies: [
                 { type: 'grunt', x: 900, y: 380, config: { patrolDir: -1 } },
-                { type: 'grunt', x: 1000, y: 260, config: { patrolRange: 60 } },
-                { type: 'flyer', x: 1050, y: 160, config: { moveDir: -1 } },
-                { type: 'slime', x: 1100, y: 380, config: {} }
+                { type: 'heavy', x: 1000, y: 370, config: { patrolRange: 120 } },
+                { type: 'grunt', x: 1130, y: 190, config: { patrolDir: -1, patrolRange: 40 } },
+                { type: 'flyer', x: 1050, y: 160, config: { moveDir: -1 } }
             ]},
+            // Floor 1400-1800
             { x: 1200, enemies: [
-                { type: 'heavy', x: 1400, y: 370, config: {} },
+                { type: 'heavy', x: 1500, y: 370, config: {} },
+                { type: 'grunt', x: 1530, y: 290, config: { patrolDir: 1, patrolRange: 50 } },
                 { type: 'flyer', x: 1550, y: 150, config: { moveDir: -1 } },
-                { type: 'slime', x: 1600, y: 280, config: {} }
+                { type: 'slime', x: 1700, y: 400, config: {} }
             ]},
+            // Floor 1900-2500
             { x: 1700, enemies: [
                 { type: 'grunt', x: 1900, y: 380, config: {} },
-                { type: 'heavy', x: 2000, y: 370, config: { patrolDir: -1 } },
-                { type: 'flying_eye', x: 2100, y: 160, config: { moveDir: -1 } },
-                { type: 'flying_eye', x: 2150, y: 200, config: { moveDir: 1 } }
+                { type: 'heavy', x: 2100, y: 370, config: { patrolDir: -1 } },
+                { type: 'grunt', x: 1980, y: 270, config: { patrolDir: 1, patrolRange: 50 } },
+                { type: 'flyer', x: 2200, y: 160, config: { moveDir: -1 } }
             ]},
+            // Floor 2600-3100
             { x: 2300, enemies: [
-                { type: 'heavy', x: 2500, y: 370, config: {} },
-                { type: 'slime', x: 2600, y: 280, config: {} },
+                { type: 'heavy', x: 2800, y: 370, config: {} },
+                { type: 'slime', x: 2700, y: 400, config: {} },
+                { type: 'grunt', x: 2730, y: 290, config: { patrolDir: -1, patrolRange: 40 } },
                 { type: 'flyer', x: 2700, y: 160, config: { moveDir: -1 } },
                 { type: 'grunt', x: 2900, y: 380, config: { patrolDir: -1 } }
             ]},
+            // Floor 3200-3800
             { x: 3000, enemies: [
-                { type: 'heavy', x: 3200, y: 370, config: { patrolDir: -1 } },
-                { type: 'heavy', x: 3300, y: 370, config: {} },
-                { type: 'slime', x: 3400, y: 260, config: {} },
-                { type: 'flying_eye', x: 3500, y: 160, config: { moveDir: -1 } }
+                { type: 'heavy', x: 3400, y: 370, config: { patrolDir: -1 } },
+                { type: 'grunt', x: 3280, y: 270, config: { patrolDir: 1, patrolRange: 40 } },
+                { type: 'slime', x: 3500, y: 400, config: {} },
+                { type: 'flyer', x: 3600, y: 160, config: { moveDir: -1 } }
             ]},
+            // Floor 3900-4300 + Blue Mech
             { x: 3700, enemies: [
-                { type: 'grunt', x: 3900, y: 380, config: {} },
-                { type: 'grunt', x: 4000, y: 380, config: { patrolDir: -1 } },
-                { type: 'heavy', x: 4100, y: 370, config: {} },
-                { type: 'slime', x: 4200, y: 300, config: {} },
-                { type: 'flyer', x: 4250, y: 160, config: { moveDir: -1 } },
-                { type: 'flying_eye', x: 4300, y: 200, config: { moveDir: 1 } }
+                { type: 'blue_mech', x: 4000, y: 350, config: { patrolDir: -1, patrolRange: 200 } }
             ]},
-            { x: 4400, enemies: [
+            // Floor 4400-4900
+            { x: 4200, enemies: [
+                { type: 'grunt', x: 4500, y: 380, config: {} },
                 { type: 'heavy', x: 4600, y: 370, config: {} },
-                { type: 'heavy', x: 4700, y: 370, config: { patrolDir: -1 } },
-                { type: 'slime', x: 4900, y: 280, config: {} },
+                { type: 'grunt', x: 4530, y: 270, config: { patrolDir: -1, patrolRange: 40 } },
+                { type: 'slime', x: 4800, y: 400, config: {} },
                 { type: 'flyer', x: 4950, y: 150, config: { moveDir: -1 } }
             ]},
+            // Floor 5000-5600
             { x: 5000, enemies: [
                 { type: 'grunt', x: 5200, y: 380, config: {} },
-                { type: 'grunt', x: 5300, y: 380, config: { patrolDir: -1 } },
                 { type: 'heavy', x: 5400, y: 370, config: {} },
-                { type: 'flying_eye', x: 5500, y: 160, config: { moveDir: -1 } },
-                { type: 'flying_eye', x: 5550, y: 200, config: { moveDir: 1 } },
-                { type: 'slime', x: 5600, y: 300, config: {} }
+                { type: 'grunt', x: 5080, y: 290, config: { patrolDir: 1, patrolRange: 40 } },
+                { type: 'slime', x: 5300, y: 400, config: {} },
+                { type: 'flyer', x: 5500, y: 160, config: { moveDir: -1 } }
             ]},
+            // Floor 5700-6100
             { x: 5700, enemies: [
                 { type: 'heavy', x: 5900, y: 370, config: { patrolDir: -1 } },
-                { type: 'heavy', x: 6000, y: 370, config: {} },
-                { type: 'slime', x: 6200, y: 280, config: {} },
-                { type: 'flying_eye', x: 6300, y: 150, config: { moveDir: -1 } },
-                { type: 'flyer', x: 6350, y: 190, config: { moveDir: 1 } }
+                { type: 'grunt', x: 5830, y: 270, config: { patrolDir: -1, patrolRange: 40 } },
+                { type: 'slime', x: 5800, y: 400, config: {} },
+                { type: 'flyer', x: 6050, y: 190, config: { moveDir: 1 } }
             ]},
-            { x: 6400, enemies: [
-                { type: 'heavy', x: 6600, y: 370, config: {} },
-                { type: 'heavy', x: 6700, y: 370, config: { patrolDir: -1 } },
-                { type: 'grunt', x: 6800, y: 380, config: {} },
-                { type: 'slime', x: 6850, y: 260, config: {} },
-                { type: 'flying_eye', x: 6950, y: 160, config: { moveDir: -1 } }
+            // Floor 6200-6700
+            { x: 6100, enemies: [
+                { type: 'heavy', x: 6400, y: 370, config: {} },
+                { type: 'grunt', x: 6330, y: 290, config: { patrolDir: 1, patrolRange: 50 } },
+                { type: 'flyer', x: 6500, y: 150, config: { moveDir: -1 } }
+            ]},
+            // Floor 6800-8000 (pre-boss)
+            { x: 6600, enemies: [
+                { type: 'heavy', x: 6900, y: 370, config: { patrolDir: -1 } },
+                { type: 'grunt', x: 7000, y: 380, config: {} },
+                { type: 'slime', x: 6850, y: 400, config: {} }
             ]}
         ],
         checkpoints: [
