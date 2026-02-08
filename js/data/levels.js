@@ -12,13 +12,13 @@ const LEVEL_DATA = {
         height: GAME_HEIGHT,
         playerStart: { x: 100, y: 350 },
         backgrounds: [
-            { key: 'l1-bg',   speed: 0.05, tileScale: 3 },
-            { key: 'l1-far',  speed: 0.15, tileScale: 4 },
-            { key: 'l1-mid',  speed: 0.3,  tileScale: 3 },
-            { key: 'l1-wall', speed: 0.4,  tileScale: 3, alpha: 0.6 },
-            { key: 'l1-fore', speed: 0.55, tileScale: 3, alignBottom: true }
+            { gradient: ['#0d1f14', '#1a3d28', '#2a6b45'], speed: 0 },
+            { key: 'l1-far',  speed: 0.15, tileScale: 2, alignBottom: true },
+            { key: 'l1-mid',  speed: 0.3,  tileScale: 2, alignBottom: true },
+            { key: 'l1-fore', speed: 0.55, tileScale: 1.5, alignBottom: true }
         ],
         platformTile: 'l1-floor',
+        platformTint: 0x88ccbb,
         platforms: [
             // Ground floor - continuous with small gaps (all jumpable)
             // Gaps are only 100px wide - easy to jump over
@@ -57,18 +57,16 @@ const LEVEL_DATA = {
                 { type: 'grunt', x: 600, y: 380, config: { patrolDir: 1, patrolRange: 100 } }
             ]},
             { x: 700, enemies: [
-                { type: 'flyer', x: 900, y: 200, config: { moveDir: -1 } },
+                { type: 'grunt', x: 720, y: 240, config: { patrolDir: 1, patrolRange: 50 } },
                 { type: 'grunt', x: 1000, y: 380, config: { patrolDir: -1 } }
             ]},
             { x: 1200, enemies: [
                 { type: 'grunt', x: 1400, y: 380, config: { patrolDir: 1 } },
-                { type: 'grunt', x: 1500, y: 280, config: { patrolDir: -1, patrolRange: 80 } },
-                { type: 'flyer', x: 1600, y: 180, config: { moveDir: -1 } }
+                { type: 'grunt', x: 1500, y: 280, config: { patrolDir: -1, patrolRange: 80 } }
             ]},
             { x: 1800, enemies: [
-                { type: 'grunt', x: 2000, y: 380, config: {} },
-                { type: 'flyer', x: 2100, y: 150, config: { moveDir: -1 } },
-                { type: 'flyer', x: 2200, y: 220, config: { moveDir: 1 } }
+                { type: 'grunt', x: 1940, y: 240, config: { patrolDir: -1, patrolRange: 50 } },
+                { type: 'grunt', x: 2000, y: 380, config: {} }
             ]},
             { x: 2400, enemies: [
                 { type: 'grunt', x: 2600, y: 380, config: { patrolDir: -1 } },
@@ -76,14 +74,16 @@ const LEVEL_DATA = {
                 { type: 'grunt', x: 2700, y: 210, config: { patrolDir: 1, patrolRange: 60 } }
             ]},
             { x: 3000, enemies: [
-                { type: 'heavy', x: 3200, y: 370, config: { patrolDir: -1 } },
-                { type: 'flyer', x: 3300, y: 160, config: { moveDir: -1 } }
+                { type: 'grunt', x: 3050, y: 230, config: { patrolDir: 1, patrolRange: 60 } },
+                { type: 'heavy', x: 3200, y: 370, config: { patrolDir: -1 } }
             ]},
             { x: 3500, enemies: [
+                { type: 'grunt', x: 3440, y: 300, config: { patrolDir: -1, patrolRange: 50 } },
                 { type: 'grunt', x: 3700, y: 380, config: {} },
-                { type: 'grunt', x: 3800, y: 380, config: { patrolDir: -1 } },
-                { type: 'flyer', x: 3900, y: 200, config: { moveDir: 1 } },
-                { type: 'flyer', x: 3950, y: 250, config: { moveDir: -1 } }
+                { type: 'grunt', x: 3800, y: 380, config: { patrolDir: -1 } }
+            ]},
+            { x: 3900, enemies: [
+                { type: 'grey_mech', x: 4100, y: 350, config: { patrolDir: -1, patrolRange: 180 } }
             ]},
             { x: 4200, enemies: [
                 { type: 'heavy', x: 4400, y: 370, config: { patrolRange: 200 } },
@@ -91,9 +91,8 @@ const LEVEL_DATA = {
                 { type: 'grunt', x: 4600, y: 260, config: { patrolDir: -1, patrolRange: 60 } }
             ]},
             { x: 4800, enemies: [
-                { type: 'grunt', x: 5000, y: 380, config: { patrolDir: 1 } },
-                { type: 'flyer', x: 5100, y: 180, config: { moveDir: -1 } },
-                { type: 'flyer', x: 5200, y: 230, config: { moveDir: 1 } }
+                { type: 'grunt', x: 5050, y: 290, config: { patrolDir: -1, patrolRange: 60 } },
+                { type: 'grunt', x: 5000, y: 380, config: { patrolDir: 1 } }
             ]},
             { x: 5400, enemies: [
                 { type: 'heavy', x: 5600, y: 370, config: {} },
@@ -103,7 +102,7 @@ const LEVEL_DATA = {
             { x: 6000, enemies: [
                 { type: 'grunt', x: 6200, y: 380, config: {} },
                 { type: 'grunt', x: 6300, y: 380, config: { patrolDir: -1 } },
-                { type: 'flyer', x: 6400, y: 170, config: { moveDir: -1 } },
+                { type: 'grunt', x: 6540, y: 270, config: { patrolDir: 1, patrolRange: 60 } },
                 { type: 'heavy', x: 6500, y: 370, config: { patrolDir: -1 } }
             ]}
         ],

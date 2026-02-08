@@ -92,6 +92,9 @@ class LevelManager {
             case 'turret':
                 enemy = new Turret(this.scene, x, y, config);
                 break;
+            case 'grey_mech':
+                enemy = new Mech(this.scene, x, y, config);
+                break;
             default:
                 console.warn('Unknown enemy type:', type);
                 return;

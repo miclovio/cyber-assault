@@ -46,7 +46,9 @@ class PowerUpSystem {
 
         // Add label on top
         const label = this.scene.add.text(x, y - 10, def.label, {
-            fontSize: '10px', fontFamily: 'monospace', color: '#ffffff', fontStyle: 'bold'
+            fontSize: '10px', fontFamily: 'monospace', color: '#ffffff', fontStyle: 'bold',
+            stroke: '#000000', strokeThickness: 3,
+            shadow: { offsetX: 1, offsetY: 1, color: '#000000', blur: 2, fill: true }
         }).setOrigin(0.5).setDepth(6);
         powerUp.label = label;
 

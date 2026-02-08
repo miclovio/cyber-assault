@@ -85,6 +85,25 @@ class EnemyBase extends Phaser.Physics.Arcade.Sprite {
         );
     }
 
+    isNearEdge() {
+        if (!this.body.blocked.down) return false;
+
+        const checkX = this.x + (this.patrolDir * 24);
+        const checkY = this.body.bottom + 8;
+        const platforms = this.scene.platforms;
+        if (!platforms) return false;
+
+        const children = platforms.getChildren();
+        for (let i = 0; i < children.length; i++) {
+            const pb = children[i].body;
+            if (pb && checkX >= pb.x && checkX <= pb.x + pb.width &&
+                checkY >= pb.y && checkY <= pb.y + pb.height) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     isOnScreen() {
         const cam = this.scene.cameras.main;
         return this.x > cam.scrollX - 50 &&
