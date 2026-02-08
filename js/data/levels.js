@@ -135,6 +135,7 @@ const LEVEL_DATA = {
             { key: 'l2-fore', speed: 0.35, tint: 0x665599 }
         ],
         platformTile: 'l2-platform',
+        enemyTint: 0x9977dd,
         platforms: [
             // Ground sections with 150px pits
             { x: 0,    y: 420, w: 700,  h: 30 },
@@ -192,7 +193,8 @@ const LEVEL_DATA = {
                 { type: 'grunt', x: 500, y: 380, config: {} }
             ]},
             { x: 800, enemies: [
-                { type: 'heavy', x: 1000, y: 370, config: { patrolDir: -1 } }
+                { type: 'heavy', x: 1000, y: 370, config: { patrolDir: -1 } },
+                { type: 'grunt', x: 980, y: 290, config: { patrolDir: 1, patrolRange: 40 } }
             ]},
             { x: 1300, enemies: [
                 { type: 'grunt', x: 1500, y: 380, config: {} },
@@ -200,33 +202,42 @@ const LEVEL_DATA = {
             ]},
             { x: 1900, enemies: [
                 { type: 'heavy', x: 2100, y: 370, config: {} },
+                { type: 'grunt', x: 2340, y: 190, config: { patrolDir: -1, patrolRange: 40 } },
                 { type: 'flyer', x: 2300, y: 180, config: { moveDir: -1 } }
             ]},
             { x: 2500, enemies: [
                 { type: 'grunt', x: 2800, y: 380, config: { patrolDir: -1 } },
+                { type: 'grunt', x: 3050, y: 210, config: { patrolDir: 1, patrolRange: 50 } },
                 { type: 'heavy', x: 2900, y: 370, config: {} }
             ]},
             { x: 3200, enemies: [
-                { type: 'heavy', x: 3400, y: 370, config: { patrolDir: -1 } },
+                { type: 'heavy', x: 3700, y: 370, config: { patrolDir: -1 } },
                 { type: 'grunt', x: 3500, y: 380, config: {} }
             ]},
+            { x: 3600, enemies: [
+                { type: 'cyan_mech', x: 3800, y: 350, config: { patrolDir: -1, patrolRange: 200 } }
+            ]},
             { x: 3800, enemies: [
+                { type: 'grunt', x: 3850, y: 220, config: { patrolDir: 1, patrolRange: 50 } },
+                { type: 'grunt', x: 4240, y: 270, config: { patrolDir: -1, patrolRange: 40 } },
                 { type: 'grunt', x: 4000, y: 380, config: {} },
                 { type: 'heavy', x: 4100, y: 370, config: { patrolDir: -1 } },
                 { type: 'flyer', x: 4300, y: 160, config: { moveDir: -1 } }
             ]},
             { x: 4400, enemies: [
-                { type: 'heavy', x: 4600, y: 370, config: {} },
-                { type: 'heavy', x: 4700, y: 370, config: { patrolDir: -1 } }
+                { type: 'heavy', x: 4900, y: 370, config: {} },
+                { type: 'grunt', x: 4600, y: 380, config: { patrolDir: -1 } }
             ]},
             { x: 5000, enemies: [
+                { type: 'grunt', x: 5150, y: 230, config: { patrolDir: 1, patrolRange: 50 } },
                 { type: 'grunt', x: 5200, y: 380, config: {} },
                 { type: 'grunt', x: 5300, y: 380, config: { patrolDir: -1 } },
                 { type: 'flyer', x: 5600, y: 180, config: { moveDir: -1 } }
             ]},
             { x: 5800, enemies: [
+                { type: 'grunt', x: 5950, y: 290, config: { patrolDir: -1, patrolRange: 50 } },
                 { type: 'heavy', x: 6000, y: 370, config: { patrolDir: -1 } },
-                { type: 'heavy', x: 6100, y: 370, config: {} }
+                { type: 'grunt', x: 5600, y: 380, config: {} }
             ]},
             { x: 6400, enemies: [
                 { type: 'heavy', x: 6500, y: 370, config: {} },
@@ -242,7 +253,7 @@ const LEVEL_DATA = {
         boss: {
             type: 'MECH',
             x: 7500,
-            y: 300,
+            y: 360,
             arenaStart: 7000,
             arenaEnd: 7900,
             name: 'ASSAULT MECH'
@@ -264,6 +275,7 @@ const LEVEL_DATA = {
         ],
         platformTile: 'l3-platform',
         platformTint: 0x995544,
+        enemyTint: 0xcc8855,
         platforms: [
             // Organic ground - irregular layout
             { x: 0,    y: 420, w: 600,  h: 30 },
@@ -335,9 +347,12 @@ const LEVEL_DATA = {
                 { type: 'grunt', x: 2700, y: 380, config: {} }
             ]},
             { x: 2900, enemies: [
-                { type: 'heavy', x: 3100, y: 370, config: { patrolDir: -1 } },
+                { type: 'heavy', x: 2700, y: 370, config: { patrolDir: -1 } },
                 { type: 'flying_eye', x: 3300, y: 160, config: { moveDir: -1 } },
                 { type: 'flying_eye', x: 3350, y: 200, config: { moveDir: 1 } }
+            ]},
+            { x: 3400, enemies: [
+                { type: 'orange_mech', x: 3600, y: 350, config: { patrolDir: -1, patrolRange: 200 } }
             ]},
             { x: 3500, enemies: [
                 { type: 'flying_eye', x: 3700, y: 150, config: { moveDir: -1 } },
@@ -348,7 +363,7 @@ const LEVEL_DATA = {
             ]},
             { x: 4200, enemies: [
                 { type: 'heavy', x: 4400, y: 370, config: {} },
-                { type: 'heavy', x: 4500, y: 370, config: { patrolDir: -1 } },
+                { type: 'grunt', x: 4500, y: 380, config: { patrolDir: -1 } },
                 { type: 'flying_eye', x: 4600, y: 160, config: { moveDir: -1 } }
             ]},
             { x: 4800, enemies: [

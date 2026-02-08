@@ -19,6 +19,7 @@ class EnemyBase extends Phaser.Physics.Arcade.Sprite {
 
         this.setDepth(5);
         this.body.allowGravity = this.config.gravity !== false;
+        this.baseTint = null;
     }
 
     takeDamage(amount) {
@@ -27,7 +28,10 @@ class EnemyBase extends Phaser.Physics.Arcade.Sprite {
         // Flash white
         this.setTintFill(0xffffff);
         this.scene.time.delayedCall(80, () => {
-            if (this.active) this.clearTint();
+            if (this.active) {
+                if (this.baseTint) this.setTint(this.baseTint);
+                else this.clearTint();
+            }
         });
 
         if (this.hp <= 0) {

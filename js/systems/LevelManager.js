@@ -15,6 +15,7 @@ class LevelManager {
     setup(levelData) {
         this.triggers = levelData.enemyTriggers || [];
         this.checkpoints = levelData.checkpoints || [];
+        this.enemyTint = levelData.enemyTint || null;
         this.activatedTriggers.clear();
         this.activatedCheckpoints.clear();
     }
@@ -95,11 +96,21 @@ class LevelManager {
             case 'grey_mech':
                 enemy = new Mech(this.scene, x, y, config);
                 break;
+            case 'cyan_mech':
+                enemy = new Mech(this.scene, x, y, { ...config, variant: 'cyan' });
+                break;
+            case 'orange_mech':
+                enemy = new Mech(this.scene, x, y, { ...config, variant: 'orange' });
+                break;
             default:
                 console.warn('Unknown enemy type:', type);
                 return;
         }
 
+        if (this.enemyTint) {
+            enemy.baseTint = this.enemyTint;
+            enemy.setTint(this.enemyTint);
+        }
         this.enemies.add(enemy);
         return enemy;
     }

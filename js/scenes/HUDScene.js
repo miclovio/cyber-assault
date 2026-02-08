@@ -58,11 +58,11 @@ class HUDScene extends Phaser.Scene {
         }).setOrigin(0.5, 0);
 
         // Boss HP bar (hidden initially)
-        this.bossBarShadow = this.add.rectangle(GAME_WIDTH / 2 + 2, 42, 302, 16, 0x000000, 0.5);
-        this.bossBarBorder = this.add.rectangle(GAME_WIDTH / 2, 40, 306, 20, 0x111111);
-        this.bossBarBg = this.add.rectangle(GAME_WIDTH / 2, 40, 302, 16, 0x333333);
-        this.bossBar = this.add.rectangle(GAME_WIDTH / 2 - 149, 40, 298, 12, 0xff0000).setOrigin(0, 0.5);
-        this.bossLabel = this.add.text(GAME_WIDTH / 2, 24, 'BOSS', {
+        this.bossBarShadow = this.add.rectangle(GAME_WIDTH / 2 + 2, 62, 302, 16, 0x000000, 0.5);
+        this.bossBarBorder = this.add.rectangle(GAME_WIDTH / 2, 60, 306, 20, 0x111111);
+        this.bossBarBg = this.add.rectangle(GAME_WIDTH / 2, 60, 302, 16, 0x333333);
+        this.bossBar = this.add.rectangle(GAME_WIDTH / 2 - 149, 60, 298, 12, 0xff0000).setOrigin(0, 0.5);
+        this.bossLabel = this.add.text(GAME_WIDTH / 2, 44, 'BOSS', {
             fontSize: '12px', fontFamily: 'monospace', color: '#ff4444', fontStyle: 'bold',
             stroke: '#330000', strokeThickness: 3,
             shadow: { offsetX: 1, offsetY: 1, color: '#000000', blur: 2, fill: true }

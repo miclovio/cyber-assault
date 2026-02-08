@@ -28,7 +28,9 @@ const ENEMY_CONFIG = {
     HEAVY: { hp: 3, speed: 40, score: 400, fireRate: 1500, burstCount: 3, burstDelay: 200 },
     GHOST: { hp: 2, speed: 55, score: 300, floatSpeed: 90 },
     TURRET: { hp: 5, speed: 0, score: 250, fireRate: 1400, detectionRange: 500 },
-    GREY_MECH: { hp: 6, speed: 35, score: 800, fireRate: 2000, burstCount: 4, burstDelay: 180, detectionRange: 450 }
+    GREY_MECH: { hp: 6, speed: 35, score: 800, fireRate: 2000, burstCount: 4, burstDelay: 180, detectionRange: 450 },
+    CYAN_MECH: { hp: 8, speed: 40, score: 1000, fireRate: 1800, burstCount: 4, burstDelay: 160, detectionRange: 500 },
+    ORANGE_MECH: { hp: 10, speed: 45, score: 1200, fireRate: 1600, burstCount: 5, burstDelay: 150, detectionRange: 550 }
 };
 
 const BOSS_CONFIG = {
