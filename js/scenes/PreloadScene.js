@@ -154,7 +154,7 @@ class PreloadScene extends Phaser.Scene {
         this.load.image('l3-back', `${rocky}/back.png`);
         this.load.image('l3-mid', `${rocky}/middle.png`);
         this.load.image('l3-near', `${rocky}/near.png`);
-        this.load.image('l3-platform', 'Assets/Environments/bulkhead-walls/v2/PNG/floor.png');
+        this.load.image('l3-platform', 'Assets/Environments/Floor/floor.png');
 
         // Level 4 - Space (Blue Version - vibrant nebula)
         const space = 'Assets/Environments/space_background_pack/Blue Version/layered';
