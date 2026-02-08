@@ -16,6 +16,9 @@ class ParallaxManager {
             // Gradient layers: smooth full-resolution background
             if (layerDef.gradient) {
                 const texKey = `_gradient_${index}`;
+                if (this.scene.textures.exists(texKey)) {
+                    this.scene.textures.remove(texKey);
+                }
                 const canvas = this.scene.textures.createCanvas(texKey, GAME_WIDTH, GAME_HEIGHT);
                 const ctx = canvas.getContext();
                 const grad = ctx.createLinearGradient(0, 0, 0, GAME_HEIGHT);

@@ -4,9 +4,14 @@
 
 class Mech extends EnemyBase {
     constructor(scene, x, y, config) {
-        const cfg = { ...ENEMY_CONFIG.GREY_MECH, ...config };
-        super(scene, x, y, 'grey-mech-idle', cfg);
+        const variant = (config && config.variant) || 'grey';
+        const baseConfig = variant === 'orange' ? ENEMY_CONFIG.ORANGE_MECH :
+                           variant === 'cyan' ? ENEMY_CONFIG.CYAN_MECH : ENEMY_CONFIG.GREY_MECH;
+        const cfg = { ...baseConfig, ...config };
+        const idleKey = variant === 'cyan' ? 'cyan-mech-idle' : 'grey-mech-idle';
+        super(scene, x, y, idleKey, cfg);
 
+        this.variant = variant;
         this.setScale(1.8);
         this.body.setSize(28, 36);
         this.body.setOffset(26, 8);
@@ -26,7 +31,7 @@ class Mech extends EnemyBase {
         this.windupTimer = 0;
         this.recoverTimer = 0;
 
-        this.play('grey-mech-walk');
+        this.play(this.variant + '-mech-walk');
     }
 
     update(time) {
@@ -169,7 +174,7 @@ class Mech extends EnemyBase {
 
     enrage() {
         this.enraged = true;
-        this.play('grey-mech-attack');
+        this.play(this.variant + '-mech-attack');
         this.setTint(0xff6666);
         this.scene.cameras.main.shake(150, 0.008);
     }
@@ -190,6 +195,23 @@ class Mech extends EnemyBase {
 
     die() {
         this.scene.cameras.main.shake(200, 0.01);
-        super.die();
+
+        // Guaranteed power-up drop
+        this.scene.powerUpSystem.spawnDrop(this.x, this.y);
+
+        // Score
+        if (this.scene.player) {
+            this.scene.player.addScore(this.scoreValue);
+        }
+
+        // Death effect
+        this.scene.effectsManager.playEnemyDeath(this.x, this.y);
+
+        this.setActive(false);
+        this.setVisible(false);
+        if (this.body) {
+            this.body.stop();
+            this.body.enable = false;
+        }
     }
 }

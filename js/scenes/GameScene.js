@@ -210,15 +210,7 @@ class GameScene extends Phaser.Scene {
         // Set checkpoint inside arena so respawn works with locked camera
         this.player.setCheckpoint(arenaStart + 60, 380);
 
-        // Add boss platform if needed
-        if (this.bossData.type !== 'FIRESKULL' && this.bossData.type !== 'SENTINEL') {
-            const arenaW = arenaEnd - arenaStart;
-            this.add.tileSprite(arenaStart + arenaW / 2, 420, arenaW, 30,
-                LEVEL_DATA[this.currentLevel].platformTile).setDepth(1);
-            const floor = this.add.rectangle(arenaStart + arenaW / 2, 420, arenaW, 30);
-            floor.setVisible(false);
-            this.platforms.add(floor);
-        }
+        // Arena floor comes from level platform data (ground must cover arena range)
 
         // Emit boss warning event (HUD shows WARNING!)
         this.events.emit('boss-start', this.bossData.name);

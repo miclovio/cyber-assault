@@ -113,6 +113,16 @@ class PreloadScene extends Phaser.Scene {
         const greyMechBase = 'Assets/Characters/Mechs/SpriteSheets/Grey_1';
         this.load.spritesheet('grey-mech-idle', `${greyMechBase}/Gr1_Idle.png`, { frameWidth: 80, frameHeight: 80 });
         this.load.spritesheet('grey-mech-alert', `${greyMechBase}/Gr1_Idle2.png`, { frameWidth: 80, frameHeight: 80 });
+
+        // Cyan Mech
+        const cyanMechBase = 'Assets/Characters/Mechs/SpriteSheets/Cyan_1';
+        this.load.spritesheet('cyan-mech-idle', `${cyanMechBase}/C1_Idle.png`, { frameWidth: 80, frameHeight: 80 });
+        this.load.spritesheet('cyan-mech-alert', `${cyanMechBase}/C1_Idle2.png`, { frameWidth: 80, frameHeight: 80 });
+
+        // Orange Mech
+        const orangeMechBase = 'Assets/Characters/Mechs/SpriteSheets/Orange_1/Sprite_Sheets';
+        this.load.spritesheet('orange-mech-idle', `${orangeMechBase}/O1_Idle.png`, { frameWidth: 80, frameHeight: 80 });
+        this.load.spritesheet('orange-mech-alert', `${orangeMechBase}/O1_Idle2.png`, { frameWidth: 80, frameHeight: 80 });
     }
 
     loadBossAssets() {
@@ -124,9 +134,9 @@ class PreloadScene extends Phaser.Scene {
         const mechBase = 'Assets/Characters/mech-unit/sprites';
         for (let i = 1; i <= 10; i++) this.load.image(`mech${i}`, `${mechBase}/mech-unit-export${i}.png`);
 
-        // Fire Skull
-        const skullBase = 'Assets/Characters/Fire-Skull-Files/Sprites/Fire';
-        for (let i = 1; i <= 8; i++) this.load.image(`fireskull${i}`, `${skullBase}/frame${i}.png`);
+        // Fire Skull (NoFire variant)
+        const skullBase = 'Assets/Characters/Fire-Skull-Files/Sprites/NoFire';
+        for (let i = 1; i <= 4; i++) this.load.image(`fireskull${i}`, `${skullBase}/frame${i}.png`);
 
         // Sentinel (single sprite)
         this.load.image('sentinel', 'Assets/Characters/Battle Sprites/Mechanic/Sentinel.png');
@@ -275,10 +285,18 @@ class PreloadScene extends Phaser.Scene {
         this.anims.create({ key: 'grey-mech-walk', frames: this.anims.generateFrameNumbers('grey-mech-idle', { start: 0, end: 12 }), frameRate: 6, repeat: -1 });
         this.anims.create({ key: 'grey-mech-attack', frames: this.anims.generateFrameNumbers('grey-mech-alert', { start: 0, end: 12 }), frameRate: 8, repeat: -1 });
 
+        // Cyan Mech animations
+        this.anims.create({ key: 'cyan-mech-walk', frames: this.anims.generateFrameNumbers('cyan-mech-idle', { start: 0, end: 12 }), frameRate: 6, repeat: -1 });
+        this.anims.create({ key: 'cyan-mech-attack', frames: this.anims.generateFrameNumbers('cyan-mech-alert', { start: 0, end: 12 }), frameRate: 8, repeat: -1 });
+
+        // Orange Mech animations
+        this.anims.create({ key: 'orange-mech-walk', frames: this.anims.generateFrameNumbers('orange-mech-idle', { start: 0, end: 12 }), frameRate: 6, repeat: -1 });
+        this.anims.create({ key: 'orange-mech-attack', frames: this.anims.generateFrameNumbers('orange-mech-alert', { start: 0, end: 12 }), frameRate: 8, repeat: -1 });
+
         // Boss animations
         this.anims.create({ key: 'tank-move', frames: this.frameKeys('tank', 1, 4), frameRate: 6, repeat: -1 });
         this.anims.create({ key: 'mech-walk', frames: this.frameKeys('mech', 1, 10), frameRate: 8, repeat: -1 });
-        this.anims.create({ key: 'fireskull-fly', frames: this.frameKeys('fireskull', 1, 8), frameRate: 10, repeat: -1 });
+        this.anims.create({ key: 'fireskull-fly', frames: this.frameKeys('fireskull', 1, 4), frameRate: 8, repeat: -1 });
 
         // Explosion animations
         this.anims.create({ key: 'explosion-a', frames: this.frameKeys('exp-a', 1, 8), frameRate: 15, repeat: 0 });
