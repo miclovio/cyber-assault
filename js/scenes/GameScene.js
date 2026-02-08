@@ -70,7 +70,7 @@ class GameScene extends Phaser.Scene {
         // Level events
         this.events.on('player-game-over', this.onGameOver, this);
 
-        // Debug: B = skip to boss, N = skip to next level
+        // Debug: B = skip to boss, N = skip to next level, M = mission complete
         this.input.keyboard.on('keydown-B', () => {
             if (!this.bossActive && this.bossData) {
                 this.player.setPosition(this.bossData.arenaStart + 50, 350);
@@ -83,6 +83,14 @@ class GameScene extends Phaser.Scene {
                     phase: 2, timer: 100, target: 'GameScene',
                     data: { level: next, score: this.player.score, lives: this.player.lives, weapon: this.player.currentWeapon }
                 };
+            }
+        });
+        this.input.keyboard.on('keydown-M', () => {
+            if (!this.sceneTransition && this.boss) {
+                this.boss.hp = 0;
+                this.boss.defeat();
+            } else if (!this.sceneTransition && !this.boss) {
+                this.onBossDefeated();
             }
         });
 

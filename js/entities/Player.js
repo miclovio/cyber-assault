@@ -76,13 +76,20 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             }
         }
 
+        // Lazy-init touch controls reference
+        if (this._touchControls === undefined) {
+            const hudScene = this.scene.scene.get('HUDScene');
+            this._touchControls = (hudScene && hudScene.touchControls) || null;
+        }
+        const tc = this._touchControls;
+
         const onGround = this.body.blocked.down || this.body.touching.down;
-        const left = this.cursors.left.isDown || this.keyA.isDown;
-        const right = this.cursors.right.isDown || this.keyD.isDown;
-        const up = this.cursors.up.isDown || this.keyW.isDown;
-        const down = this.cursors.down.isDown || this.keyS.isDown;
-        const jumpPressed = Phaser.Input.Keyboard.JustDown(this.jumpKey) || Phaser.Input.Keyboard.JustDown(this.jumpKey2);
-        const fire = this.fireKey.isDown || this.mousePointer.isDown;
+        const left = this.cursors.left.isDown || this.keyA.isDown || (tc && tc.left);
+        const right = this.cursors.right.isDown || this.keyD.isDown || (tc && tc.right);
+        const up = this.cursors.up.isDown || this.keyW.isDown || (tc && tc.up);
+        const down = this.cursors.down.isDown || this.keyS.isDown || (tc && tc.down);
+        const jumpPressed = Phaser.Input.Keyboard.JustDown(this.jumpKey) || Phaser.Input.Keyboard.JustDown(this.jumpKey2) || (tc && tc.jumpPressed);
+        const fire = this.fireKey.isDown || (tc ? tc.fire : this.mousePointer.isDown);
 
         // Reset jumps when on ground
         if (onGround) {

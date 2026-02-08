@@ -104,6 +104,15 @@ class HUDScene extends Phaser.Scene {
         gameScene.events.on('level-changed', this.updateLevel, this);
         gameScene.events.on('extra-life', this.showExtraLife, this);
         gameScene.events.on('player-shield-changed', this.updateShield, this);
+
+        // Touch controls (only visible on touch devices)
+        this.touchControls = new TouchControls(this);
+    }
+
+    update(time, delta) {
+        if (this.touchControls && this.touchControls.enabled) {
+            this.touchControls.update();
+        }
     }
 
     updateScore(score) {

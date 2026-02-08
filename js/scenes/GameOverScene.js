@@ -36,7 +36,9 @@ class GameOverScene extends Phaser.Scene {
         }).setOrigin(0.5);
 
         // Continue option
-        const continueText = this.add.text(w / 2, 290, 'PRESS ENTER TO CONTINUE', {
+        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        const continueText = this.add.text(w / 2, 290,
+            isTouchDevice ? 'TAP TO CONTINUE' : 'PRESS ENTER TO CONTINUE', {
             fontSize: '18px', fontFamily: 'monospace', color: '#00ffff', fontStyle: 'bold'
         }).setOrigin(0.5);
 
@@ -49,20 +51,29 @@ class GameOverScene extends Phaser.Scene {
         });
 
         // Menu option
-        this.add.text(w / 2, 330, 'PRESS ESC FOR MENU', {
-            fontSize: '14px', fontFamily: 'monospace', color: '#666666'
-        }).setOrigin(0.5);
+        if (!isTouchDevice) {
+            this.add.text(w / 2, 330, 'PRESS ESC FOR MENU', {
+                fontSize: '14px', fontFamily: 'monospace', color: '#666666'
+            }).setOrigin(0.5);
+        }
 
         // Input
-        this.input.keyboard.once('keydown-ENTER', () => {
+        this._transitioning = false;
+        const continueGame = () => {
+            if (this._transitioning) return;
+            this._transitioning = true;
             this.cameras.main.fadeOut(300, 0, 0, 0);
             this.cameras.main.once('camerafadeoutcomplete', () => {
                 this.scene.stop('HUDScene');
                 this.scene.start('GameScene', { level: this.levelReached });
             });
-        });
+        };
+        this.input.keyboard.once('keydown-ENTER', continueGame);
+        this.input.once('pointerdown', continueGame);
 
         this.input.keyboard.once('keydown-ESC', () => {
+            if (this._transitioning) return;
+            this._transitioning = true;
             this.cameras.main.fadeOut(300, 0, 0, 0);
             this.cameras.main.once('camerafadeoutcomplete', () => {
                 this.scene.stop('HUDScene');

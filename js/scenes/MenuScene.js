@@ -47,7 +47,12 @@ class MenuScene extends Phaser.Scene {
         }).setOrigin(0.5);
 
         // Controls info
-        const controls = [
+        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        const controls = isTouchDevice ? [
+            'D-PAD (Left) - Move / Aim',
+            'JUMP Button (Right) - Jump',
+            'FIRE Button (Right) - Fire'
+        ] : [
             'WASD / ARROWS - Move / Aim',
             'SPACE / Z - Jump',
             'CLICK / X - Fire',
@@ -60,7 +65,8 @@ class MenuScene extends Phaser.Scene {
         });
 
         // Start prompt (blinking)
-        this.startText = this.add.text(w / 2, 370, 'PRESS ENTER TO START', {
+        this.startText = this.add.text(w / 2, 370,
+            isTouchDevice ? 'TAP TO START' : 'PRESS ENTER TO START', {
             fontSize: '20px', fontFamily: 'monospace', color: '#ffffff', fontStyle: 'bold'
         }).setOrigin(0.5);
 
@@ -73,12 +79,17 @@ class MenuScene extends Phaser.Scene {
         });
 
         // Input
-        this.input.keyboard.once('keydown-ENTER', () => {
+        this._starting = false;
+        const startGame = () => {
+            if (this._starting) return;
+            this._starting = true;
             this.cameras.main.fadeOut(500, 0, 0, 0);
             this.cameras.main.once('camerafadeoutcomplete', () => {
                 this.scene.start('GameScene', { level: 1 });
             });
-        });
+        };
+        this.input.keyboard.once('keydown-ENTER', startGame);
+        this.input.once('pointerdown', startGame);
 
         // Music
         this.sound.stopAll();
