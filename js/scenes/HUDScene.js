@@ -13,7 +13,7 @@ class HUDScene extends Phaser.Scene {
         // Dark backing panel
         const panel = this.add.graphics();
         panel.fillStyle(0x000000, 0.5);
-        panel.fillRoundedRect(4, 4, 180, 64, 6);
+        panel.fillRoundedRect(4, 4, 200, 64, 6);
 
         // Score text
         this.scoreText = this.add.text(margin, margin, 'SCORE: 0', {
@@ -42,6 +42,18 @@ class HUDScene extends Phaser.Scene {
             stroke: '#000000', strokeThickness: 3,
             shadow: { offsetX: 1, offsetY: 1, color: '#000000', blur: 2, fill: true }
         }).setOrigin(0, 0.5);
+
+        // Shield indicator (shown when shield is active)
+        this.shieldIcon = this.add.graphics();
+        this.shieldIcon.fillStyle(0x0088ff, 0.8);
+        this.shieldIcon.fillRoundedRect(0, 0, 52, 16, 4);
+        this.shieldIcon.setPosition(margin + 132, 49);
+        this.shieldText = this.add.text(margin + 158, 57, 'SH', {
+            fontSize: '10px', fontFamily: 'monospace', color: '#ffffff', fontStyle: 'bold',
+            stroke: '#000000', strokeThickness: 3
+        }).setOrigin(0.5, 0.5);
+        this.shieldIcon.setVisible(false);
+        this.shieldText.setVisible(false);
 
         // Weapon indicator
         this.weaponText = this.add.text(GAME_WIDTH - margin, margin, 'PULSE RIFLE', {
@@ -91,6 +103,7 @@ class HUDScene extends Phaser.Scene {
         gameScene.events.on('boss-defeated', this.hideBossBar, this);
         gameScene.events.on('level-changed', this.updateLevel, this);
         gameScene.events.on('extra-life', this.showExtraLife, this);
+        gameScene.events.on('player-shield-changed', this.updateShield, this);
     }
 
     updateScore(score) {
@@ -113,11 +126,8 @@ class HUDScene extends Phaser.Scene {
     updateWeapon(weaponKey) {
         const weapon = WEAPONS[weaponKey];
         this.weaponText.setText(weapon ? weapon.name.toUpperCase() : 'PULSE RIFLE');
-        this.weaponText.setColor(
-            weaponKey === 'PULSE' ? '#00ffff' :
-            weaponKey === 'SPREAD' ? '#ff6600' :
-            weaponKey === 'LASER' ? '#ff0000' : '#ffff00'
-        );
+        const c = weapon ? weapon.color : 0xffff00;
+        this.weaponText.setColor('#' + c.toString(16).padStart(6, '0'));
     }
 
     updateLevel(level) {
@@ -177,6 +187,36 @@ class HUDScene extends Phaser.Scene {
         this.bossBarBg.setVisible(false);
         this.bossBar.setVisible(false);
         this.bossLabel.setVisible(false);
+    }
+
+    updateShield(hits) {
+        if (hits > 0) {
+            this.shieldText.setText(`SH ${hits}`);
+            if (!this.shieldIcon.visible) {
+                this.shieldIcon.setVisible(true);
+                this.shieldText.setVisible(true);
+                this.shieldIcon.setScale(0);
+                this.shieldText.setScale(0);
+                this.tweens.add({
+                    targets: [this.shieldIcon, this.shieldText],
+                    scaleX: 1, scaleY: 1,
+                    duration: 300,
+                    ease: 'Back.easeOut'
+                });
+            }
+        } else {
+            this.tweens.add({
+                targets: [this.shieldIcon, this.shieldText],
+                alpha: 0,
+                duration: 300,
+                onComplete: () => {
+                    this.shieldIcon.setVisible(false);
+                    this.shieldText.setVisible(false);
+                    this.shieldIcon.setAlpha(1);
+                    this.shieldText.setAlpha(1);
+                }
+            });
+        }
     }
 
     showExtraLife() {

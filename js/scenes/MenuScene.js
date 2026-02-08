@@ -11,10 +11,24 @@ class MenuScene extends Phaser.Scene {
         const w = GAME_WIDTH;
         const h = GAME_HEIGHT;
 
+        // Gradient sky background (matches L1 style)
+        const gradKey = '_menu_gradient';
+        if (this.textures.exists(gradKey)) this.textures.remove(gradKey);
+        const canvas = this.textures.createCanvas(gradKey, w, h);
+        const ctx = canvas.getContext();
+        const grad = ctx.createLinearGradient(0, 0, 0, h);
+        const stops = ['#0d1f14', '#1a3d28', '#2a6b45'];
+        for (let i = 0; i < stops.length; i++) {
+            grad.addColorStop(i / (stops.length - 1), stops[i]);
+        }
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+        canvas.refresh();
+        this.add.image(0, 0, gradKey).setOrigin(0).setDepth(-3);
+
         // Parallax background layers
-        this.bgLayer = this.add.tileSprite(0, 0, w, h, 'l1-bg').setOrigin(0).setScrollFactor(0).setTileScale(3, 3);
-        this.farLayer = this.add.tileSprite(0, 0, w, h, 'l1-far').setOrigin(0).setScrollFactor(0).setTileScale(4, 4);
-        this.midLayer = this.add.tileSprite(0, 0, w, h, 'l1-mid').setOrigin(0).setScrollFactor(0).setTileScale(3, 3);
+        this.farLayer = this.add.tileSprite(0, 0, w, h, 'l1-far').setOrigin(0).setScrollFactor(0).setTileScale(4, 4).setDepth(-2);
+        this.midLayer = this.add.tileSprite(0, 0, w, h, 'l1-mid').setOrigin(0).setScrollFactor(0).setTileScale(3, 3).setDepth(-1);
 
         // Dark overlay
         this.add.rectangle(w / 2, h / 2, w, h, 0x000000, 0.5);
@@ -28,7 +42,8 @@ class MenuScene extends Phaser.Scene {
         // Subtitle
         this.add.text(w / 2, 155, 'RUN AND GUN', {
             fontSize: '16px', fontFamily: 'monospace', color: '#ff6600',
-            letterSpacing: 8
+            letterSpacing: 8,
+            shadow: { offsetX: 2, offsetY: 2, color: '#000000', blur: 4, fill: true }
         }).setOrigin(0.5);
 
         // Controls info
@@ -74,7 +89,6 @@ class MenuScene extends Phaser.Scene {
 
     update() {
         // Scroll backgrounds (divided by tileScale)
-        this.bgLayer.tilePositionX += 0.1 / 3;
         this.farLayer.tilePositionX += 0.3 / 4;
         this.midLayer.tilePositionX += 0.6 / 3;
     }

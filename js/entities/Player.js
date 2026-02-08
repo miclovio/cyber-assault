@@ -10,7 +10,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
         this.setScale(1.5);
         this.body.setSize(20, 36);
-        this.body.setOffset(6, 4);
+        this.body.setOffset(28, 4);
         this.setCollideWorldBounds(false);
         this.setDepth(10);
 
@@ -19,7 +19,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.lives = PLAYER_CONFIG.MAX_LIVES;
         this.score = 0;
         this.currentWeapon = 'PULSE';
-        this.hasShield = false;
+        this.shieldHits = 0;
         this.isInvulnerable = false;
         this.invulnTimer = 0;
         this.isDead = false;
@@ -109,11 +109,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         if (down && onGround && !left && !right) {
             this.isCrouching = true;
             this.body.setSize(20, 24);
-            this.body.setOffset(6, 16);
+            this.body.setOffset(28, 16);
         } else if (this.isCrouching && !down) {
             this.isCrouching = false;
             this.body.setSize(20, 36);
-            this.body.setOffset(6, 4);
+            this.body.setOffset(28, 4);
         }
 
         // Jump (double jump supported)
@@ -122,7 +122,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             this.jumpsLeft--;
             this.isCrouching = false;
             this.body.setSize(20, 36);
-            this.body.setOffset(6, 4);
+            this.body.setOffset(28, 4);
             this.scene.audioManager.playSound('sfx-jump');
         }
 
@@ -138,6 +138,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
         // Update animation state
         this.updateAnimationState(onGround, fire, left || right);
+
+        // Update shield bubble position
+        if (this.shieldBubble && this.shieldBubble.visible) {
+            this.shieldBubble.setPosition(this.x, this.y);
+        }
 
         // Fall death
         if (this.y > GAME_HEIGHT + 100) {
@@ -236,10 +241,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     takeDamage(amount) {
         if (this.isInvulnerable || this.isDead) return;
 
-        if (this.hasShield) {
-            this.hasShield = false;
+        if (this.shieldHits > 0) {
+            this.shieldHits--;
             this.startInvulnerability();
-            this.scene.events.emit('player-shield-break');
+            this.scene.events.emit('player-shield-changed', this.shieldHits);
+            if (this.shieldHits <= 0) {
+                this.hideShieldBubble();
+            }
             return;
         }
 
@@ -270,8 +278,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.scene.cameras.main.shake(300, 0.015);
         this.scene.effectsManager.screenFlash(200);
 
-        // Lose weapon upgrade
+        // Lose weapon upgrade and shield
         this.currentWeapon = 'PULSE';
+        this.shieldHits = 0;
+        this.hideShieldBubble();
+        this.scene.events.emit('player-shield-changed', 0);
 
         // Pop up
         this.setVelocityX(0);
@@ -290,7 +301,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             this.body.allowGravity = true;
             this.body.enable = true;
             this.body.setSize(20, 36);
-            this.body.setOffset(6, 4);
+            this.body.setOffset(28, 4);
         }
 
         // Reset state
@@ -339,5 +350,22 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     switchWeapon(weaponKey) {
         this.currentWeapon = weaponKey;
         this.scene.events.emit('player-weapon-changed', this.currentWeapon);
+    }
+
+    showShieldBubble() {
+        if (!this.shieldBubble) {
+            this.shieldBubble = this.scene.add.sprite(this.x, this.y, 'energy-shield');
+            this.shieldBubble.play('energy-shield-anim');
+            this.shieldBubble.setScale(2.8);
+            this.shieldBubble.setDepth(11);
+            this.shieldBubble.setAlpha(0.35);
+        }
+        this.shieldBubble.setVisible(true);
+    }
+
+    hideShieldBubble() {
+        if (this.shieldBubble) {
+            this.shieldBubble.setVisible(false);
+        }
     }
 }

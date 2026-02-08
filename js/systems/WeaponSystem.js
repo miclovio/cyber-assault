@@ -16,7 +16,8 @@ class WeaponSystem {
 
         // Spawn point offset from player center
         const offsetX = player.facingRight ? 20 : -20;
-        const offsetY = player.isCrouching ? 4 : -4;
+        const isStanding = player.state === 'idle' || player.state === 'shoot';
+        const offsetY = player.isCrouching ? 10 : isStanding ? 3 : 6;
         const spawnX = player.x + offsetX;
         const spawnY = player.y + offsetY;
 
@@ -26,7 +27,7 @@ class WeaponSystem {
             this.playerBullets.fireBullet(
                 spawnX, spawnY,
                 Math.cos(angle), Math.sin(angle),
-                weapon.bulletSpeed, weapon.damage, weapon.bulletKey
+                weapon.bulletSpeed, weapon.damage, weapon.bulletKey, weapon.color
             );
         } else {
             // Spread shot
@@ -38,7 +39,7 @@ class WeaponSystem {
                 this.playerBullets.fireBullet(
                     spawnX, spawnY,
                     Math.cos(angle), Math.sin(angle),
-                    weapon.bulletSpeed, weapon.damage, weapon.bulletKey
+                    weapon.bulletSpeed, weapon.damage, weapon.bulletKey, weapon.color
                 );
             }
         }

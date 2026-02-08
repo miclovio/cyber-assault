@@ -111,6 +111,9 @@ const LEVEL_DATA = {
             { x: 4000, y: 380 },
             { x: 6000, y: 380 }
         ],
+        fixedDrops: [
+            { x: 3000, y: 380, type: 'SHIELD' }
+        ],
         boss: {
             type: 'TANK',
             x: 7500,
@@ -249,6 +252,9 @@ const LEVEL_DATA = {
             { x: 1800, y: 380 },
             { x: 3800, y: 380 },
             { x: 5800, y: 380 }
+        ],
+        fixedDrops: [
+            { x: 3000, y: 380, type: 'SHIELD' }
         ],
         boss: {
             type: 'MECH',
@@ -390,6 +396,9 @@ const LEVEL_DATA = {
             { x: 4000, y: 380 },
             { x: 6000, y: 380 }
         ],
+        fixedDrops: [
+            { x: 3000, y: 380, type: 'SHIELD' }
+        ],
         boss: {
             type: 'FIRESKULL',
             x: 7500,
@@ -465,48 +474,39 @@ const LEVEL_DATA = {
         ],
         enemyTint: 0x6688ee,
         enemyTriggers: [
-            // Floor 0-700
+            // Floor 0-700 (easy intro)
             { x: 300, enemies: [
                 { type: 'grunt', x: 500, y: 380, config: {} },
-                { type: 'grunt', x: 530, y: 210, config: { patrolDir: -1, patrolRange: 40 } },
-                { type: 'flyer', x: 550, y: 180, config: { moveDir: -1 } },
-                { type: 'slime', x: 600, y: 400, config: {} }
+                { type: 'flyer', x: 550, y: 180, config: { moveDir: -1 } }
             ]},
             // Floor 800-1300
             { x: 700, enemies: [
-                { type: 'grunt', x: 900, y: 380, config: { patrolDir: -1 } },
                 { type: 'heavy', x: 1000, y: 370, config: { patrolRange: 120 } },
-                { type: 'grunt', x: 1130, y: 190, config: { patrolDir: -1, patrolRange: 40 } },
-                { type: 'flyer', x: 1050, y: 160, config: { moveDir: -1 } }
+                { type: 'grunt', x: 1130, y: 190, config: { patrolDir: -1, patrolRange: 40 } }
             ]},
             // Floor 1400-1800
             { x: 1200, enemies: [
                 { type: 'heavy', x: 1500, y: 370, config: {} },
-                { type: 'grunt', x: 1530, y: 290, config: { patrolDir: 1, patrolRange: 50 } },
-                { type: 'flyer', x: 1550, y: 150, config: { moveDir: -1 } },
-                { type: 'slime', x: 1700, y: 400, config: {} }
+                { type: 'slime', x: 1700, y: 400, config: {} },
+                { type: 'flyer', x: 1550, y: 150, config: { moveDir: -1 } }
             ]},
             // Floor 1900-2500
             { x: 1700, enemies: [
                 { type: 'grunt', x: 1900, y: 380, config: {} },
                 { type: 'heavy', x: 2100, y: 370, config: { patrolDir: -1 } },
-                { type: 'grunt', x: 1980, y: 270, config: { patrolDir: 1, patrolRange: 50 } },
                 { type: 'flyer', x: 2200, y: 160, config: { moveDir: -1 } }
             ]},
             // Floor 2600-3100
             { x: 2300, enemies: [
                 { type: 'heavy', x: 2800, y: 370, config: {} },
                 { type: 'slime', x: 2700, y: 400, config: {} },
-                { type: 'grunt', x: 2730, y: 290, config: { patrolDir: -1, patrolRange: 40 } },
-                { type: 'flyer', x: 2700, y: 160, config: { moveDir: -1 } },
-                { type: 'grunt', x: 2900, y: 380, config: { patrolDir: -1 } }
+                { type: 'grunt', x: 2730, y: 290, config: { patrolDir: -1, patrolRange: 40 } }
             ]},
             // Floor 3200-3800
             { x: 3000, enemies: [
                 { type: 'heavy', x: 3400, y: 370, config: { patrolDir: -1 } },
-                { type: 'grunt', x: 3280, y: 270, config: { patrolDir: 1, patrolRange: 40 } },
-                { type: 'slime', x: 3500, y: 400, config: {} },
-                { type: 'flyer', x: 3600, y: 160, config: { moveDir: -1 } }
+                { type: 'flyer', x: 3600, y: 160, config: { moveDir: -1 } },
+                { type: 'slime', x: 3500, y: 400, config: {} }
             ]},
             // Floor 3900-4300 + Blue Mech
             { x: 3700, enemies: [
@@ -514,37 +514,29 @@ const LEVEL_DATA = {
             ]},
             // Floor 4400-4900
             { x: 4200, enemies: [
-                { type: 'grunt', x: 4500, y: 380, config: {} },
                 { type: 'heavy', x: 4600, y: 370, config: {} },
                 { type: 'grunt', x: 4530, y: 270, config: { patrolDir: -1, patrolRange: 40 } },
-                { type: 'slime', x: 4800, y: 400, config: {} },
                 { type: 'flyer', x: 4950, y: 150, config: { moveDir: -1 } }
             ]},
             // Floor 5000-5600
             { x: 5000, enemies: [
-                { type: 'grunt', x: 5200, y: 380, config: {} },
                 { type: 'heavy', x: 5400, y: 370, config: {} },
-                { type: 'grunt', x: 5080, y: 290, config: { patrolDir: 1, patrolRange: 40 } },
                 { type: 'slime', x: 5300, y: 400, config: {} },
-                { type: 'flyer', x: 5500, y: 160, config: { moveDir: -1 } }
+                { type: 'grunt', x: 5080, y: 290, config: { patrolDir: 1, patrolRange: 40 } }
             ]},
             // Floor 5700-6100
             { x: 5700, enemies: [
                 { type: 'heavy', x: 5900, y: 370, config: { patrolDir: -1 } },
-                { type: 'grunt', x: 5830, y: 270, config: { patrolDir: -1, patrolRange: 40 } },
-                { type: 'slime', x: 5800, y: 400, config: {} },
                 { type: 'flyer', x: 6050, y: 190, config: { moveDir: 1 } }
             ]},
             // Floor 6200-6700
             { x: 6100, enemies: [
                 { type: 'heavy', x: 6400, y: 370, config: {} },
-                { type: 'grunt', x: 6330, y: 290, config: { patrolDir: 1, patrolRange: 50 } },
-                { type: 'flyer', x: 6500, y: 150, config: { moveDir: -1 } }
+                { type: 'grunt', x: 6330, y: 290, config: { patrolDir: 1, patrolRange: 50 } }
             ]},
             // Floor 6800-8000 (pre-boss)
             { x: 6600, enemies: [
                 { type: 'heavy', x: 6900, y: 370, config: { patrolDir: -1 } },
-                { type: 'grunt', x: 7000, y: 380, config: {} },
                 { type: 'slime', x: 6850, y: 400, config: {} }
             ]}
         ],
@@ -553,10 +545,13 @@ const LEVEL_DATA = {
             { x: 4000, y: 380 },
             { x: 6000, y: 380 }
         ],
+        fixedDrops: [
+            { x: 3000, y: 380, type: 'SHIELD' }
+        ],
         boss: {
             type: 'SENTINEL',
             x: 7500,
-            y: 200,
+            y: 220,
             arenaStart: 7000,
             arenaEnd: 7900,
             name: 'OMEGA SENTINEL'

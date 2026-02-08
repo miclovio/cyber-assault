@@ -8,6 +8,7 @@ const config = {
     height: GAME_HEIGHT,
     parent: document.body,
     pixelArt: true,
+    backgroundColor: '#000000',
     physics: {
         default: 'arcade',
         arcade: {

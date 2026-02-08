@@ -48,7 +48,9 @@ class VictoryScene extends Phaser.Scene {
         // Animated score counter
         const scoreObj = { value: 0 };
         const scoreText = this.add.text(w / 2, 195, '0', {
-            fontSize: '36px', fontFamily: 'monospace', color: '#ffff00', fontStyle: 'bold'
+            fontSize: '36px', fontFamily: 'monospace', color: '#ffff00', fontStyle: 'bold',
+            stroke: '#665500', strokeThickness: 4,
+            shadow: { offsetX: 3, offsetY: 3, color: '#000000', blur: 6, fill: true }
         }).setOrigin(0.5);
 
         this.tweens.add({
@@ -71,7 +73,9 @@ class VictoryScene extends Phaser.Scene {
 
         this.time.delayedCall(2500, () => {
             this.add.text(w / 2, 260, `RANK: ${rank}`, {
-                fontSize: '32px', fontFamily: 'monospace', color: rankColor, fontStyle: 'bold'
+                fontSize: '32px', fontFamily: 'monospace', color: rankColor, fontStyle: 'bold',
+                stroke: '#222222', strokeThickness: 4,
+                shadow: { offsetX: 3, offsetY: 3, color: '#000000', blur: 6, fill: true }
             }).setOrigin(0.5);
         });
 

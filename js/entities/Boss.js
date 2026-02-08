@@ -8,7 +8,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             TANK: 'tank1',
             MECH: 'mech1',
             FIRESKULL: 'fireskull1',
-            SENTINEL: 'sentinel'
+            SENTINEL: 'sentinel-body'
         };
 
         super(scene, x, y, textureMap[bossType] || 'tank1');
@@ -39,6 +39,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 this.body.setSize(48, 32);
                 this.body.setOffset(8, 16);
                 this.setScale(2.5);
+                this.hitRadius = 70;
                 this.play('tank-move');
                 this.attackPatterns = [
                     this.tankShoot.bind(this),
@@ -50,6 +51,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 this.body.setSize(40, 50);
                 this.body.setOffset(28, 30);
                 this.setScale(2);
+                this.hitRadius = 60;
                 this.play('mech-walk');
                 this.attackPatterns = [
                     this.mechShoot.bind(this),
@@ -58,9 +60,10 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 ];
                 break;
             case 'FIRESKULL':
-                this.body.setSize(36, 36);
+                this.body.setSize(48, 48);
                 this.body.allowGravity = false;
                 this.setScale(2.5);
+                this.hitRadius = 75;
                 this.play('fireskull-fly');
                 this.startY = this.y;
                 this.attackPatterns = [
@@ -70,10 +73,18 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 ];
                 break;
             case 'SENTINEL':
-                this.body.setSize(48, 48);
+                this.body.setSize(130, 112);
+                this.body.setOffset(31, 16);
                 this.body.allowGravity = false;
-                this.setScale(2.5);
-                this.setCrop(0, 0, 124, 85);
+                this.setScale(1.2);
+                this.hitRadius = 90;
+                this.play('sentinel-idle');
+                this.startY = this.y;
+                // Thrust sprite below boss
+                this.thrustSprite = this.scene.add.sprite(this.x, this.y + 60, 'sentinel-thrust');
+                this.thrustSprite.setScale(1.5);
+                this.thrustSprite.setDepth(7);
+                this.thrustSprite.play('sentinel-thrust-anim');
                 this.attackPatterns = [
                     this.sentinelLaser.bind(this),
                     this.sentinelSpread.bind(this),
@@ -91,6 +102,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 if (this.defeatTimer <= 0) {
                     this.setActive(false);
                     this.setVisible(false);
+                    if (this.thrustSprite) this.thrustSprite.destroy();
                 }
             }
             return;
@@ -114,8 +126,36 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         // Boss-specific movement
         this.updateMovement(time);
 
+        // Manual bullet hit detection (physics overlap unreliable for aerial bosses)
+        this.checkPlayerBulletHits();
+
         // Flash on phase transition
         this.updateVisual();
+    }
+
+    checkPlayerBulletHits() {
+        if (!this.scene || !this.scene.weaponSystem) return;
+        const children = this.scene.weaponSystem.playerBullets.getChildren();
+        const cx = this.x;
+        const cy = this.y;
+        const r = this.hitRadius || 75;
+        const rSq = r * r;
+        for (let i = 0; i < children.length; i++) {
+            const b = children[i];
+            if (!b.active) continue;
+            const dx = b.x - cx;
+            const dy = b.y - cy;
+            if (dx * dx + dy * dy < rSq) {
+                // Inline deactivation to avoid any method issues
+                b.setActive(false);
+                b.setVisible(false);
+                if (b.body) { b.body.stop(); b.body.enable = false; }
+                if (this.scene.effectsManager) {
+                    this.scene.effectsManager.playHitEffect(b.x, b.y, b.rotation);
+                }
+                this.takeDamage(b.damage || 1);
+            }
+        }
     }
 
     updateMovement(time) {
@@ -148,9 +188,10 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 this.setFlipX(this.moveDir < 0);
                 break;
 
-            case 'FIRESKULL':
-                // Float and bob
-                this.y = this.startY + Math.sin(time * 0.002) * 40;
+            case 'FIRESKULL': {
+                // Float and bob via velocity so physics body stays in sync
+                const skullTargetY = this.startY + Math.sin(time * 0.002) * 40;
+                this.setVelocityY((skullTargetY - this.y) * 8);
                 // Slowly chase player
                 if (this.scene.player) {
                     const dx = this.scene.player.x - this.x;
@@ -161,15 +202,28 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 if (this.arenaStart && this.x < this.arenaStart + 40) this.x = this.arenaStart + 40;
                 if (this.arenaEnd && this.x > this.arenaEnd - 40) this.x = this.arenaEnd - 40;
                 break;
+            }
 
-            case 'SENTINEL':
-                // Hover and strafe
-                this.y = 150 + Math.sin(time * 0.001) * 60;
-                this.setVelocityX(Math.sin(time * 0.0008) * this.speed);
+            case 'SENTINEL': {
+                // Float and bob via velocity so physics body stays in sync
+                const sentTargetY = this.startY + Math.sin(time * 0.0015) * 30;
+                this.setVelocityY((sentTargetY - this.y) * 8);
+                // Chase player horizontally
+                if (this.scene.player) {
+                    const dx = this.scene.player.x - this.x;
+                    this.setVelocityX(Math.sign(dx) * this.speed * 0.6);
+                    this.setFlipX(dx < 0);
+                }
                 // Clamp to arena
-                if (this.arenaStart && this.x < this.arenaStart + 40) this.x = this.arenaStart + 40;
-                if (this.arenaEnd && this.x > this.arenaEnd - 40) this.x = this.arenaEnd - 40;
+                if (this.arenaStart && this.x < this.arenaStart + 60) this.x = this.arenaStart + 60;
+                if (this.arenaEnd && this.x > this.arenaEnd - 60) this.x = this.arenaEnd - 60;
+                // Update thrust position
+                if (this.thrustSprite) {
+                    this.thrustSprite.setPosition(this.x, this.y + 65);
+                    this.thrustSprite.setFlipX(this.flipX);
+                }
                 break;
+            }
         }
     }
 
@@ -223,6 +277,9 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.setVelocity(0, 0);
         this.body.allowGravity = false;
         if (this.body) this.body.enable = false;
+
+        // Hide thrust sprite
+        if (this.thrustSprite) this.thrustSprite.setVisible(false);
 
         // Award score immediately
         if (this.scene.player) {

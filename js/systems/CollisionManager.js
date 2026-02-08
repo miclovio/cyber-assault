@@ -21,13 +21,15 @@ class CollisionManager {
 
         // Player bullets vs Platforms
         scene.physics.add.collider(scene.weaponSystem.playerBullets, platforms, (bullet) => {
-            scene.effectsManager.playHitEffect(bullet.x, bullet.y);
+            scene.effectsManager.playHitEffect(bullet.x, bullet.y, bullet.rotation);
             bullet.deactivate();
         });
 
-        // Enemy bullets vs Platforms
+        // Enemy bullets vs Platforms (disabled during boss fights so aerial boss bullets reach the player)
         scene.physics.add.collider(scene.weaponSystem.enemyBullets, platforms, (bullet) => {
             bullet.deactivate();
+        }, (bullet, platform) => {
+            return !scene.bossActive;
         });
 
         // Enemies vs Platforms (ghosts phase through, one-way platforms)
@@ -60,14 +62,7 @@ class CollisionManager {
             );
         }
 
-        // Player bullets vs Boss
-        if (scene.boss) {
-            scene.physics.add.overlap(
-                scene.weaponSystem.playerBullets,
-                scene.boss,
-                this.bulletHitBoss.bind(this)
-            );
-        }
+        // Player bullets vs Boss handled by Boss.checkPlayerBulletHits()
 
         // Enemy bullets vs Player
         scene.physics.add.overlap(
@@ -101,7 +96,7 @@ class CollisionManager {
         if (!bullet.active || !enemy.active) return;
 
         bullet.deactivate();
-        this.scene.effectsManager.playHitEffect(bullet.x, bullet.y);
+        this.scene.effectsManager.playHitEffect(bullet.x, bullet.y, bullet.rotation);
 
         if (enemy.takeDamage) {
             enemy.takeDamage(bullet.damage);
@@ -112,10 +107,10 @@ class CollisionManager {
         if (!bullet.active || !boss.active) return;
 
         bullet.deactivate();
-        this.scene.effectsManager.playHitEffect(bullet.x, bullet.y);
+        this.scene.effectsManager.playHitEffect(bullet.x, bullet.y, bullet.rotation);
 
         if (boss.takeDamage) {
-            boss.takeDamage(bullet.damage);
+            boss.takeDamage(bullet.damage || 1);
         }
     }
 
@@ -134,12 +129,14 @@ class CollisionManager {
     setupBossCollision(boss) {
         const scene = this.scene;
 
+        // Player bullet vs boss (physics overlap as primary detection)
         scene.physics.add.overlap(
             scene.weaponSystem.playerBullets,
             boss,
             this.bulletHitBoss.bind(this)
         );
 
+        // Boss body vs player
         scene.physics.add.overlap(
             scene.player,
             boss,
