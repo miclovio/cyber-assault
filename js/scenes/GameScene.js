@@ -312,6 +312,11 @@ class GameScene extends Phaser.Scene {
         this.sound.stopAll();
         this.sound.play('music-victory', { loop: false, volume: 0.5 });
 
+        // Remove shield for victory celebration
+        this.player.shieldHits = 0;
+        this.player.hideShieldBubble();
+        this.events.emit('player-shield-changed', 0);
+
         // Player celebration - stop input, make invulnerable, victory jump
         this.player.isInvulnerable = true;
         this.player.invulnTimer = 10000;
@@ -407,7 +412,7 @@ class GameScene extends Phaser.Scene {
                     level: this.currentLevel + 1,
                     score: this.player.score,
                     lives: this.player.lives,
-                    weapon: this.player.currentWeapon
+                    weapon: 'PULSE'
                 }
             };
         } else {
