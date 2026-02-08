@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>CYBER ASSAULT</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,7 +14,7 @@
             min-height: 100vh;
             overflow: hidden;
         }
-        canvas { image-rendering: pixelated; }
+        canvas { image-rendering: pixelated; touch-action: none; }
     </style>
 </head>
 <body>
@@ -33,6 +33,7 @@
     <script src="js/systems/PowerUpSystem.js"></script>
     <script src="js/systems/CollisionManager.js"></script>
     <script src="js/systems/LevelManager.js"></script>
+    <script src="js/systems/TouchControls.js"></script>
 
     <!-- Entities -->
     <script src="js/entities/Bullet.js"></script>

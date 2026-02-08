@@ -42,15 +42,17 @@ class VictoryScene extends Phaser.Scene {
 
         // Score
         this.add.text(w / 2, 160, `FINAL SCORE`, {
-            fontSize: '16px', fontFamily: 'monospace', color: '#888888'
+            fontSize: '18px', fontFamily: 'monospace', color: '#aaaaaa', fontStyle: 'bold',
+            stroke: '#000000', strokeThickness: 3,
+            shadow: { offsetX: 2, offsetY: 2, color: '#000000', blur: 4, fill: true }
         }).setOrigin(0.5);
 
         // Animated score counter
         const scoreObj = { value: 0 };
-        const scoreText = this.add.text(w / 2, 195, '0', {
-            fontSize: '36px', fontFamily: 'monospace', color: '#ffff00', fontStyle: 'bold',
-            stroke: '#665500', strokeThickness: 4,
-            shadow: { offsetX: 3, offsetY: 3, color: '#000000', blur: 6, fill: true }
+        const scoreText = this.add.text(w / 2, 200, '0', {
+            fontSize: '48px', fontFamily: 'monospace', color: '#ffff00', fontStyle: 'bold',
+            stroke: '#664400', strokeThickness: 8,
+            shadow: { offsetX: 4, offsetY: 4, color: '#000000', blur: 10, fill: true }
         }).setOrigin(0.5);
 
         this.tweens.add({
@@ -92,8 +94,11 @@ class VictoryScene extends Phaser.Scene {
         });
 
         // Return to menu
+        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        this._transitioning = false;
         this.time.delayedCall(3000, () => {
-            const menuText = this.add.text(w / 2, 400, 'PRESS ENTER FOR MENU', {
+            const menuText = this.add.text(w / 2, 400,
+                isTouchDevice ? 'TAP FOR MENU' : 'PRESS ENTER FOR MENU', {
                 fontSize: '16px', fontFamily: 'monospace', color: '#ffffff'
             }).setOrigin(0.5);
 
@@ -105,12 +110,16 @@ class VictoryScene extends Phaser.Scene {
                 repeat: -1
             });
 
-            this.input.keyboard.once('keydown-ENTER', () => {
+            const goToMenu = () => {
+                if (this._transitioning) return;
+                this._transitioning = true;
                 this.cameras.main.fadeOut(500, 0, 0, 0);
                 this.cameras.main.once('camerafadeoutcomplete', () => {
                     this.scene.start('MenuScene');
                 });
-            });
+            };
+            this.input.keyboard.once('keydown-ENTER', goToMenu);
+            this.input.once('pointerdown', goToMenu);
         });
 
         // Music - play intro theme for mission complete screen

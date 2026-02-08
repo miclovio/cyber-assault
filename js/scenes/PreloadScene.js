@@ -230,6 +230,12 @@ class PreloadScene extends Phaser.Scene {
         // Energy shield bubble
         this.load.spritesheet('energy-shield', 'Assets/Misc/Grotto-escape-2-FX/spritesheets/energy-shield.png', { frameWidth: 51, frameHeight: 47 });
 
+        // Mobile touch controls
+        const touch = 'Assets/Mobile Controls/Sprites/Style C/Default';
+        this.load.image('touch-pad', `${touch}/joystick_circle_pad_a.png`);
+        this.load.image('touch-nub', `${touch}/joystick_circle_nub_a.png`);
+        this.load.image('touch-btn', `${touch}/button_circle.png`);
+
         // Gems spritesheet (for collectibles we'll use individual color tints)
         this.load.image('gem', 'Assets/Misc/gems/spritesheets/gems-spritesheet.png');
 
