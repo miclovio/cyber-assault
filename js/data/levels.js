@@ -254,7 +254,7 @@ const LEVEL_DATA = {
     // LEVEL 3 - Lava Pit
     // ========================================================================
     3: {
-        name: 'Rocky Planet',
+        name: 'Rocky Ridge',
         width: 8000,
         height: GAME_HEIGHT,
         playerStart: { x: 100, y: 350 },
