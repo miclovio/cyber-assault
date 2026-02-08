@@ -83,6 +83,20 @@ class MenuScene extends Phaser.Scene {
         const startGame = () => {
             if (this._starting) return;
             this._starting = true;
+
+            // Request fullscreen + landscape on mobile
+            if (isTouchDevice) {
+                const el = document.documentElement;
+                const fs = el.requestFullscreen || el.webkitRequestFullscreen;
+                if (fs) {
+                    fs.call(el).then(() => {
+                        if (screen.orientation && screen.orientation.lock) {
+                            screen.orientation.lock('landscape').catch(() => {});
+                        }
+                    }).catch(() => {});
+                }
+            }
+
             this.cameras.main.fadeOut(500, 0, 0, 0);
             this.cameras.main.once('camerafadeoutcomplete', () => {
                 this.scene.start('GameScene', { level: 1 });

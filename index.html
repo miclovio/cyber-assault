@@ -15,9 +15,21 @@
             overflow: hidden;
         }
         canvas { image-rendering: pixelated; touch-action: none; }
+        #rotate-msg {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; color: #00ffff; z-index: 9999;
+            flex-direction: column; justify-content: center; align-items: center;
+            font-family: monospace; font-size: 20px; text-align: center;
+        }
+        #rotate-msg span { font-size: 48px; margin-bottom: 16px; }
+        @media (orientation: portrait) and (hover: none) and (pointer: coarse) {
+            #rotate-msg { display: flex; }
+        }
     </style>
 </head>
 <body>
+    <div id="rotate-msg"><span>&#x1F504;</span>ROTATE DEVICE<br>TO LANDSCAPE</div>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
     <!-- Data -->
