@@ -123,6 +123,11 @@ class PreloadScene extends Phaser.Scene {
         const orangeMechBase = 'Assets/Characters/Mechs/SpriteSheets/Orange_1/Sprite_Sheets';
         this.load.spritesheet('orange-mech-idle', `${orangeMechBase}/O1_Idle.png`, { frameWidth: 80, frameHeight: 80 });
         this.load.spritesheet('orange-mech-alert', `${orangeMechBase}/O1_Idle2.png`, { frameWidth: 80, frameHeight: 80 });
+
+        // Blue Mech
+        const blueMechBase = 'Assets/Characters/Mechs/SpriteSheets/Blue_1';
+        this.load.spritesheet('blue-mech-idle', `${blueMechBase}/B1_Idle.png`, { frameWidth: 80, frameHeight: 80 });
+        this.load.spritesheet('blue-mech-alert', `${blueMechBase}/B1_Idle2.png`, { frameWidth: 80, frameHeight: 80 });
     }
 
     loadBossAssets() {
@@ -175,6 +180,10 @@ class PreloadScene extends Phaser.Scene {
         const space = 'Assets/Environments/space_background_pack/Blue Version/layered';
         this.load.image('l4-bg', `${space}/blue-back.png`);
         this.load.image('l4-stars', `${space}/blue-stars.png`);
+        this.load.image('l4-asteroid1', `${space}/asteroid-1.png`);
+        this.load.image('l4-asteroid2', `${space}/asteroid-2.png`);
+        this.load.image('l4-planet-big', `${space}/prop-planet-big.png`);
+        this.load.image('l4-planet-small', `${space}/prop-planet-small.png`);
     }
 
     loadEffectsAssets() {
@@ -292,6 +301,10 @@ class PreloadScene extends Phaser.Scene {
         // Orange Mech animations
         this.anims.create({ key: 'orange-mech-walk', frames: this.anims.generateFrameNumbers('orange-mech-idle', { start: 0, end: 12 }), frameRate: 6, repeat: -1 });
         this.anims.create({ key: 'orange-mech-attack', frames: this.anims.generateFrameNumbers('orange-mech-alert', { start: 0, end: 12 }), frameRate: 8, repeat: -1 });
+
+        // Blue Mech animations
+        this.anims.create({ key: 'blue-mech-walk', frames: this.anims.generateFrameNumbers('blue-mech-idle', { start: 0, end: 12 }), frameRate: 6, repeat: -1 });
+        this.anims.create({ key: 'blue-mech-attack', frames: this.anims.generateFrameNumbers('blue-mech-alert', { start: 0, end: 12 }), frameRate: 8, repeat: -1 });
 
         // Boss animations
         this.anims.create({ key: 'tank-move', frames: this.frameKeys('tank', 1, 4), frameRate: 6, repeat: -1 });
