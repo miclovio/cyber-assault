@@ -271,7 +271,7 @@ class GameScene extends Phaser.Scene {
         ).setDepth(1).setScrollFactor(0);
         this.tweens.add({
             targets: this.bossBackdrop,
-            fillAlpha: 0.8,
+            fillAlpha: 0.4,
             duration: 1500,
             ease: 'Sine.easeIn'
         });
