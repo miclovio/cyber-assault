@@ -128,9 +128,15 @@ class VictoryScene extends Phaser.Scene {
         this._gp = new GamepadControls(this);
         this._menuReady = false;
 
-        // Music - play intro theme for mission complete screen
+        // Music (defer if audio context is locked)
         this.sound.stopAll();
-        this.sound.play('music-intro', { loop: true, volume: 0.5 });
+        if (this.sound.locked) {
+            this.sound.once('unlocked', () => {
+                this.sound.play('music-intro', { loop: true, volume: 0.5 });
+            });
+        } else {
+            this.sound.play('music-intro', { loop: true, volume: 0.5 });
+        }
 
         this.cameras.main.fadeIn(1000, 0, 0, 0);
     }
