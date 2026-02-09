@@ -56,11 +56,11 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
             this.setScale(1.8);
         }
 
-        // Tint: player=weapon color, enemy=orange, boss=no tint (fire-ball has own colors)
+        // Tint: player=weapon color, enemy=orange (or custom), boss=no tint
         if (isBoss) {
             this.clearTint();
         } else if (!isPlayerBullet) {
-            this.setTint(0xff6600);
+            this.setTint(tintColor || 0xff6600);
         } else if (tintColor) {
             this.setTint(tintColor);
         } else {

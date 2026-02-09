@@ -216,11 +216,11 @@ const LEVEL_DATA = {
                 { type: 'heavy', x: 2900, y: 370, config: {} }
             ]},
             { x: 3200, enemies: [
-                { type: 'heavy', x: 3700, y: 370, config: { patrolDir: -1 } },
+                { type: 'heavy', x: 3400, y: 370, config: { patrolDir: -1 } },
                 { type: 'grunt', x: 3500, y: 380, config: {} }
             ]},
-            { x: 3600, enemies: [
-                { type: 'cyan_mech', x: 3800, y: 350, config: { patrolDir: -1, patrolRange: 200 } }
+            { x: 3900, enemies: [
+                { type: 'cyan_mech', x: 4200, y: 350, config: { patrolDir: -1, patrolRange: 200 } }
             ]},
             { x: 3800, enemies: [
                 { type: 'grunt', x: 3850, y: 220, config: { patrolDir: 1, patrolRange: 50 } },
