@@ -216,6 +216,12 @@ class PreloadScene extends Phaser.Scene {
             const pad = String(i).padStart(4, '0');
             this.load.image(`fire-ball${i}`, `${fx}/fire-ball/_${pad}_Layer-${i + 1}.png`);
         }
+        // Bolt (Warped shooting fx)
+        const boltBase = 'Assets/Misc/Warped shooting fx/Bolt/Sprites';
+        for (let i = 1; i <= 4; i++) this.load.image(`bolt${i}`, `${boltBase}/bolt${i}.png`);
+        // Player hit effect
+        const hitBase = 'Assets/Misc/Warped shooting fx/hits/hits-1/Sprites';
+        for (let i = 1; i <= 5; i++) this.load.image(`player-hit${i}`, `${hitBase}/hits-1-${i}.png`);
         // Energy field
         for (let i = 0; i <= 7; i++) {
             const pad = String(i).padStart(4, '0');
@@ -252,6 +258,12 @@ class PreloadScene extends Phaser.Scene {
         this.load.audio('sfx-jump', `${snd}/jump.wav`);
         this.load.audio('sfx-laser', `${snd}/laser.wav`);
         this.load.audio('sfx-pickup', `${snd}/pickup.wav`);
+        this.load.audio('sfx-hit', 'Assets/Music/ouch.mp3');
+        this.load.audio('sfx-1up', 'Assets/Music/1-up.mp3');
+        this.load.audio('sfx-boss-defeat', 'Assets/Music/boss-defeat.mp3');
+        this.load.audio('sfx-enemy-hit', 'Assets/Music/enemy-hit.mp3');
+        this.load.audio('sfx-spread', 'Assets/Music/spread.mp3');
+        this.load.audio('sfx-pause', 'Assets/Music/pause.mp3');
 
         // Music
         const mus = 'Assets/Music';
@@ -369,6 +381,10 @@ class PreloadScene extends Phaser.Scene {
 
         // Fire ball
         this.anims.create({ key: 'fire-ball', frames: this.frameKeys('fire-ball', 0, 2), frameRate: 10, repeat: -1 });
+        // Bolt
+        this.anims.create({ key: 'bolt', frames: this.frameKeys('bolt', 1, 4), frameRate: 10, repeat: -1 });
+        // Player hit
+        this.anims.create({ key: 'player-hit', frames: this.frameKeys('player-hit', 1, 5), frameRate: 15, repeat: 0 });
 
         // Energy shield
         this.anims.create({ key: 'energy-shield-anim', frames: this.anims.generateFrameNumbers('energy-shield', { start: 0, end: 7 }), frameRate: 10, repeat: -1 });

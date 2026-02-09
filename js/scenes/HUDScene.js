@@ -110,6 +110,25 @@ class HUDScene extends Phaser.Scene {
 
         // Gamepad controls
         this.gamepadControls = new GamepadControls(this);
+
+        // Touch pause button (only on touch devices)
+        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        if (isTouchDevice) {
+            const pauseBtnX = GAME_WIDTH - 30;
+            const pauseBtnY = 50;
+
+            const pauseBg = this.add.circle(pauseBtnX, pauseBtnY, 18, 0x000000, 0.4);
+            pauseBg.setInteractive();
+
+            const pauseIcon = this.add.text(pauseBtnX, pauseBtnY, '| |', {
+                fontSize: '14px', fontFamily: 'monospace', color: '#ffffff', fontStyle: 'bold'
+            }).setOrigin(0.5);
+
+            pauseBg.on('pointerdown', () => {
+                const gameScene = this.scene.get('GameScene');
+                gameScene.events.emit('toggle-pause', 'touch');
+            });
+        }
     }
 
     update(time, delta) {

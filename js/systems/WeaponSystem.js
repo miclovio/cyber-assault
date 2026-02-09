@@ -65,7 +65,7 @@ class WeaponSystem {
         );
     }
 
-    fireBossBullet(x, y, targetX, targetY, speed, damage) {
+    fireBossBullet(x, y, targetX, targetY, speed, damage, bossAnimKey) {
         const dx = targetX - x;
         const dy = targetY - y;
         const len = Math.sqrt(dx * dx + dy * dy) || 1;
@@ -73,15 +73,15 @@ class WeaponSystem {
         return this.enemyBullets.fireBullet(
             x, y,
             dx / len, dy / len,
-            speed || 200, damage || 1, 'bullet2', null, true
+            speed || 200, damage || 1, 'bullet2', null, true, bossAnimKey
         );
     }
 
-    fireBossBulletAngle(x, y, angle, speed, damage) {
+    fireBossBulletAngle(x, y, angle, speed, damage, bossAnimKey) {
         return this.enemyBullets.fireBullet(
             x, y,
             Math.cos(angle), Math.sin(angle),
-            speed || 200, damage || 1, 'bullet2', null, true
+            speed || 200, damage || 1, 'bullet2', null, true, bossAnimKey
         );
     }
 

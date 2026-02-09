@@ -252,7 +252,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.lastFireTime = time;
 
         this.scene.weaponSystem.fire(this, weapon);
-        this.scene.audioManager.playSound('sfx-laser', 0.3);
+        const sfx = this.currentWeapon === 'SPREAD' ? 'sfx-spread' : 'sfx-laser';
+        this.scene.audioManager.playSound(sfx, 0.3);
     }
 
     takeDamage(amount) {
@@ -271,6 +272,14 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.hp -= amount;
         this.scene.events.emit('player-hp-changed', this.hp);
         this.scene.cameras.main.shake(100, 0.01);
+        this.scene.effectsManager.playPlayerHit(this);
+        this.scene.audioManager.playSound('sfx-hit', 0.4);
+
+        // Lose weapon upgrade on hit
+        if (this.currentWeapon !== 'PULSE') {
+            this.currentWeapon = 'PULSE';
+            this.scene.events.emit('player-weapon-changed', this.currentWeapon);
+        }
 
         if (this.hp <= 0) {
             this.die();
@@ -291,9 +300,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.state = 'die';
         this.play('player-die');
 
-        // Screen shake + flash on death
+        // Screen shake on death
         this.scene.cameras.main.shake(300, 0.015);
-        this.scene.effectsManager.screenFlash(200);
 
         // Lose weapon upgrade and shield
         this.currentWeapon = 'PULSE';
@@ -356,6 +364,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             this.lives++;
             this.scene.events.emit('player-lives-changed', this.lives);
             this.scene.events.emit('extra-life');
+            this.scene.audioManager.playSound('sfx-1up');
         }
     }
 

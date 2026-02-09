@@ -95,6 +95,7 @@ class PowerUpSystem {
             player.lives++;
             this.scene.events.emit('player-lives-changed', player.lives);
             this.scene.events.emit('extra-life');
+            this.scene.audioManager.playSound('sfx-1up');
         }
 
         this.scene.audioManager.playSound('sfx-pickup');
