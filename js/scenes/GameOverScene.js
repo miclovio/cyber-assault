@@ -87,15 +87,9 @@ class GameOverScene extends Phaser.Scene {
         // Gamepad polling
         this._gp = new GamepadControls(this);
 
-        // Music (defer if audio context is locked)
+        // Music
         this.sound.stopAll();
-        if (this.sound.locked) {
-            this.sound.once('unlocked', () => {
-                this.sound.play('music-gameover', { loop: true, volume: 0.5 });
-            });
-        } else {
-            this.sound.play('music-gameover', { loop: true, volume: 0.5 });
-        }
+        this.sound.play('music-gameover', { loop: true, volume: 0.5 });
 
         this.cameras.main.fadeIn(500, 0, 0, 0);
     }
