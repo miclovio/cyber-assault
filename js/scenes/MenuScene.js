@@ -46,27 +46,19 @@ class MenuScene extends Phaser.Scene {
             shadow: { offsetX: 2, offsetY: 2, color: '#000000', blur: 4, fill: true }
         }).setOrigin(0.5);
 
-        // Controls info
-        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-        const controls = isTouchDevice ? [
-            'D-PAD (Left) - Move / Aim',
-            'JUMP Button (Right) - Jump',
-            'FIRE Button (Right) - Fire'
-        ] : [
-            'WASD / ARROWS - Move / Aim',
-            'SPACE / Z - Jump',
-            'CLICK / X - Fire',
-            'S / DOWN - Crouch'
-        ];
-        controls.forEach((text, i) => {
-            this.add.text(w / 2, 220 + i * 25, text, {
+        // Detect input mode
+        this._isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
+        // Controls info (dynamic — updates if gamepad connects)
+        this._controlTexts = [];
+        for (let i = 0; i < 4; i++) {
+            this._controlTexts.push(this.add.text(w / 2, 220 + i * 25, '', {
                 fontSize: '14px', fontFamily: 'monospace', color: '#aaaaaa'
-            }).setOrigin(0.5);
-        });
+            }).setOrigin(0.5));
+        }
 
         // Start prompt (blinking)
-        this.startText = this.add.text(w / 2, 370,
-            isTouchDevice ? 'TAP TO START' : 'PRESS ENTER TO START', {
+        this.startText = this.add.text(w / 2, 370, '', {
             fontSize: '20px', fontFamily: 'monospace', color: '#ffffff', fontStyle: 'bold'
         }).setOrigin(0.5);
 
@@ -78,6 +70,11 @@ class MenuScene extends Phaser.Scene {
             repeat: -1
         });
 
+        // Gamepad polling
+        this._gp = new GamepadControls(this);
+        this._lastInputMode = null;
+        this._updateControlsDisplay();
+
         // Input
         this._starting = false;
         const startGame = () => {
@@ -85,7 +82,7 @@ class MenuScene extends Phaser.Scene {
             this._starting = true;
 
             // Request fullscreen + landscape on mobile
-            if (isTouchDevice) {
+            if (this._isTouch) {
                 const el = document.documentElement;
                 const fs = el.requestFullscreen || el.webkitRequestFullscreen;
                 if (fs) {
@@ -106,9 +103,6 @@ class MenuScene extends Phaser.Scene {
         this.input.once('pointerdown', startGame);
         this._startGame = startGame;
 
-        // Gamepad polling
-        this._gp = new GamepadControls(this);
-
         // Music
         this.sound.stopAll();
         this.sound.play('music-intro', { loop: true, volume: 0.5 });
@@ -116,13 +110,53 @@ class MenuScene extends Phaser.Scene {
         this.cameras.main.fadeIn(500, 0, 0, 0);
     }
 
+    _updateControlsDisplay() {
+        const mode = this._isTouch ? 'touch' : (this._gp.enabled ? 'gamepad' : 'keyboard');
+        if (mode === this._lastInputMode) return;
+        this._lastInputMode = mode;
+
+        const controlSets = {
+            keyboard: [
+                'WASD / ARROWS - Move / Aim',
+                'SPACE / Z - Jump',
+                'CLICK / X - Fire',
+                'S / DOWN - Crouch'
+            ],
+            touch: [
+                'D-PAD (Left) - Move / Aim',
+                'JUMP Button (Right) - Jump',
+                'FIRE Button (Right) - Fire',
+                ''
+            ],
+            gamepad: [
+                'LEFT STICK / D-PAD - Move / Aim',
+                'A - Jump',
+                'X / RT - Fire',
+                'DOWN - Crouch'
+            ]
+        };
+
+        const startTexts = {
+            keyboard: 'PRESS ENTER TO START',
+            touch: 'TAP TO START',
+            gamepad: 'PRESS START'
+        };
+
+        const controls = controlSets[mode];
+        for (let i = 0; i < this._controlTexts.length; i++) {
+            this._controlTexts[i].setText(controls[i] || '');
+        }
+        this.startText.setText(startTexts[mode]);
+    }
+
     update() {
         // Scroll backgrounds (divided by tileScale)
         this.farLayer.tilePositionX += 0.3 / 4;
         this.midLayer.tilePositionX += 0.6 / 3;
 
-        // Gamepad confirm
+        // Gamepad polling + dynamic controls update
         this._gp.update();
+        this._updateControlsDisplay();
         if (this._gp.confirm) this._startGame();
     }
 }
