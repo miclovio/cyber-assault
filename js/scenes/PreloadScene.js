@@ -264,7 +264,29 @@ class PreloadScene extends Phaser.Scene {
 
     create() {
         this.createAnimations();
-        this.scene.start('MenuScene');
+
+        // Show "click to enter" prompt to unlock browser audio context
+        const w = this.cameras.main.width;
+        const h = this.cameras.main.height;
+
+        const prompt = this.add.text(w / 2, h / 2 + 30, 'CLICK TO ENTER', {
+            fontSize: '18px', fontFamily: 'monospace', color: '#00ffff', fontStyle: 'bold'
+        }).setOrigin(0.5);
+
+        this.tweens.add({
+            targets: prompt,
+            alpha: 0.2,
+            duration: 600,
+            yoyo: true,
+            repeat: -1
+        });
+
+        const enter = () => {
+            this.input.keyboard.off('keydown', enter);
+            this.scene.start('MenuScene');
+        };
+        this.input.once('pointerdown', enter);
+        this.input.keyboard.on('keydown', enter);
     }
 
     createAnimations() {
