@@ -17,7 +17,8 @@ const config = {
         }
     },
     input: {
-        activePointers: 3
+        activePointers: 3,
+        gamepad: true
     },
     scale: {
         mode: Phaser.Scale.FIT,

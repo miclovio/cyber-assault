@@ -104,6 +104,10 @@ class MenuScene extends Phaser.Scene {
         };
         this.input.keyboard.once('keydown-ENTER', startGame);
         this.input.once('pointerdown', startGame);
+        this._startGame = startGame;
+
+        // Gamepad polling
+        this._gp = new GamepadControls(this);
 
         // Music
         this.sound.stopAll();
@@ -116,5 +120,9 @@ class MenuScene extends Phaser.Scene {
         // Scroll backgrounds (divided by tileScale)
         this.farLayer.tilePositionX += 0.3 / 4;
         this.midLayer.tilePositionX += 0.6 / 3;
+
+        // Gamepad confirm
+        this._gp.update();
+        if (this._gp.confirm) this._startGame();
     }
 }

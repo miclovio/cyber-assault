@@ -76,20 +76,22 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             }
         }
 
-        // Lazy-init touch controls reference
+        // Lazy-init touch/gamepad controls reference
         if (this._touchControls === undefined) {
             const hudScene = this.scene.scene.get('HUDScene');
             this._touchControls = (hudScene && hudScene.touchControls) || null;
+            this._gamepadControls = (hudScene && hudScene.gamepadControls) || null;
         }
         const tc = this._touchControls;
+        const gp = this._gamepadControls;
 
         const onGround = this.body.blocked.down || this.body.touching.down;
-        const left = this.cursors.left.isDown || this.keyA.isDown || (tc && tc.left);
-        const right = this.cursors.right.isDown || this.keyD.isDown || (tc && tc.right);
-        const up = this.cursors.up.isDown || this.keyW.isDown || (tc && tc.up);
-        const down = this.cursors.down.isDown || this.keyS.isDown || (tc && tc.down);
-        const jumpPressed = Phaser.Input.Keyboard.JustDown(this.jumpKey) || Phaser.Input.Keyboard.JustDown(this.jumpKey2) || (tc && tc.jumpPressed);
-        const fire = this.fireKey.isDown || (tc && tc.enabled ? tc.fire : this.mousePointer.isDown);
+        const left = this.cursors.left.isDown || this.keyA.isDown || (tc && tc.left) || (gp && gp.left);
+        const right = this.cursors.right.isDown || this.keyD.isDown || (tc && tc.right) || (gp && gp.right);
+        const up = this.cursors.up.isDown || this.keyW.isDown || (tc && tc.up) || (gp && gp.up);
+        const down = this.cursors.down.isDown || this.keyS.isDown || (tc && tc.down) || (gp && gp.down);
+        const jumpPressed = Phaser.Input.Keyboard.JustDown(this.jumpKey) || Phaser.Input.Keyboard.JustDown(this.jumpKey2) || (tc && tc.jumpPressed) || (gp && gp.jumpPressed);
+        const fire = this.fireKey.isDown || (tc && tc.enabled ? tc.fire : this.mousePointer.isDown) || (gp && gp.fire);
 
         // Reset jumps when on ground
         if (onGround) {

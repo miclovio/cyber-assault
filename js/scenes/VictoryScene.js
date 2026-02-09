@@ -120,12 +120,23 @@ class VictoryScene extends Phaser.Scene {
             };
             this.input.keyboard.once('keydown-ENTER', goToMenu);
             this.input.once('pointerdown', goToMenu);
+            this._goToMenu = goToMenu;
+            this._menuReady = true;
         });
+
+        // Gamepad polling
+        this._gp = new GamepadControls(this);
+        this._menuReady = false;
 
         // Music - play intro theme for mission complete screen
         this.sound.stopAll();
         this.sound.play('music-intro', { loop: true, volume: 0.5 });
 
         this.cameras.main.fadeIn(1000, 0, 0, 0);
+    }
+
+    update() {
+        this._gp.update();
+        if (this._menuReady && this._gp.confirm) this._goToMenu();
     }
 }
