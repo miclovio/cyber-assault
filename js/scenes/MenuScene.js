@@ -103,15 +103,9 @@ class MenuScene extends Phaser.Scene {
         this.input.once('pointerdown', startGame);
         this._startGame = startGame;
 
-        // Music (defer if still locked — gamepad doesn't unlock audio context)
+        // Music (audio unlocked by splash screen tap/keypress)
         this.sound.stopAll();
-        if (this.sound.locked) {
-            this.sound.once('unlocked', () => {
-                this.sound.play('music-intro', { loop: true, volume: 0.5 });
-            });
-        } else {
-            this.sound.play('music-intro', { loop: true, volume: 0.5 });
-        }
+        this.sound.play('music-intro', { loop: true, volume: 0.5 });
 
         this.cameras.main.fadeIn(500, 0, 0, 0);
     }

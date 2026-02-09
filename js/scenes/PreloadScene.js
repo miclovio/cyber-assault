@@ -272,7 +272,7 @@ class PreloadScene extends Phaser.Scene {
         const w = this.cameras.main.width;
         const h = this.cameras.main.height;
 
-        const prompt = this.add.text(w / 2, h / 2 + 30, 'PRESS ANY BUTTON', {
+        const prompt = this.add.text(w / 2, h / 2 + 30, 'TAP OR PRESS ANY KEY', {
             fontSize: '18px', fontFamily: 'monospace', color: '#00ffff', fontStyle: 'bold',
             stroke: '#003333', strokeThickness: 4,
             shadow: { offsetX: 2, offsetY: 2, color: '#000000', blur: 4, fill: true }
@@ -291,25 +291,10 @@ class PreloadScene extends Phaser.Scene {
             if (this._entered) return;
             this._entered = true;
             this.input.keyboard.off('keydown', enter);
-            // Try to unlock audio context (may not work for gamepad-only input)
-            if (this.sound.context && this.sound.context.state === 'suspended') {
-                this.sound.context.resume().catch(() => {});
-            }
             this.scene.start('MenuScene');
         };
         this.input.once('pointerdown', enter);
         this.input.keyboard.on('keydown', enter);
-
-        // Poll gamepad for controller input
-        this._enterFn = enter;
-        this._gp = new GamepadControls(this);
-    }
-
-    update() {
-        if (this._gp) {
-            this._gp.update();
-            if (this._gp.confirm) this._enterFn();
-        }
     }
 
     createAnimations() {
