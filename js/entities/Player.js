@@ -89,7 +89,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         const up = this.cursors.up.isDown || this.keyW.isDown || (tc && tc.up);
         const down = this.cursors.down.isDown || this.keyS.isDown || (tc && tc.down);
         const jumpPressed = Phaser.Input.Keyboard.JustDown(this.jumpKey) || Phaser.Input.Keyboard.JustDown(this.jumpKey2) || (tc && tc.jumpPressed);
-        const fire = this.fireKey.isDown || (tc ? tc.fire : this.mousePointer.isDown);
+        const fire = this.fireKey.isDown || (tc && tc.enabled ? tc.fire : this.mousePointer.isDown);
 
         // Reset jumps when on ground
         if (onGround) {
