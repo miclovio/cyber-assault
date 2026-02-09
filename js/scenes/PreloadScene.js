@@ -32,13 +32,15 @@ class PreloadScene extends Phaser.Scene {
         const bar = this.add.rectangle(w / 2 - 198, h / 2, 0, 16, 0x00ffff);
         bar.setOrigin(0, 0.5);
 
-        const loadText = this.add.text(w / 2, h / 2 + 30, 'Loading... 0%', {
-            fontSize: '14px', fontFamily: 'monospace', color: '#888888'
+        this.loadText = this.add.text(w / 2, h / 2 + 30, 'Loading... 0%', {
+            fontSize: '14px', fontFamily: 'monospace', color: '#aaaaaa', fontStyle: 'bold',
+            stroke: '#000000', strokeThickness: 3,
+            shadow: { offsetX: 1, offsetY: 1, color: '#000000', blur: 3, fill: true }
         }).setOrigin(0.5);
 
         this.load.on('progress', (value) => {
             bar.width = 396 * value;
-            loadText.setText(`Loading... ${Math.floor(value * 100)}%`);
+            this.loadText.setText(`Loading... ${Math.floor(value * 100)}%`);
         });
     }
 
@@ -265,12 +267,15 @@ class PreloadScene extends Phaser.Scene {
     create() {
         this.createAnimations();
 
-        // Show "click to enter" prompt to unlock browser audio context
+        // Hide loading text and show "click to enter" prompt to unlock browser audio
+        this.loadText.destroy();
         const w = this.cameras.main.width;
         const h = this.cameras.main.height;
 
         const prompt = this.add.text(w / 2, h / 2 + 30, 'CLICK TO ENTER', {
-            fontSize: '18px', fontFamily: 'monospace', color: '#00ffff', fontStyle: 'bold'
+            fontSize: '18px', fontFamily: 'monospace', color: '#00ffff', fontStyle: 'bold',
+            stroke: '#003333', strokeThickness: 4,
+            shadow: { offsetX: 2, offsetY: 2, color: '#000000', blur: 4, fill: true }
         }).setOrigin(0.5);
 
         this.tweens.add({
