@@ -291,6 +291,10 @@ class PreloadScene extends Phaser.Scene {
             if (this._entered) return;
             this._entered = true;
             this.input.keyboard.off('keydown', enter);
+            // Try to unlock audio context (may not work for gamepad-only input)
+            if (this.sound.context && this.sound.context.state === 'suspended') {
+                this.sound.context.resume().catch(() => {});
+            }
             this.scene.start('MenuScene');
         };
         this.input.once('pointerdown', enter);
