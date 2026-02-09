@@ -268,6 +268,7 @@ class PreloadScene extends Phaser.Scene {
         this.load.audio('sfx-mech-laser', 'Assets/Music/mech-laser.mp3');
         this.load.audio('sfx-enemy-gun', 'Assets/Music/enemy-gun.mp3');
         this.load.audio('sfx-tank-fire', 'Assets/Music/tank-fire.mp3');
+        this.load.audio('sfx-skull-fire', 'Assets/Music/fireball-sfx-02.mp3');
 
         // Music
         const mus = 'Assets/Music';

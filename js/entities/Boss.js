@@ -398,6 +398,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             this.scene.player.x, this.scene.player.y,
             300, 1
         );
+        this.scene.audioManager.playSound('sfx-skull-fire', 0.4, 2.0);
     }
 
     skullRing() {
@@ -409,11 +410,13 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             );
         }
         this.scene.cameras.main.shake(150, 0.008);
+        this.scene.audioManager.playSound('sfx-skull-fire', 0.4, 2.0);
     }
 
     skullCharge() {
         // Quick charge toward player
         if (!this.scene.player) return;
+        this.scene.audioManager.playSound('sfx-skull-fire', 0.35, 2.0);
         const angle = this.getAngleToPlayer();
         this.setVelocity(
             Math.cos(angle) * 300,
@@ -441,6 +444,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                     this.scene.player.x, this.scene.player.y,
                     400, 1
                 );
+                this.scene.audioManager.playSound('sfx-fireball', 0.4, 2.0);
             }
         });
     }
@@ -454,6 +458,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             );
         }
         this.scene.cameras.main.shake(200, 0.01);
+        this.scene.audioManager.playSound('sfx-fireball', 0.4, 2.0);
     }
 
     sentinelBarrage() {
@@ -468,6 +473,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                         200, 1
                     );
                 }
+                this.scene.audioManager.playSound('sfx-fireball', 0.4, 2.0);
             });
         }
     }

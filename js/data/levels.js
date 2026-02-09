@@ -39,7 +39,6 @@ const LEVEL_DATA = {
             { x: 2700, y: 320, w: 200, h: 20 },
             { x: 3000, y: 260, w: 180, h: 20 },
             { x: 3400, y: 330, w: 150, h: 20 },
-            { x: 4100, y: 300, w: 200, h: 20 },
             { x: 4400, y: 330, w: 150, h: 20 },
             { x: 4700, y: 270, w: 200, h: 20 },
             { x: 5000, y: 320, w: 180, h: 20 },
@@ -178,8 +177,6 @@ const LEVEL_DATA = {
 
             { x: 3700, y: 320, w: 120, h: 20 },
             { x: 3800, y: 250, w: 150, h: 20 },
-            { x: 4200, y: 300, w: 120, h: 20 },
-            { x: 4400, y: 220, w: 100, h: 20 },
 
             { x: 4900, y: 340, w: 120, h: 20 },
             { x: 5100, y: 260, w: 150, h: 20 },
@@ -313,8 +310,6 @@ const LEVEL_DATA = {
             { x: 2600, y: 300, w: 130, h: 18 },
             { x: 2700, y: 220, w: 110, h: 18 },
             { x: 3100, y: 310, w: 140, h: 18 },
-            { x: 3350, y: 240, w: 100, h: 18 },
-            { x: 3500, y: 330, w: 130, h: 18 },
             { x: 3900, y: 260, w: 120, h: 18 },
             { x: 4150, y: 190, w: 100, h: 18 },
             { x: 4450, y: 310, w: 130, h: 18 },
@@ -464,8 +459,6 @@ const LEVEL_DATA = {
             { x: 3250, y: 300, w: 120, h: 20 },
             { x: 3500, y: 220, w: 100, h: 20 },
             { x: 3600, y: 320, w: 130, h: 20 },
-            { x: 4000, y: 240, w: 120, h: 20 },
-            { x: 4100, y: 160, w: 100, h: 20 },
             { x: 4500, y: 300, w: 140, h: 20 },
             { x: 4750, y: 220, w: 120, h: 20 },
             { x: 5050, y: 320, w: 130, h: 20 },
@@ -491,8 +484,10 @@ const LEVEL_DATA = {
             // Floor 1400-1800
             { x: 1200, enemies: [
                 { type: 'heavy', x: 1500, y: 370, config: {} },
-                { type: 'slime', x: 1700, y: 400, config: {} },
                 { type: 'flyer', x: 1550, y: 150, config: { moveDir: -1 } }
+            ]},
+            { x: 1500, enemies: [
+                { type: 'slime', x: 1730, y: 210, config: {} }
             ]},
             // Floor 1900-2500
             { x: 1700, enemies: [
@@ -503,14 +498,14 @@ const LEVEL_DATA = {
             // Floor 2600-3100
             { x: 2300, enemies: [
                 { type: 'heavy', x: 2800, y: 370, config: {} },
-                { type: 'slime', x: 2700, y: 400, config: {} },
-                { type: 'grunt', x: 2730, y: 290, config: { patrolDir: -1, patrolRange: 40 } }
+                { type: 'grunt', x: 2730, y: 290, config: { patrolDir: -1, patrolRange: 40 } },
+                { type: 'slime', x: 2980, y: 210, config: {} }
             ]},
             // Floor 3200-3800
             { x: 3000, enemies: [
                 { type: 'heavy', x: 3400, y: 370, config: { patrolDir: -1 } },
                 { type: 'flyer', x: 3600, y: 160, config: { moveDir: -1 } },
-                { type: 'slime', x: 3500, y: 400, config: {} }
+                { type: 'slime', x: 3630, y: 290, config: {} }
             ]},
             // Floor 3900-4300 + Blue Mech
             { x: 3700, enemies: [
@@ -525,8 +520,8 @@ const LEVEL_DATA = {
             // Floor 5000-5600
             { x: 5000, enemies: [
                 { type: 'heavy', x: 5400, y: 370, config: {} },
-                { type: 'slime', x: 5300, y: 400, config: {} },
-                { type: 'grunt', x: 5080, y: 290, config: { patrolDir: 1, patrolRange: 40 } }
+                { type: 'grunt', x: 5080, y: 290, config: { patrolDir: 1, patrolRange: 40 } },
+                { type: 'slime', x: 5330, y: 210, config: {} }
             ]},
             // Floor 5700-6100
             { x: 5700, enemies: [
@@ -540,8 +535,10 @@ const LEVEL_DATA = {
             ]},
             // Floor 6800-8000 (pre-boss)
             { x: 6600, enemies: [
-                { type: 'heavy', x: 6900, y: 370, config: { patrolDir: -1 } },
-                { type: 'slime', x: 6850, y: 400, config: {} }
+                { type: 'heavy', x: 6900, y: 370, config: { patrolDir: -1 } }
+            ]},
+            { x: 6700, enemies: [
+                { type: 'slime', x: 7200, y: 380, config: {} }
             ]}
         ],
         checkpoints: [
