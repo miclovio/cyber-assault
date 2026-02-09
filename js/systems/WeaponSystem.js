@@ -45,7 +45,7 @@ class WeaponSystem {
         }
     }
 
-    fireEnemyBullet(x, y, targetX, targetY, speed, damage) {
+    fireEnemyBullet(x, y, targetX, targetY, speed, damage, tintColor) {
         const dx = targetX - x;
         const dy = targetY - y;
         const len = Math.sqrt(dx * dx + dy * dy) || 1;
@@ -53,7 +53,7 @@ class WeaponSystem {
         return this.enemyBullets.fireBullet(
             x, y,
             dx / len, dy / len,
-            speed || 200, damage || 1, 'bullet2', null, false
+            speed || 200, damage || 1, 'bullet2', tintColor, false
         );
     }
 

@@ -136,20 +136,10 @@ class Mech extends EnemyBase {
         this.setVelocityX(spd * this.chargeDir);
 
         this.scene.cameras.main.shake(80, 0.005);
+        this.scene.audioManager.playSound('sfx-mech-laser', 0.3);
     }
 
     updateCharge(time) {
-        // Fire bullets while charging in enraged mode
-        if (this.enraged && time - this.lastFireTime > 300) {
-            this.lastFireTime = time;
-            if (this.scene.player) {
-                this.scene.weaponSystem.fireEnemyBullet(
-                    this.x, this.y,
-                    this.scene.player.x, this.scene.player.y,
-                    200, 1
-                );
-            }
-        }
 
         // Stop charge at walls, edges, or after traveling far enough
         const distFromChargeStart = Math.abs(this.x - this.chargeStartX);

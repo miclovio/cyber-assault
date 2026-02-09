@@ -79,8 +79,8 @@ class EnemyBase extends Phaser.Physics.Arcade.Sprite {
     }
 
     shootAtPlayer(time) {
-        if (time - this.lastFireTime < this.fireRate) return;
-        if (!this.canSeePlayer()) return;
+        if (time - this.lastFireTime < this.fireRate) return false;
+        if (!this.canSeePlayer()) return false;
 
         this.lastFireTime = time;
         this.scene.weaponSystem.fireEnemyBullet(
@@ -88,6 +88,7 @@ class EnemyBase extends Phaser.Physics.Arcade.Sprite {
             this.scene.player.x, this.scene.player.y,
             200, 1
         );
+        return true;
     }
 
     isNearEdge() {

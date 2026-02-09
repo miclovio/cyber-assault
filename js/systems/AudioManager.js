@@ -20,18 +20,23 @@ class AudioManager {
             this.sounds['sfx-enemy-hit'] = this.scene.sound.add('sfx-enemy-hit', { volume: 0.2 });
             this.sounds['sfx-spread'] = this.scene.sound.add('sfx-spread', { volume: 0.3 });
             this.sounds['sfx-pause'] = this.scene.sound.add('sfx-pause', { volume: 0.4 });
+            this.sounds['sfx-fireball'] = this.scene.sound.add('sfx-fireball', { volume: 0.2 });
+            this.sounds['sfx-mech-laser'] = this.scene.sound.add('sfx-mech-laser', { volume: 0.3 });
+            this.sounds['sfx-enemy-gun'] = this.scene.sound.add('sfx-enemy-gun', { volume: 0.3 });
+            this.sounds['sfx-tank-fire'] = this.scene.sound.add('sfx-tank-fire', { volume: 0.4 });
         } catch (e) {
             console.warn('Audio not available:', e);
             this.enabled = false;
         }
     }
 
-    playSound(key, volume) {
+    playSound(key, volume, baseRate) {
         if (!this.enabled) return;
         const sound = this.sounds[key];
         if (sound) {
             // Pitch variation for variety
-            const rate = 0.9 + Math.random() * 0.2;
+            const r = baseRate || 1.0;
+            const rate = r * (0.9 + Math.random() * 0.2);
             sound.play({
                 volume: volume !== undefined ? volume : sound.volume,
                 rate: rate

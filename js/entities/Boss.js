@@ -315,6 +315,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.scene.weaponSystem.fireBossBulletAngle(
             cannonX, this.y, dir < 0 ? 0 : Math.PI, 250, 1
         );
+        this.scene.audioManager.playSound('sfx-tank-fire', 0.4, 2.0);
     }
 
     tankSpread() {
@@ -326,6 +327,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 this.x - 30 * dir, this.y, baseAngle + i * 0.2, 200, 1
             );
         }
+        this.scene.audioManager.playSound('sfx-tank-fire', 0.4, 2.0);
     }
 
     tankBarrage() {
@@ -343,6 +345,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                     baseAngle + (Math.random() - 0.5) * 0.4,
                     280, 1
                 );
+                this.scene.audioManager.playSound('sfx-tank-fire', 0.3, 2.0);
             }
         });
     }
@@ -355,6 +358,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             this.scene.player.x, this.scene.player.y,
             300, 1, 'bolt'
         );
+        this.scene.audioManager.playSound('sfx-mech-laser', 0.4);
     }
 
     mechStomp() {
@@ -371,17 +375,20 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             });
         }
         this.scene.cameras.main.shake(200, 0.01);
+        this.scene.audioManager.playSound('sfx-mech-laser', 0.35);
     }
 
     mechMissile() {
-        // Arc shots upward from shoulders
-        for (let i = -1; i <= 1; i++) {
+        // Fire bolts in all directions
+        const count = 8;
+        for (let i = 0; i < count; i++) {
+            const angle = (i / count) * Math.PI * 2;
             this.scene.weaponSystem.fireBossBulletAngle(
                 this.x, this.y,
-                -Math.PI / 2 + i * 0.4,
-                200, 1, 'bolt'
+                angle, 200, 1, 'bolt'
             );
         }
+        this.scene.audioManager.playSound('sfx-mech-laser', 0.4);
     }
 
     // === FIRE SKULL ATTACKS ===

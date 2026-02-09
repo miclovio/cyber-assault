@@ -62,8 +62,9 @@ class Heavy extends EnemyBase {
                 this.scene.weaponSystem.fireEnemyBullet(
                     this.x, this.y,
                     this.scene.player.x, this.scene.player.y,
-                    250, 1
+                    250, 1, 0x4488ff
                 );
+                this.scene.audioManager.playSound('sfx-enemy-gun', 0.3);
                 shotsRemaining--;
                 if (shotsRemaining <= 0) {
                     this.isBursting = false;

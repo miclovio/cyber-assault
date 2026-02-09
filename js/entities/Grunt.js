@@ -39,6 +39,8 @@ class Grunt extends EnemyBase {
         if (this.isNearEdge()) this.patrolDir *= -1;
 
         // Shoot at player
-        this.shootAtPlayer(time);
+        if (this.shootAtPlayer(time)) {
+            this.scene.audioManager.playSound('sfx-fireball', 0.5, 2.0);
+        }
     }
 }
