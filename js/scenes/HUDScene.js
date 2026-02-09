@@ -107,12 +107,16 @@ class HUDScene extends Phaser.Scene {
 
         // Touch controls (only visible on touch devices)
         this.touchControls = new TouchControls(this);
+
+        // Gamepad controls
+        this.gamepadControls = new GamepadControls(this);
     }
 
     update(time, delta) {
         if (this.touchControls && this.touchControls.enabled) {
             this.touchControls.update();
         }
+        this.gamepadControls.update();
     }
 
     updateScore(score) {

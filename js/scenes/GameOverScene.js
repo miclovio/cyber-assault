@@ -70,8 +70,9 @@ class GameOverScene extends Phaser.Scene {
         };
         this.input.keyboard.once('keydown-ENTER', continueGame);
         this.input.once('pointerdown', continueGame);
+        this._continueGame = continueGame;
 
-        this.input.keyboard.once('keydown-ESC', () => {
+        const goToMenu = () => {
             if (this._transitioning) return;
             this._transitioning = true;
             this.cameras.main.fadeOut(300, 0, 0, 0);
@@ -79,12 +80,23 @@ class GameOverScene extends Phaser.Scene {
                 this.scene.stop('HUDScene');
                 this.scene.start('MenuScene');
             });
-        });
+        };
+        this.input.keyboard.once('keydown-ESC', goToMenu);
+        this._goToMenu = goToMenu;
+
+        // Gamepad polling
+        this._gp = new GamepadControls(this);
 
         // Music
         this.sound.stopAll();
         this.sound.play('music-gameover', { loop: true, volume: 0.5 });
 
         this.cameras.main.fadeIn(500, 0, 0, 0);
+    }
+
+    update() {
+        this._gp.update();
+        if (this._gp.confirm) this._continueGame();
+        if (this._gp.back) this._goToMenu();
     }
 }
