@@ -16,11 +16,13 @@ class GamepadControls {
         this.jumpPressed = false;
         this.confirm = false;
         this.back = false;
+        this.startPressed = false;
 
         // Edge detection (previous frame state)
         this._prevJump = false;
         this._prevConfirm = false;
         this._prevBack = false;
+        this._prevStart = false;
 
         this.DEADZONE = 0.3;
     }
@@ -30,6 +32,7 @@ class GamepadControls {
         this.jumpPressed = false;
         this.confirm = false;
         this.back = false;
+        this.startPressed = false;
 
         // Get first connected gamepad
         const pads = this.scene.input.gamepad;
@@ -83,5 +86,10 @@ class GamepadControls {
         // Edge-detect back
         this.back = backNow && !this._prevBack;
         this._prevBack = backNow;
+
+        // Edge-detect Start button (for pause)
+        const startNow = pad.buttons[9] && pad.buttons[9].pressed;
+        this.startPressed = startNow && !this._prevStart;
+        this._prevStart = startNow;
     }
 }

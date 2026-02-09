@@ -115,6 +115,9 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         else if (hpPercent <= 0.60) this.phase = 2;
         else this.phase = 1;
 
+        // Boss-specific movement (before attack so direction is current)
+        this.updateMovement(time);
+
         // Attack rate increases with phase
         const attackRate = Math.max(800, 2000 - (this.phase - 1) * 500);
 
@@ -122,9 +125,6 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             this.lastAttackTime = time;
             this.executeAttack();
         }
-
-        // Boss-specific movement
-        this.updateMovement(time);
 
         // Manual bullet hit detection (physics overlap unreliable for aerial bosses)
         this.checkPlayerBulletHits();
@@ -161,13 +161,22 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     updateMovement(time) {
         switch (this.bossType) {
             case 'TANK':
+                // Patrol back and forth
                 this.setVelocityX(this.speed * this.moveDir);
-                // Reverse at arena edges
                 if (this.arenaStart && this.x <= this.arenaStart + 40) this.moveDir = 1;
                 if (this.arenaEnd && this.x >= this.arenaEnd - 40) this.moveDir = -1;
                 if (this.body.blocked.left) this.moveDir = 1;
                 if (this.body.blocked.right) this.moveDir = -1;
-                this.setFlipX(this.moveDir > 0);
+                // Periodically turn cannon to face player (separate from movement)
+                if (!this.cannonDir) this.cannonDir = this.moveDir;
+                if (this.scene.player && (!this.lastTurnTime || time - this.lastTurnTime > 3000)) {
+                    const playerDir = this.scene.player.x < this.x ? -1 : 1;
+                    if (playerDir === this.cannonDir) {
+                        this.cannonDir = -playerDir;
+                        this.lastTurnTime = time;
+                    }
+                }
+                this.setFlipX(this.cannonDir > 0);
                 break;
 
             case 'MECH':
@@ -256,6 +265,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     takeDamage(amount) {
         if (this.isDefeated) return;
         this.hp -= amount;
+        this.scene.audioManager.playSound('sfx-enemy-hit', 0.15);
         this.setTintFill(0xffffff);
         this.scene.time.delayedCall(80, () => {
             if (this.active) this.updateVisual();
@@ -286,6 +296,8 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             this.scene.player.addScore(this.scoreValue);
         }
 
+        this.scene.audioManager.playSound('sfx-boss-defeat');
+
         // Visual explosions (fire and forget - no callback dependency)
         this.scene.effectsManager.playBossExplosionChain(this.x, this.y, 100, 80);
         this.scene.effectsManager.screenFlash(500);
@@ -297,33 +309,38 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
 
     // === TANK ATTACKS ===
     tankShoot() {
-        this.scene.weaponSystem.fireBossBullet(
-            this.x - 30 * this.moveDir, this.y,
-            this.scene.player.x, this.scene.player.y,
-            250, 1
+        // Fire from cannon (front of tank)
+        const dir = this.cannonDir || this.moveDir;
+        const cannonX = this.x - 40 * dir;
+        this.scene.weaponSystem.fireBossBulletAngle(
+            cannonX, this.y, dir < 0 ? 0 : Math.PI, 250, 1
         );
     }
 
     tankSpread() {
+        // Spread from cannon direction
+        const dir = this.cannonDir || this.moveDir;
+        const baseAngle = dir < 0 ? 0 : Math.PI;
         for (let i = -2; i <= 2; i++) {
-            const angle = this.getAngleToPlayer() + i * 0.2;
             this.scene.weaponSystem.fireBossBulletAngle(
-                this.x, this.y, angle, 200, 1
+                this.x - 30 * dir, this.y, baseAngle + i * 0.2, 200, 1
             );
         }
     }
 
     tankBarrage() {
-        let count = 0;
+        const dir = this.cannonDir || this.moveDir;
         this.scene.time.addEvent({
             delay: 150,
             repeat: 5,
             callback: () => {
                 if (!this.active) return;
-                this.scene.weaponSystem.fireBossBullet(
-                    this.x, this.y,
-                    this.scene.player.x + (Math.random() - 0.5) * 100,
-                    this.scene.player.y,
+                // Fire forward from cannon with slight random spread
+                const d = this.cannonDir || this.moveDir;
+                const baseAngle = d < 0 ? 0 : Math.PI;
+                this.scene.weaponSystem.fireBossBulletAngle(
+                    this.x - 30 * d, this.y,
+                    baseAngle + (Math.random() - 0.5) * 0.4,
                     280, 1
                 );
             }
@@ -336,7 +353,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.scene.weaponSystem.fireBossBullet(
             this.x, this.y - 10,
             this.scene.player.x, this.scene.player.y,
-            300, 1
+            300, 1, 'bolt'
         );
     }
 
@@ -346,10 +363,10 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             this.scene.time.delayedCall(i * 100, () => {
                 if (!this.active) return;
                 this.scene.weaponSystem.fireBossBulletAngle(
-                    this.x - 20 - i * 40, this.y + 70, Math.PI, 150, 1
+                    this.x - 20 - i * 40, this.y + 70, Math.PI, 150, 1, 'bolt'
                 );
                 this.scene.weaponSystem.fireBossBulletAngle(
-                    this.x + 20 + i * 40, this.y + 70, 0, 150, 1
+                    this.x + 20 + i * 40, this.y + 70, 0, 150, 1, 'bolt'
                 );
             });
         }
@@ -362,7 +379,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             this.scene.weaponSystem.fireBossBulletAngle(
                 this.x, this.y,
                 -Math.PI / 2 + i * 0.4,
-                200, 1
+                200, 1, 'bolt'
             );
         }
     }

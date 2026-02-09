@@ -9,8 +9,9 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
         this.isPlayerBullet = true;
     }
 
-    fire(x, y, dirX, dirY, speed, damage, textureKey, isPlayerBullet, tintColor, isBoss) {
+    fire(x, y, dirX, dirY, speed, damage, textureKey, isPlayerBullet, tintColor, isBoss, bossAnimKey) {
         this.isBoss = isBoss;
+        this.bossAnimKey = bossAnimKey || null;
         this.body.enable = true;
         this.body.reset(x, y);
         this.setActive(true);
@@ -19,10 +20,12 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
         this.isPlayerBullet = isPlayerBullet !== false;
         this.body.allowGravity = false;
 
-        // Boss bullets use animated fire-ball, others use static texture
+        // Boss bullets use animated sprites, others use static texture
         if (isBoss) {
-            this.setTexture('fire-ball0');
-            this.play('fire-ball');
+            const animKey = bossAnimKey || 'fire-ball';
+            const firstFrame = bossAnimKey ? `${bossAnimKey}1` : 'fire-ball0';
+            this.setTexture(firstFrame);
+            this.play(animKey);
         } else {
             this.stop();
             this.setTexture(textureKey || 'bullet1');
@@ -34,13 +37,21 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
         const ny = dirY / len;
 
         this.setVelocity(nx * speed, ny * speed);
-        this.setRotation(Math.atan2(ny, nx));
 
-        // Scale: player=1, enemy=1.8, boss=2
+        // Rotation: bolt faces left (offset π), fire-ball faces right (no offset)
+        this.setFlipX(false);
+        const angle = Math.atan2(ny, nx);
+        if (bossAnimKey === 'bolt') {
+            this.setRotation(angle - Math.PI);
+        } else {
+            this.setRotation(angle);
+        }
+
+        // Scale: player=1, enemy=1.8, boss=fire-ball 2/bolt 1.2
         if (isPlayerBullet) {
             this.setScale(1);
         } else if (isBoss) {
-            this.setScale(2);
+            this.setScale(bossAnimKey === 'bolt' ? 1.2 : 2);
         } else {
             this.setScale(1.8);
         }
@@ -120,10 +131,10 @@ class BulletPool extends Phaser.Physics.Arcade.Group {
         }
     }
 
-    fireBullet(x, y, dirX, dirY, speed, damage, textureKey, tintColor, isBoss) {
+    fireBullet(x, y, dirX, dirY, speed, damage, textureKey, tintColor, isBoss, bossAnimKey) {
         const bullet = this.getFirstDead(false);
         if (bullet) {
-            bullet.fire(x, y, dirX, dirY, speed, damage, textureKey, this.isPlayerPool, tintColor, isBoss);
+            bullet.fire(x, y, dirX, dirY, speed, damage, textureKey, this.isPlayerPool, tintColor, isBoss, bossAnimKey);
         }
         return bullet;
     }

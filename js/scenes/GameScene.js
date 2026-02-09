@@ -111,6 +111,14 @@ class GameScene extends Phaser.Scene {
         this.sound.stopAll();
         this.sound.play(`music-level${this.currentLevel}`, { loop: true, volume: 0.4 });
 
+        // Pause system
+        this.isPaused = false;
+        this.pauseOverlay = null;
+        this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+
+        // Listen for touch pause button from HUDScene
+        this.events.on('toggle-pause', this.togglePause, this);
+
         // Fade in
         this.cameras.main.fadeIn(500, 0, 0, 0);
     }
@@ -120,6 +128,9 @@ class GameScene extends Phaser.Scene {
         const tileTint = levelData.platformTint;
         const texH = this.textures.get(tileKey).getSourceImage().height;
 
+        const roundCaps = levelData.platformCaps || false;
+        const capRadius = 12;
+
         levelData.platforms.forEach(p => {
             // Visual tileSprite (centered)
             const visual = this.add.tileSprite(p.x + p.w / 2, p.y + p.h / 2, p.w, p.h, tileKey);
@@ -127,6 +138,27 @@ class GameScene extends Phaser.Scene {
             if (tileTint) visual.setTint(tileTint);
             // Scale texture to fit platform height (prevent vertical tiling)
             if (texH < p.h) visual.setTileScale(1, p.h / texH);
+
+            // Round top corners with a geometry mask
+            if (roundCaps) {
+                const gfx = this.make.graphics({ x: 0, y: 0, add: false });
+                const r = capRadius;
+                const left = p.x;
+                const top = p.y;
+                const right = p.x + p.w;
+                const bottom = p.y + p.h;
+                gfx.fillStyle(0xffffff);
+                gfx.beginPath();
+                gfx.moveTo(left, top + r);
+                gfx.arc(left + r, top + r, r, Math.PI, Math.PI * 1.5);
+                gfx.lineTo(right - r, top);
+                gfx.arc(right - r, top + r, r, Math.PI * 1.5, 0);
+                gfx.lineTo(right, bottom);
+                gfx.lineTo(left, bottom);
+                gfx.closePath();
+                gfx.fillPath();
+                visual.setMask(gfx.createGeometryMask());
+            }
 
             // Invisible physics rectangle (origin 0.5 properly initialized unlike Zone)
             const rect = this.add.rectangle(p.x + p.w / 2, p.y + p.h / 2, p.w, p.h);
@@ -138,6 +170,16 @@ class GameScene extends Phaser.Scene {
 
     update(time, delta) {
         if (!this.player) return;
+
+        // Pause toggle (ESC or gamepad Start)
+        const hudScene = this.scene.get('HUDScene');
+        const gamepadStart = hudScene && hudScene.gamepadControls && hudScene.gamepadControls.startPressed;
+        if (Phaser.Input.Keyboard.JustDown(this.escKey) || gamepadStart) {
+            if (!this.sceneTransition && (!this.boss || !this.boss.isDefeated)) {
+                this.togglePause(gamepadStart ? 'gamepad' : 'keyboard');
+            }
+        }
+        if (this.isPaused) return;
 
         // Handle scene transitions (reliable delta-timer, no camera events)
         if (this.sceneTransition) {
@@ -218,9 +260,9 @@ class GameScene extends Phaser.Scene {
 
         if (t.phase === 1 && t.timer <= 0) {
             // Phase 1 done: start fadeout
-            this.cameras.main.fadeOut(1000, t.fadeR || 0, t.fadeG || 0, t.fadeB || 0);
+            this.cameras.main.fadeOut(1500, t.fadeR || 0, t.fadeG || 0, t.fadeB || 0);
             t.phase = 2;
-            t.timer = 1200; // slightly longer than fade duration
+            t.timer = 4500; // 1.5s fade + 3s hold on black
         } else if (t.phase === 2 && t.timer <= 0) {
             // Phase 2 done: execute transition
             this.sceneTransition = null; // prevent re-entry
@@ -316,9 +358,14 @@ class GameScene extends Phaser.Scene {
         // Notify HUD to hide boss HP bar
         this.events.emit('boss-defeated');
 
-        // Victory music
-        this.sound.stopAll();
-        this.sound.play('music-victory', { loop: false, volume: 0.5 });
+        // Stop level music, delay victory music so boss defeat SFX can finish
+        this.sound.stopByKey('music-level1');
+        this.sound.stopByKey('music-level2');
+        this.sound.stopByKey('music-level3');
+        this.sound.stopByKey('music-level4');
+        this.time.delayedCall(1500, () => {
+            this.sound.play('music-victory', { loop: false, volume: 0.5 });
+        });
 
         // Remove shield for victory celebration
         this.player.shieldHits = 0;
@@ -410,11 +457,11 @@ class GameScene extends Phaser.Scene {
             });
         });
 
-        // Start transition via update loop (3s wait, then fadeout, then switch scene)
+        // Start transition via update loop (6s celebration, then fade to black, hold, then switch)
         if (this.currentLevel < 4) {
             this.sceneTransition = {
                 phase: 1,
-                timer: 3000,
+                timer: 6000,
                 target: 'GameScene',
                 data: {
                     level: this.currentLevel + 1,
@@ -426,11 +473,65 @@ class GameScene extends Phaser.Scene {
         } else {
             this.sceneTransition = {
                 phase: 1,
-                timer: 3000,
+                timer: 6000,
                 target: 'VictoryScene',
                 data: { score: this.player.score },
                 fadeR: 0, fadeG: 0, fadeB: 0
             };
+        }
+    }
+
+    togglePause(inputMode) {
+        if (!this.isPaused && (this.sceneTransition || (this.boss && this.boss.isDefeated))) return;
+
+        this.isPaused = !this.isPaused;
+
+        if (this.isPaused) {
+            // Freeze physics, tweens, timers, and pause music
+            this.physics.world.pause();
+            this.tweens.pauseAll();
+            this.time.paused = true;
+            this.sound.pauseAll();
+            // Play pause sound after pauseAll so it doesn't get paused
+            this.sound.play('sfx-pause', { volume: 0.4 });
+
+            // Dynamic resume hint based on input mode
+            let hintText = 'PRESS ESC TO RESUME';
+            if (inputMode === 'gamepad') hintText = 'PRESS START TO RESUME';
+            else if (inputMode === 'touch') hintText = 'TAP TO RESUME';
+
+            // Dark overlay + text (fixed to camera)
+            this.pauseOverlay = this.add.container(0, 0).setDepth(200).setScrollFactor(0);
+
+            const bg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7);
+            const title = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, 'PAUSED', {
+                fontSize: '48px', fontFamily: 'monospace', color: '#00ffff', fontStyle: 'bold',
+                stroke: '#003333', strokeThickness: 6
+            }).setOrigin(0.5);
+            const hint = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, hintText, {
+                fontSize: '16px', fontFamily: 'monospace', color: '#aaaaaa'
+            }).setOrigin(0.5);
+
+            this.pauseOverlay.add([bg, title, hint]);
+
+            // If touch mode, allow tapping the overlay to resume
+            if (inputMode === 'touch') {
+                bg.setInteractive();
+                bg.on('pointerdown', () => this.togglePause('touch'));
+            }
+        } else {
+            // Resume physics, tweens, timers, and music
+            this.sound.play('sfx-pause', { volume: 0.4 });
+            this.physics.world.resume();
+            this.tweens.resumeAll();
+            this.time.paused = false;
+            this.sound.resumeAll();
+
+            // Remove overlay
+            if (this.pauseOverlay) {
+                this.pauseOverlay.destroy();
+                this.pauseOverlay = null;
+            }
         }
     }
 

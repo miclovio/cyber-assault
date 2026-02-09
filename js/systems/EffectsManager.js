@@ -101,6 +101,23 @@ class EffectsManager {
         }
     }
 
+    playPlayerHit(player) {
+        const hit = this.scene.add.sprite(player.x, player.y, 'player-hit1');
+        hit.setDepth(15);
+        hit.setScale(1.5);
+        hit.setAlpha(0.6);
+        hit.play('player-hit');
+        // Follow the player while animating
+        const followUpdate = () => {
+            if (hit.active) hit.setPosition(player.x, player.y);
+        };
+        this.scene.events.on('update', followUpdate);
+        hit.once('animationcomplete', () => {
+            this.scene.events.off('update', followUpdate);
+            hit.destroy();
+        });
+    }
+
     screenFlash(duration) {
         const flash = this.scene.add.rectangle(
             this.scene.cameras.main.scrollX + GAME_WIDTH / 2,

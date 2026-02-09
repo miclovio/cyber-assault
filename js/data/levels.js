@@ -18,6 +18,7 @@ const LEVEL_DATA = {
             { key: 'l1-fore', speed: 0.55, tileScale: 1.5, alignBottom: true }
         ],
         platformTile: 'l1-floor',
+        platformCaps: true,
         platformTint: 0x88ccbb,
         platforms: [
             // Ground floor - continuous with small gaps (all jumpable)
@@ -138,6 +139,7 @@ const LEVEL_DATA = {
             { key: 'l2-fore', speed: 0.35, tint: 0x665599 }
         ],
         platformTile: 'l2-platform',
+        platformCaps: true,
         enemyTint: 0x9977dd,
         platforms: [
             // Ground sections with 150px pits
@@ -280,6 +282,7 @@ const LEVEL_DATA = {
             { key: 'l3-near', speed: 0.3,  tileScale: 2, alignBottom: true }
         ],
         platformTile: 'l3-platform',
+        platformCaps: true,
         platformTint: 0x995544,
         enemyTint: 0xcc8855,
         platforms: [
@@ -428,6 +431,7 @@ const LEVEL_DATA = {
             { key: 'l4-planet-small', prop: true, x: 100, y: 110, scale: 3.5, speed: 0.04, alpha: 0.4 }
         ],
         platformTile: 'l1-floor',
+        platformCaps: true,
         platformTint: 0x4466dd,
         platforms: [
             // Space station structure - mix of all platform styles

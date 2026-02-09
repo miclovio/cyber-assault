@@ -24,6 +24,7 @@ class EnemyBase extends Phaser.Physics.Arcade.Sprite {
 
     takeDamage(amount) {
         this.hp -= amount;
+        this.scene.audioManager.playSound('sfx-enemy-hit', 0.2);
 
         // Flash white
         this.setTintFill(0xffffff);
