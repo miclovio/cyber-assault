@@ -297,7 +297,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
 
     // === TANK ATTACKS ===
     tankShoot() {
-        this.scene.weaponSystem.fireEnemyBullet(
+        this.scene.weaponSystem.fireBossBullet(
             this.x - 30 * this.moveDir, this.y,
             this.scene.player.x, this.scene.player.y,
             250, 1
@@ -307,7 +307,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     tankSpread() {
         for (let i = -2; i <= 2; i++) {
             const angle = this.getAngleToPlayer() + i * 0.2;
-            this.scene.weaponSystem.fireEnemyBulletAngle(
+            this.scene.weaponSystem.fireBossBulletAngle(
                 this.x, this.y, angle, 200, 1
             );
         }
@@ -320,7 +320,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             repeat: 5,
             callback: () => {
                 if (!this.active) return;
-                this.scene.weaponSystem.fireEnemyBullet(
+                this.scene.weaponSystem.fireBossBullet(
                     this.x, this.y,
                     this.scene.player.x + (Math.random() - 0.5) * 100,
                     this.scene.player.y,
@@ -332,9 +332,9 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
 
     // === MECH ATTACKS ===
     mechShoot() {
-        // Fire from gun level (lower half of sprite)
-        this.scene.weaponSystem.fireEnemyBullet(
-            this.x, this.y + 40,
+        // Fire from chest level
+        this.scene.weaponSystem.fireBossBullet(
+            this.x, this.y - 10,
             this.scene.player.x, this.scene.player.y,
             300, 1
         );
@@ -345,10 +345,10 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         for (let i = 0; i < 4; i++) {
             this.scene.time.delayedCall(i * 100, () => {
                 if (!this.active) return;
-                this.scene.weaponSystem.fireEnemyBulletAngle(
+                this.scene.weaponSystem.fireBossBulletAngle(
                     this.x - 20 - i * 40, this.y + 70, Math.PI, 150, 1
                 );
-                this.scene.weaponSystem.fireEnemyBulletAngle(
+                this.scene.weaponSystem.fireBossBulletAngle(
                     this.x + 20 + i * 40, this.y + 70, 0, 150, 1
                 );
             });
@@ -359,7 +359,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     mechMissile() {
         // Arc shots upward from shoulders
         for (let i = -1; i <= 1; i++) {
-            this.scene.weaponSystem.fireEnemyBulletAngle(
+            this.scene.weaponSystem.fireBossBulletAngle(
                 this.x, this.y,
                 -Math.PI / 2 + i * 0.4,
                 200, 1
@@ -369,7 +369,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
 
     // === FIRE SKULL ATTACKS ===
     skullFireball() {
-        this.scene.weaponSystem.fireEnemyBullet(
+        this.scene.weaponSystem.fireBossBullet(
             this.x, this.y,
             this.scene.player.x, this.scene.player.y,
             300, 1
@@ -380,7 +380,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         const count = 8 + this.phase * 2;
         for (let i = 0; i < count; i++) {
             const angle = (i / count) * Math.PI * 2;
-            this.scene.weaponSystem.fireEnemyBulletAngle(
+            this.scene.weaponSystem.fireBossBulletAngle(
                 this.x, this.y, angle, 180, 1
             );
         }
@@ -412,7 +412,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             repeat: 7,
             callback: () => {
                 if (!this.active) return;
-                this.scene.weaponSystem.fireEnemyBullet(
+                this.scene.weaponSystem.fireBossBullet(
                     this.x, this.y + 30,
                     this.scene.player.x, this.scene.player.y,
                     400, 1
@@ -425,7 +425,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         const count = 12 + this.phase * 4;
         for (let i = 0; i < count; i++) {
             const angle = (i / count) * Math.PI * 2;
-            this.scene.weaponSystem.fireEnemyBulletAngle(
+            this.scene.weaponSystem.fireBossBulletAngle(
                 this.x, this.y, angle, 150, 1
             );
         }
@@ -438,7 +438,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             this.scene.time.delayedCall(wave * 400, () => {
                 if (!this.active) return;
                 for (let i = -3; i <= 3; i++) {
-                    this.scene.weaponSystem.fireEnemyBulletAngle(
+                    this.scene.weaponSystem.fireBossBulletAngle(
                         this.x, this.y,
                         Math.PI / 2 + i * 0.15 + wave * 0.1,
                         200, 1

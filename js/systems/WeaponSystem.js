@@ -53,7 +53,7 @@ class WeaponSystem {
         return this.enemyBullets.fireBullet(
             x, y,
             dx / len, dy / len,
-            speed || 200, damage || 1, 'bullet2'
+            speed || 200, damage || 1, 'bullet2', null, false
         );
     }
 
@@ -61,7 +61,27 @@ class WeaponSystem {
         return this.enemyBullets.fireBullet(
             x, y,
             Math.cos(angle), Math.sin(angle),
-            speed || 200, damage || 1, 'bullet2'
+            speed || 200, damage || 1, 'bullet2', null, false
+        );
+    }
+
+    fireBossBullet(x, y, targetX, targetY, speed, damage) {
+        const dx = targetX - x;
+        const dy = targetY - y;
+        const len = Math.sqrt(dx * dx + dy * dy) || 1;
+
+        return this.enemyBullets.fireBullet(
+            x, y,
+            dx / len, dy / len,
+            speed || 200, damage || 1, 'bullet2', null, true
+        );
+    }
+
+    fireBossBulletAngle(x, y, angle, speed, damage) {
+        return this.enemyBullets.fireBullet(
+            x, y,
+            Math.cos(angle), Math.sin(angle),
+            speed || 200, damage || 1, 'bullet2', null, true
         );
     }
 

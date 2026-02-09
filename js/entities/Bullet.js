@@ -9,8 +9,8 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
         this.isPlayerBullet = true;
     }
 
-    fire(x, y, dirX, dirY, speed, damage, textureKey, isPlayerBullet, tintColor) {
-        this.setTexture(textureKey || 'bullet1');
+    fire(x, y, dirX, dirY, speed, damage, textureKey, isPlayerBullet, tintColor, isBoss) {
+        this.isBoss = isBoss;
         this.body.enable = true;
         this.body.reset(x, y);
         this.setActive(true);
@@ -19,6 +19,15 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
         this.isPlayerBullet = isPlayerBullet !== false;
         this.body.allowGravity = false;
 
+        // Boss bullets use animated fire-ball, others use static texture
+        if (isBoss) {
+            this.setTexture('fire-ball0');
+            this.play('fire-ball');
+        } else {
+            this.stop();
+            this.setTexture(textureKey || 'bullet1');
+        }
+
         // Normalize direction
         const len = Math.sqrt(dirX * dirX + dirY * dirY) || 1;
         const nx = dirX / len;
@@ -26,10 +35,21 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
 
         this.setVelocity(nx * speed, ny * speed);
         this.setRotation(Math.atan2(ny, nx));
-        this.setScale(isPlayerBullet ? 1 : 0.8);
 
-        if (!isPlayerBullet) {
-            this.setTint(0xff4444);
+        // Scale: player=1, enemy=1.8, boss=2
+        if (isPlayerBullet) {
+            this.setScale(1);
+        } else if (isBoss) {
+            this.setScale(2);
+        } else {
+            this.setScale(1.8);
+        }
+
+        // Tint: player=weapon color, enemy=orange, boss=no tint (fire-ball has own colors)
+        if (isBoss) {
+            this.clearTint();
+        } else if (!isPlayerBullet) {
+            this.setTint(0xff6600);
         } else if (tintColor) {
             this.setTint(tintColor);
         } else {
@@ -100,10 +120,10 @@ class BulletPool extends Phaser.Physics.Arcade.Group {
         }
     }
 
-    fireBullet(x, y, dirX, dirY, speed, damage, textureKey, tintColor) {
+    fireBullet(x, y, dirX, dirY, speed, damage, textureKey, tintColor, isBoss) {
         const bullet = this.getFirstDead(false);
         if (bullet) {
-            bullet.fire(x, y, dirX, dirY, speed, damage, textureKey, this.isPlayerPool, tintColor);
+            bullet.fire(x, y, dirX, dirY, speed, damage, textureKey, this.isPlayerPool, tintColor, isBoss);
         }
         return bullet;
     }
