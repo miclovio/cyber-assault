@@ -272,7 +272,7 @@ class PreloadScene extends Phaser.Scene {
         const w = this.cameras.main.width;
         const h = this.cameras.main.height;
 
-        const prompt = this.add.text(w / 2, h / 2 + 30, 'CLICK TO ENTER', {
+        const prompt = this.add.text(w / 2, h / 2 + 30, 'PRESS ANY BUTTON', {
             fontSize: '18px', fontFamily: 'monospace', color: '#00ffff', fontStyle: 'bold',
             stroke: '#003333', strokeThickness: 4,
             shadow: { offsetX: 2, offsetY: 2, color: '#000000', blur: 4, fill: true }
