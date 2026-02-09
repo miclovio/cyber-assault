@@ -101,12 +101,14 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         // Update aim direction
         this.updateAim(left, right, up, down, onGround);
 
-        // Movement
-        if (left) {
-            this.setVelocityX(this.isCrouching ? -PHYSICS.PLAYER_CROUCH_SPEED : -PHYSICS.PLAYER_SPEED);
+        // Movement (no movement while crouching)
+        if (this.isCrouching) {
+            this.setVelocityX(0);
+        } else if (left) {
+            this.setVelocityX(-PHYSICS.PLAYER_SPEED);
             this.facingRight = false;
         } else if (right) {
-            this.setVelocityX(this.isCrouching ? PHYSICS.PLAYER_CROUCH_SPEED : PHYSICS.PLAYER_SPEED);
+            this.setVelocityX(PHYSICS.PLAYER_SPEED);
             this.facingRight = true;
         } else {
             this.setVelocityX(0);
@@ -221,8 +223,14 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         }
 
         if (newState !== this.state) {
+            const prevState = this.state;
             this.state = newState;
-            this.playAnimation();
+            if (prevState === 'crouch-shoot' && newState === 'crouch') {
+                // Play crouch from last frame (fully crouched) to avoid stand-up transition
+                this.play({ key: 'player-crouch-gun', startFrame: 2 });
+            } else {
+                this.playAnimation();
+            }
         }
     }
 
