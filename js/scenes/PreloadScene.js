@@ -286,12 +286,26 @@ class PreloadScene extends Phaser.Scene {
             repeat: -1
         });
 
+        this._entered = false;
         const enter = () => {
+            if (this._entered) return;
+            this._entered = true;
             this.input.keyboard.off('keydown', enter);
             this.scene.start('MenuScene');
         };
         this.input.once('pointerdown', enter);
         this.input.keyboard.on('keydown', enter);
+
+        // Poll gamepad for controller input
+        this._enterFn = enter;
+        this._gp = new GamepadControls(this);
+    }
+
+    update() {
+        if (this._gp) {
+            this._gp.update();
+            if (this._gp.confirm) this._enterFn();
+        }
     }
 
     createAnimations() {
