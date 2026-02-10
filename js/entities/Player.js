@@ -24,6 +24,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.invulnTimer = 0;
         this.isDead = false;
         this.isCrouching = false;
+        this.isClimbing = false;
+        this.isCrawling = false;
+        this.nearLadder = false;
+        this.currentLadder = null;
+        this.inCrawlZone = false;
         this.facingRight = true;
         this.lastFireTime = 0;
 
@@ -51,7 +56,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.jumpKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.jumpKey2 = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
         this.fireKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);
+        this.grenadeKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
         this.mousePointer = scene.input.activePointer;
+
+        // Grenade state (L5 only)
+        this.grenadeEnabled = false;
+        this.lastThrowTime = 0;
+        this.isThrowing = false;
 
         // Checkpoint tracking
         this.lastCheckpointX = x;
@@ -98,40 +109,135 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             this.jumpsLeft = this.maxJumps;
         }
 
+        // === Climbing State ===
+        if (this.isClimbing) {
+            this.updateClimbing(up, down, left, right, jumpPressed, fire, time);
+            return;
+        }
+
+        // Enter climbing: press up or down while overlapping ladder
+        if (this.nearLadder && (up || down) && !this.isClimbing) {
+            this.startClimbing();
+            this.updateClimbing(up, down, left, right, jumpPressed, fire, time);
+            return;
+        }
+
         // Update aim direction
         this.updateAim(left, right, up, down, onGround);
 
-        // Movement (no movement while crouching)
-        if (this.isCrouching) {
-            this.setVelocityX(0);
-        } else if (left) {
-            this.setVelocityX(-PHYSICS.PLAYER_SPEED);
-            this.facingRight = false;
-        } else if (right) {
-            this.setVelocityX(PHYSICS.PLAYER_SPEED);
-            this.facingRight = true;
+        // === Crawl Zone Logic ===
+        // In a crawl zone: force crouch and allow movement
+        if (this.inCrawlZone && onGround) {
+            if (!this.isCrouching) {
+                this.isCrouching = true;
+                this.isCrawling = true;
+                this.body.setSize(20, 24);
+                this.body.setOffset(28, 16);
+            }
+            this.isCrawling = true;
+
+            // Crawl movement
+            if (left) {
+                this.setVelocityX(-PHYSICS.PLAYER_CROUCH_SPEED);
+                this.facingRight = false;
+            } else if (right) {
+                this.setVelocityX(PHYSICS.PLAYER_CROUCH_SPEED);
+                this.facingRight = true;
+            } else {
+                this.setVelocityX(0);
+            }
+
+            this.setFlipX(!this.facingRight);
+
+            // Can't stand up or jump in crawl zone
+            // Shooting while crawling
+            if (fire) {
+                this.shoot(time);
+            }
+
+            this.updateAnimationState(onGround, fire, left || right);
+
+            // Update shield bubble position
+            if (this.shieldBubble && this.shieldBubble.visible) {
+                this.shieldBubble.setPosition(this.x, this.y);
+            }
+
+            // Fall death
+            if (this.y > GAME_HEIGHT + 100) {
+                this.die();
+            }
+            return;
+        }
+
+        // Exiting crawl zone: allow standing up
+        if (this.isCrawling && !this.inCrawlZone) {
+            this.isCrawling = false;
+            if (!down) {
+                this.isCrouching = false;
+                this.body.setSize(20, 36);
+                this.body.setOffset(28, 4);
+            }
+        }
+
+        // Crouch / crouch-walk
+        if (down && onGround) {
+            if (!this.isCrouching) {
+                this.isCrouching = true;
+                this.body.setSize(20, 24);
+                this.body.setOffset(28, 16);
+            }
+            // Crouch-walk: Down + direction = crawl movement
+            if (left) {
+                this.setVelocityX(-PHYSICS.PLAYER_CROUCH_SPEED);
+                this.facingRight = false;
+                this.isCrawling = true;
+            } else if (right) {
+                this.setVelocityX(PHYSICS.PLAYER_CROUCH_SPEED);
+                this.facingRight = true;
+                this.isCrawling = true;
+            } else {
+                this.setVelocityX(0);
+                this.isCrawling = false;
+            }
+        } else if (this.isCrouching && !down && !this.inCrawlZone) {
+            this.isCrouching = false;
+            this.isCrawling = false;
+            this.body.setSize(20, 36);
+            this.body.setOffset(28, 4);
+            // Normal movement
+            if (left) {
+                this.setVelocityX(-PHYSICS.PLAYER_SPEED);
+                this.facingRight = false;
+            } else if (right) {
+                this.setVelocityX(PHYSICS.PLAYER_SPEED);
+                this.facingRight = true;
+            } else {
+                this.setVelocityX(0);
+            }
+        } else if (!this.isCrouching) {
+            // Normal standing movement
+            if (left) {
+                this.setVelocityX(-PHYSICS.PLAYER_SPEED);
+                this.facingRight = false;
+            } else if (right) {
+                this.setVelocityX(PHYSICS.PLAYER_SPEED);
+                this.facingRight = true;
+            } else {
+                this.setVelocityX(0);
+            }
         } else {
+            // Crouching in crawl zone, holding down released — stay crouched, no movement
             this.setVelocityX(0);
         }
 
         this.setFlipX(!this.facingRight);
-
-        // Crouch
-        if (down && onGround && !left && !right) {
-            this.isCrouching = true;
-            this.body.setSize(20, 24);
-            this.body.setOffset(28, 16);
-        } else if (this.isCrouching && !down) {
-            this.isCrouching = false;
-            this.body.setSize(20, 36);
-            this.body.setOffset(28, 4);
-        }
 
         // Jump (double jump supported)
         if (jumpPressed && this.jumpsLeft > 0) {
             this.setVelocityY(PHYSICS.PLAYER_JUMP);
             this.jumpsLeft--;
             this.isCrouching = false;
+            this.isCrawling = false;
             this.body.setSize(20, 36);
             this.body.setOffset(28, 4);
             this.scene.audioManager.playSound('sfx-jump');
@@ -145,6 +251,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         // Shooting
         if (fire) {
             this.shoot(time);
+        }
+
+        // Grenade throw (L5 only)
+        if (this.grenadeEnabled && !this.isThrowing && !this.isClimbing && !this.isCrawling &&
+            Phaser.Input.Keyboard.JustDown(this.grenadeKey)) {
+            this.throwGrenade(time);
         }
 
         // Update animation state
@@ -207,11 +319,127 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
+    // === Climbing ===
+    startClimbing() {
+        this.isClimbing = true;
+        this.isCrouching = false;
+        this.isCrawling = false;
+        this.body.allowGravity = false;
+        this.setVelocityX(0);
+        this.setVelocityY(0);
+        this.body.setSize(20, 36);
+        this.body.setOffset(28, 4);
+        // Center on ladder
+        if (this.currentLadder) {
+            this.x = this.currentLadder.x + this.currentLadder.w / 2;
+        }
+    }
+
+    stopClimbing() {
+        this.isClimbing = false;
+        this.body.allowGravity = true;
+    }
+
+    updateClimbing(up, down, left, right, jumpPressed, fire, time) {
+        const climbSpeed = 140;
+
+        // Vertical movement
+        if (up) {
+            this.setVelocityY(-climbSpeed);
+        } else if (down) {
+            this.setVelocityY(climbSpeed);
+        } else {
+            this.setVelocityY(0);
+        }
+        this.setVelocityX(0);
+
+        // Update aim for shooting while climbing
+        this.updateAim(left, right, up, down, false);
+        this.setFlipX(!this.facingRight);
+
+        // Dismount: jump off
+        if (jumpPressed) {
+            this.stopClimbing();
+            this.setVelocityY(PHYSICS.PLAYER_JUMP);
+            this.jumpsLeft = this.maxJumps - 1;
+            this.scene.audioManager.playSound('sfx-jump');
+            return;
+        }
+
+        // Dismount: walk off sideways
+        if (left || right) {
+            this.stopClimbing();
+            if (left) {
+                this.facingRight = false;
+                this.setVelocityX(-PHYSICS.PLAYER_SPEED);
+            } else {
+                this.facingRight = true;
+                this.setVelocityX(PHYSICS.PLAYER_SPEED);
+            }
+            return;
+        }
+
+        // Dismount: reach top or bottom of ladder
+        if (this.currentLadder) {
+            if (this.y < this.currentLadder.y - 10 && !down) {
+                this.stopClimbing();
+                this.setVelocityY(-100); // small pop up
+                return;
+            }
+            if (this.y > this.currentLadder.y + this.currentLadder.h + 10) {
+                this.stopClimbing();
+                return;
+            }
+        }
+
+        // Dismount: no longer near any ladder
+        if (!this.nearLadder) {
+            this.stopClimbing();
+            return;
+        }
+
+        // Shooting while climbing
+        if (fire) {
+            this.shoot(time);
+        }
+
+        // Animation
+        const moving = up || down;
+        if (moving) {
+            this.state = 'climb';
+            this.play('player-climb', true);
+        } else {
+            // Stop on current frame
+            if (this.state !== 'climb') {
+                this.state = 'climb';
+                this.play('player-climb', true);
+            }
+            this.anims.pause();
+        }
+
+        // Shield bubble
+        if (this.shieldBubble && this.shieldBubble.visible) {
+            this.shieldBubble.setPosition(this.x, this.y);
+        }
+
+        // Fall death
+        if (this.y > GAME_HEIGHT + 100) {
+            this.stopClimbing();
+            this.die();
+        }
+    }
+
     updateAnimationState(onGround, firing, moving) {
         let newState;
 
-        if (!onGround) {
+        if (this.isThrowing) {
+            newState = 'throw';
+        } else if (this.isClimbing) {
+            newState = 'climb';
+        } else if (!onGround) {
             newState = 'jump';
+        } else if (this.isCrawling && moving) {
+            newState = 'crawl';
         } else if (this.isCrouching) {
             newState = firing ? 'crouch-shoot' : 'crouch';
         } else if (firing && !moving) {
@@ -243,7 +471,29 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             case 'crouch-shoot': this.play('player-crouch-shoot', true); break;
             case 'shoot': this.play('player-shoot', true); break;
             case 'die': this.play('player-die', true); break;
+            case 'climb': this.play('player-climb', true); break;
+            case 'crawl': this.play('player-crawl', true); break;
+            case 'throw': this.play('player-throw', true); break;
         }
+    }
+
+    throwGrenade(time) {
+        if (time - this.lastThrowTime < GRENADE.COOLDOWN) return;
+        this.lastThrowTime = time;
+        this.isThrowing = true;
+
+        // Spawn grenade partway through animation (frame 4 of 8)
+        this.once('animationcomplete-player-throw', () => {
+            this.isThrowing = false;
+        });
+
+        // Spawn grenade at release point (after wind-up frames)
+        this.scene.time.delayedCall(250, () => {
+            if (this.isDead) return;
+            const offsetX = this.facingRight ? 25 : -25;
+            this.scene.spawnGrenade(this.x + offsetX, this.y - 5, this.aimX, this.aimY);
+            this.scene.audioManager.playSound('sfx-fireball', 0.3);
+        });
     }
 
     shoot(time) {
@@ -297,6 +547,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         if (this.isDead) return;
         this.isDead = true;
         this.isInvulnerable = true;
+        if (this.isClimbing) this.stopClimbing();
+        this.isCrawling = false;
+        this.isCrouching = false;
+        this.isThrowing = false;
         this.state = 'die';
         this.play('player-die');
 
@@ -335,6 +589,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.deathTimer = 0;
         this.hp = PLAYER_CONFIG.MAX_HP;
         this.isCrouching = false;
+        this.isClimbing = false;
+        this.isCrawling = false;
         this.jumpsLeft = this.maxJumps;
         this.setActive(true);
         this.setVisible(true);

@@ -38,7 +38,8 @@ const BOSS_CONFIG = {
     TANK:     { hp: 30, score: 5000, speed: 60 },
     MECH:     { hp: 40, score: 7000, speed: 50 },
     FIRESKULL:{ hp: 35, score: 6000, speed: 80 },
-    SENTINEL: { hp: 50, score: 10000, speed: 40 }
+    SENTINEL: { hp: 50, score: 10000, speed: 40 },
+    COREGUARDIAN: { hp: 60, score: 15000, speed: 30 }
 };
 
 const POOL_SIZES = {
@@ -56,6 +57,18 @@ const COLORS = {
     HEALTH_LOW: 0xff0000,
     SCORE_TEXT: '#ffffff',
     TITLE_TEXT: '#00ffff'
+};
+
+const GRENADE = {
+    COOLDOWN: 1500,
+    SPEED: 350,
+    GRAVITY: 400,
+    FUSE_TIME: 2000,
+    ENEMY_RADIUS: 150,
+    ENEMY_DAMAGE: 2,
+    PLAYER_RADIUS: 80,
+    PLAYER_DAMAGE: 1,
+    POOL_SIZE: 5
 };
 
 const EXTRA_LIFE_THRESHOLD = 50000;

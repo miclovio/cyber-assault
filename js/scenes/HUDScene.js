@@ -163,7 +163,7 @@ class HUDScene extends Phaser.Scene {
     }
 
     updateLevel(level) {
-        const names = ['', 'INDUSTRIAL BASE', 'UNDERGROUND CAVERNS', 'ROCKY RIDGE', 'SPACE STATION'];
+        const names = ['', 'INDUSTRIAL BASE', 'UNDERGROUND CAVERNS', 'ROCKY RIDGE', 'SPACE STATION', 'CORE BREACH'];
         this.levelText.setText(`LEVEL ${level} - ${names[level] || ''}`);
 
         // Flash level name

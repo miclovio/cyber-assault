@@ -5,10 +5,12 @@
 class Turret extends EnemyBase {
     constructor(scene, x, y, config) {
         const isSlime = config && config.variant === 'slime';
+        const isCeiling = config && config.ceiling;
         const cfg = { ...ENEMY_CONFIG.TURRET, ...config };
         super(scene, x, y, isSlime ? 'slime1' : 'turret', cfg);
 
         this.isSlime = isSlime;
+        this.isCeiling = isCeiling;
 
         if (isSlime) {
             this.setScale(1);
@@ -17,6 +19,11 @@ class Turret extends EnemyBase {
         } else {
             this.setScale(1.2);
             this.body.setSize(40, 40);
+        }
+
+        // Ceiling turret: flip vertically
+        if (this.isCeiling) {
+            this.setFlipY(true);
         }
 
         this.body.setImmovable(true);
@@ -39,9 +46,25 @@ class Turret extends EnemyBase {
         // Shoot at player
         if (this.isSlime) {
             this.shootSlime(time);
+        } else if (this.isCeiling) {
+            this.shootCeiling(time);
         } else {
             this.shootAtPlayer(time);
         }
+    }
+
+    shootCeiling(time) {
+        if (time - this.lastFireTime < this.fireRate) return;
+        if (!this.canSeePlayer()) return;
+
+        this.lastFireTime = time;
+        // Fire downward from ceiling mount
+        const fireY = this.y + 20;
+        this.scene.weaponSystem.fireEnemyBullet(
+            this.x, fireY,
+            this.scene.player.x, this.scene.player.y,
+            200, 1
+        );
     }
 
     shootSlime(time) {
