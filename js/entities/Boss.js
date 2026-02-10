@@ -1,5 +1,5 @@
 // ============================================================================
-// Boss - Phase-based boss fights (Tank, Mech, FireSkull, Sentinel)
+// Boss - Phase-based boss fights (Tank, Mech, FireSkull, Sentinel, CoreGuardian)
 // ============================================================================
 
 class Boss extends Phaser.Physics.Arcade.Sprite {
@@ -8,7 +8,8 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             TANK: 'tank1',
             MECH: 'mech1',
             FIRESKULL: 'fireskull1',
-            SENTINEL: 'sentinel-body'
+            SENTINEL: 'sentinel-body',
+            COREGUARDIAN: 'sentinel-body'  // Reuse sentinel sprite until custom sprite provided
         };
 
         super(scene, x, y, textureMap[bossType] || 'tank1');
@@ -91,6 +92,28 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                     this.sentinelBarrage.bind(this)
                 ];
                 break;
+
+            case 'COREGUARDIAN':
+                this.body.setSize(130, 112);
+                this.body.setOffset(31, 16);
+                this.body.allowGravity = false;
+                this.setScale(1.5);
+                this.hitRadius = 100;
+                this.play('sentinel-idle');
+                this.startY = this.y;
+                // Red energy glow underneath
+                this.coreGlow = this.scene.add.sprite(this.x, this.y + 50, 'energy-field0');
+                this.coreGlow.play('energy-field');
+                this.coreGlow.setTint(0xff2222);
+                this.coreGlow.setScale(2);
+                this.coreGlow.setDepth(7);
+                this.coreGlow.setAlpha(0.6);
+                this.attackPatterns = [
+                    this.guardianLaserSweep.bind(this),
+                    this.guardianLockdown.bind(this),
+                    this.guardianMeltdown.bind(this)
+                ];
+                break;
         }
     }
 
@@ -103,6 +126,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                     this.setActive(false);
                     this.setVisible(false);
                     if (this.thrustSprite) this.thrustSprite.destroy();
+                    if (this.coreGlow) this.coreGlow.destroy();
                 }
             }
             return;
@@ -119,7 +143,12 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.updateMovement(time);
 
         // Attack rate increases with phase
-        const attackRate = Math.max(800, 2000 - (this.phase - 1) * 500);
+        let attackRate;
+        if (this.bossType === 'COREGUARDIAN') {
+            attackRate = this.phase === 3 ? 1000 : this.phase === 2 ? 1500 : 2000;
+        } else {
+            attackRate = Math.max(800, 2000 - (this.phase - 1) * 500);
+        }
 
         if (time - this.lastAttackTime > attackRate) {
             this.lastAttackTime = time;
@@ -233,12 +262,39 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 }
                 break;
             }
+
+            case 'COREGUARDIAN': {
+                // Float and bob
+                const guardTargetY = this.startY + Math.sin(time * 0.0012) * 25;
+                this.setVelocityY((guardTargetY - this.y) * 6);
+                // Chase player slowly
+                if (this.scene.player) {
+                    const dx = this.scene.player.x - this.x;
+                    this.setVelocityX(Math.sign(dx) * this.speed * 0.5);
+                    this.setFlipX(dx < 0);
+                }
+                // Phase speed increase
+                if (this.phase === 2) this.speed = 45;
+                else if (this.phase === 3) this.speed = 60;
+                // Clamp to arena
+                if (this.arenaStart && this.x < this.arenaStart + 80) this.x = this.arenaStart + 80;
+                if (this.arenaEnd && this.x > this.arenaEnd - 80) this.x = this.arenaEnd - 80;
+                // Update core glow
+                if (this.coreGlow) {
+                    this.coreGlow.setPosition(this.x, this.y + 50);
+                }
+                break;
+            }
         }
     }
 
     updateVisual() {
         // Phase indicator tint
-        if (this.phase === 3) {
+        if (this.bossType === 'COREGUARDIAN') {
+            if (this.phase === 3) this.setTint(0xff2222);
+            else if (this.phase === 2) this.setTint(0xff6644);
+            else this.setTint(0xcc4444);
+        } else if (this.phase === 3) {
             this.setTint(0xff4444);
         } else if (this.phase === 2) {
             this.setTint(0xffaa44);
@@ -288,8 +344,9 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.body.allowGravity = false;
         if (this.body) this.body.enable = false;
 
-        // Hide thrust sprite
+        // Hide thrust sprite / core glow
         if (this.thrustSprite) this.thrustSprite.setVisible(false);
+        if (this.coreGlow) this.coreGlow.setVisible(false);
 
         // Award score immediately
         if (this.scene.player) {
@@ -476,6 +533,149 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 this.scene.audioManager.playSound('sfx-fireball', 0.4, 2.0);
             });
         }
+    }
+
+    // === CORE GUARDIAN ATTACKS ===
+
+    guardianLaserSweep() {
+        // Rapid stream of 12 bullets in a sweeping arc
+        if (!this.scene.player) return;
+        const startAngle = this.scene.player.x < this.x ? Math.PI * 0.8 : Math.PI * 0.2;
+        const sweepDir = this.scene.player.x < this.x ? -1 : 1;
+
+        this.scene.time.addEvent({
+            delay: 100,
+            repeat: 11,
+            callback: () => {
+                if (!this.active) return;
+                const i = this._sweepCount || 0;
+                this._sweepCount = i + 1;
+                const angle = startAngle - sweepDir * i * 0.12;
+                this.scene.weaponSystem.fireBossBulletAngle(
+                    this.x, this.y + 20,
+                    angle, 300, 1
+                );
+                this.scene.audioManager.playSound('sfx-fireball', 0.25, 2.0);
+            }
+        });
+        this._sweepCount = 0;
+    }
+
+    guardianLockdown() {
+        // Place 4 energy fields on the ground as damage zones, then fire aimed shots
+        if (!this.scene.player) return;
+
+        const arenaCenter = (this.arenaStart + this.arenaEnd) / 2;
+        const positions = [
+            arenaCenter - 150, arenaCenter - 50,
+            arenaCenter + 50, arenaCenter + 150
+        ];
+
+        positions.forEach((px, i) => {
+            this.scene.time.delayedCall(i * 200, () => {
+                if (!this.active) return;
+                // Energy field zone on ground
+                const field = this.scene.add.sprite(px, 400, 'energy-field0');
+                field.play('energy-field');
+                field.setTint(0xff2222);
+                field.setScale(1.5);
+                field.setDepth(3);
+                field.setAlpha(0.7);
+
+                // Damage zone
+                const zone = this.scene.add.rectangle(px, 400, 40, 40);
+                zone.setVisible(false);
+                this.scene.physics.add.existing(zone, true);
+
+                // Overlap with player
+                this.scene.physics.add.overlap(this.scene.player, zone, () => {
+                    if (this.scene.player.isDead || this.scene.player.isInvulnerable) return;
+                    this.scene.player.takeDamage(1);
+                });
+
+                // Auto-destroy after 3s
+                this.scene.time.delayedCall(3000, () => {
+                    field.destroy();
+                    zone.destroy();
+                });
+            });
+        });
+
+        // Fire aimed shots after placing fields
+        this.scene.time.delayedCall(1000, () => {
+            if (!this.active) return;
+            for (let i = 0; i < 3; i++) {
+                this.scene.time.delayedCall(i * 300, () => {
+                    if (!this.active || !this.scene.player) return;
+                    this.scene.weaponSystem.fireBossBullet(
+                        this.x, this.y,
+                        this.scene.player.x, this.scene.player.y,
+                        350, 1
+                    );
+                    this.scene.audioManager.playSound('sfx-fireball', 0.3, 2.0);
+                });
+            }
+        });
+
+        this.scene.cameras.main.shake(200, 0.008);
+        this.scene.audioManager.playSound('sfx-fireball', 0.4, 2.0);
+    }
+
+    guardianMeltdown() {
+        // Descend to ground, windup, emit 16-bullet ring + floor shockwave
+        if (!this.active) return;
+
+        // Descend
+        this.setVelocityY(150);
+        this.scene.time.delayedCall(600, () => {
+            if (!this.active) return;
+            this.setVelocityY(0);
+            this.setVelocityX(0);
+
+            // 1s windup: shake + red flash
+            this.scene.cameras.main.shake(1000, 0.012);
+            this.setTintFill(0xff0000);
+            this.scene.time.delayedCall(300, () => {
+                if (this.active) this.updateVisual();
+            });
+
+            // After windup: emit ring + floor shockwave
+            this.scene.time.delayedCall(1000, () => {
+                if (!this.active) return;
+
+                // 16-bullet ring
+                const count = 16;
+                for (let i = 0; i < count; i++) {
+                    const angle = (i / count) * Math.PI * 2;
+                    this.scene.weaponSystem.fireBossBulletAngle(
+                        this.x, this.y, angle, 200, 1
+                    );
+                }
+
+                // Floor shockwave: bullets along ground in both directions
+                for (let i = 0; i < 6; i++) {
+                    this.scene.time.delayedCall(i * 80, () => {
+                        if (!this.active) return;
+                        this.scene.weaponSystem.fireBossBulletAngle(
+                            this.x - 20 - i * 50, 400, Math.PI, 180, 1
+                        );
+                        this.scene.weaponSystem.fireBossBulletAngle(
+                            this.x + 20 + i * 50, 400, 0, 180, 1
+                        );
+                    });
+                }
+
+                this.scene.audioManager.playSound('sfx-fireball', 0.5, 2.0);
+                this.scene.cameras.main.shake(300, 0.015);
+
+                // Return to float height
+                this.scene.time.delayedCall(500, () => {
+                    if (this.active) {
+                        this.startY = this.y;
+                    }
+                });
+            });
+        });
     }
 
     getAngleToPlayer() {

@@ -11,9 +11,11 @@ class CollisionManager {
         const scene = this.scene;
         const player = scene.player;
 
-        // Player vs Platforms (one-way for thin platforms)
+        // Player vs Platforms (one-way for thin platforms, pass-through when climbing)
         scene.physics.add.collider(player, platforms, null, (player, platform) => {
             if (platform.isOneWay) {
+                // Let climbing player pass through one-way platforms to descend ladders
+                if (scene.player.isClimbing) return false;
                 return player.body.velocity.y >= 0 && player.body.bottom <= platform.body.y + 10;
             }
             return true;
@@ -124,6 +126,105 @@ class CollisionManager {
     enemyTouchPlayer(player, enemy) {
         if (!enemy.active || player.isDead || player.isInvulnerable) return;
         player.takeDamage(1);
+    }
+
+    // === L5 Mechanics Collisions ===
+
+    setupDestructibleWalls() {
+        const scene = this.scene;
+        if (!scene.destructibleWalls || scene.destructibleWalls.getLength() === 0) return;
+
+        // Player vs destructible walls
+        scene.physics.add.collider(scene.player, scene.destructibleWalls);
+
+        // Player bullets vs destructible walls
+        scene.physics.add.collider(scene.weaponSystem.playerBullets, scene.destructibleWalls, (bullet, wall) => {
+            if (!wall.isDestructibleWall) return;
+            scene.effectsManager.playHitEffect(bullet.x, bullet.y, bullet.rotation);
+            bullet.deactivate();
+            scene.damageWall(wall, bullet.damage || 1);
+        });
+
+        // Enemy bullets vs destructible walls
+        scene.physics.add.collider(scene.weaponSystem.enemyBullets, scene.destructibleWalls, (bullet) => {
+            bullet.deactivate();
+        });
+
+        // Enemies vs destructible walls
+        if (scene.levelManager) {
+            scene.physics.add.collider(scene.levelManager.enemies, scene.destructibleWalls);
+        }
+    }
+
+    setupExplosiveBarrels() {
+        const scene = this.scene;
+        if (!scene.explosiveBarrels || scene.explosiveBarrels.getLength() === 0) return;
+
+        // Player bullets vs explosive barrels
+        scene.physics.add.collider(scene.weaponSystem.playerBullets, scene.explosiveBarrels, (bullet, barrel) => {
+            if (!barrel.isExplosiveBarrel) return;
+            scene.effectsManager.playHitEffect(bullet.x, bullet.y, bullet.rotation);
+            bullet.deactivate();
+            scene.damageBarrel(barrel, bullet.damage || 1);
+        });
+
+        // Enemy bullets vs explosive barrels
+        scene.physics.add.collider(scene.weaponSystem.enemyBullets, scene.explosiveBarrels, (bullet, barrel) => {
+            if (!barrel.isExplosiveBarrel) return;
+            bullet.deactivate();
+            scene.damageBarrel(barrel, 1);
+        });
+    }
+
+    setupGrenades() {
+        const scene = this.scene;
+        if (!scene.grenades) return;
+
+        // Grenades vs platforms — explode on impact
+        scene.physics.add.collider(scene.grenades, scene.platforms, (grenade) => {
+            scene.explodeGrenade(grenade);
+        });
+
+        // Grenades vs destructible walls — explode on impact + damage wall
+        if (scene.destructibleWalls && scene.destructibleWalls.getLength() > 0) {
+            scene.physics.add.collider(scene.grenades, scene.destructibleWalls, (grenade, wall) => {
+                if (wall.isDestructibleWall) {
+                    scene.damageWall(wall, GRENADE.ENEMY_DAMAGE);
+                }
+                scene.explodeGrenade(grenade);
+            });
+        }
+    }
+
+    setupLaserGates() {
+        const scene = this.scene;
+        if (!scene.laserGates || scene.laserGates.length === 0) return;
+
+        scene.laserGates.forEach(gate => {
+            scene.physics.add.overlap(scene.player, gate.zone, () => {
+                if (!gate.isOn) return;
+                if (scene.player.isDead || scene.player.isInvulnerable) return;
+                scene.player.takeDamage(1);
+            });
+        });
+    }
+
+    setupLockDoors() {
+        const scene = this.scene;
+        if (!scene.lockDoors || scene.lockDoors.getLength() === 0) return;
+
+        // Player vs lock doors (solid collision)
+        scene.physics.add.collider(scene.player, scene.lockDoors);
+
+        // Bullets vs lock doors (block, no damage)
+        scene.physics.add.collider(scene.weaponSystem.playerBullets, scene.lockDoors, (bullet) => {
+            scene.effectsManager.playHitEffect(bullet.x, bullet.y, bullet.rotation);
+            bullet.deactivate();
+        });
+
+        scene.physics.add.collider(scene.weaponSystem.enemyBullets, scene.lockDoors, (bullet) => {
+            bullet.deactivate();
+        });
     }
 
     setupBossCollision(boss) {

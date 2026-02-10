@@ -1,5 +1,5 @@
 // ============================================================================
-// Game Scene - Core gameplay (reused for all 4 levels)
+// Game Scene - Core gameplay (reused for all 5 levels)
 // ============================================================================
 
 class GameScene extends Phaser.Scene {
@@ -40,11 +40,28 @@ class GameScene extends Phaser.Scene {
         this.platforms = this.physics.add.staticGroup();
         this.createPlatforms(levelData);
 
+        // Create L5 interactive elements (destructible walls, ladders, crawl zones, laser gates, barrels, lock doors)
+        this.destructibleWalls = this.physics.add.staticGroup();
+        this.ladderZones = [];
+        this.crawlZones = [];
+        this.laserGates = [];
+        this.explosiveBarrels = this.physics.add.staticGroup();
+        this.lockDoors = this.physics.add.staticGroup();
+        this.grenades = this.physics.add.group({ maxSize: GRENADE.POOL_SIZE });
+        this.createDestructibleWalls(levelData);
+        this.createLadders(levelData);
+        this.createCrawlZones(levelData);
+        this.createLaserGates(levelData);
+        this.createExplosiveBarrels(levelData);
+        this.createLockDoors(levelData);
+
         // Create player
         this.player = new Player(this, levelData.playerStart.x, levelData.playerStart.y);
         this.player.score = this.playerScore;
         this.player.lives = this.playerLives;
         this.player.currentWeapon = this.playerWeapon;
+        this.player.grenadeEnabled = (this.currentLevel === 5);
+        if (this.currentLevel === 5) this.player.maxJumps = 1;
 
         // Setup camera
         this.cameras.main.setBounds(0, 0, levelData.width, levelData.height);
@@ -59,6 +76,13 @@ class GameScene extends Phaser.Scene {
         this.levelManager.setup(levelData);
         this.collisionManager.setupEnemyCollisions();
 
+        // Setup L5 collisions for new elements
+        this.collisionManager.setupDestructibleWalls();
+        this.collisionManager.setupExplosiveBarrels();
+        this.collisionManager.setupLaserGates();
+        this.collisionManager.setupLockDoors();
+        this.collisionManager.setupGrenades();
+
         // Boss state
         this.boss = null;
         this.bossActive = false;
@@ -70,7 +94,7 @@ class GameScene extends Phaser.Scene {
         // Level events
         this.events.on('player-game-over', this.onGameOver, this);
 
-        // Debug: B = skip to boss, N = skip to next level, M = mission complete
+        // Debug: B = skip to boss, N = skip to next level, M = mission complete, F5 = jump to Level 5
         this.input.keyboard.on('keydown-B', () => {
             if (!this.bossActive && this.bossData) {
                 this.player.setPosition(this.bossData.arenaStart + 50, 350);
@@ -78,7 +102,7 @@ class GameScene extends Phaser.Scene {
         });
         this.input.keyboard.on('keydown-N', () => {
             if (!this.sceneTransition) {
-                const next = this.currentLevel < 4 ? this.currentLevel + 1 : 1;
+                const next = this.currentLevel < 5 ? this.currentLevel + 1 : 1;
                 this.sceneTransition = {
                     phase: 2, timer: 100, target: 'GameScene',
                     data: { level: next, score: this.player.score, lives: this.player.lives, weapon: this.player.currentWeapon }
@@ -91,6 +115,13 @@ class GameScene extends Phaser.Scene {
                 this.boss.defeat();
             } else if (!this.sceneTransition && !this.boss) {
                 this.onBossDefeated();
+            }
+        });
+        this.input.keyboard.on('keydown-F5', () => {
+            if (!this.sceneTransition) {
+                this.sound.stopAll();
+                this.scene.stop('HUDScene');
+                this.scene.start('GameScene', { level: 5, score: this.player ? this.player.score : 0, lives: this.player ? this.player.lives : 3, weapon: this.player ? this.player.currentWeapon : 'PULSE' });
             }
         });
 
@@ -196,6 +227,12 @@ class GameScene extends Phaser.Scene {
         // Update level manager (enemy spawning)
         this.levelManager.update();
 
+        // Update laser gates (toggle on/off)
+        this.updateLaserGates(time);
+
+        // Update ladder/crawl zone overlaps for player
+        this.updatePlayerZones();
+
         // Update boss
         if (this.boss) {
             this.boss.update(time, delta);
@@ -220,8 +257,8 @@ class GameScene extends Phaser.Scene {
                 }
             }
 
-        // FAILSAFE: Direct inline enemy-bullet vs player hit check
-        if (this.weaponSystem && this.player && !this.player.isDead && !this.player.isInvulnerable) {
+        // FAILSAFE: Direct inline enemy-bullet vs player hit check (skip if boss defeated)
+        if (this.weaponSystem && this.player && !this.player.isDead && !this.player.isInvulnerable && (!this.boss || !this.boss.isDefeated)) {
             const px = this.player.x;
             const py = this.player.y;
             const hitW = 20; // half-width of player hit area
@@ -250,6 +287,14 @@ class GameScene extends Phaser.Scene {
         if (!this.bossActive && this.bossData) {
             if (this.player.x >= this.bossData.arenaStart) {
                 this.startBossFight();
+            }
+        }
+
+        // Bossless level completion: reach end zone to trigger victory
+        if (!this.bossData && !this.bossActive && !this.sceneTransition) {
+            const levelData = LEVEL_DATA[this.currentLevel];
+            if (levelData && levelData.endZoneX && this.player.x >= levelData.endZoneX) {
+                this.onBossDefeated();
             }
         }
     }
@@ -332,7 +377,7 @@ class GameScene extends Phaser.Scene {
             this.boss.arenaEnd = this.bossData.arenaEnd;
 
             // Boss vs platforms collider
-            if (this.bossData.type !== 'FIRESKULL' && this.bossData.type !== 'SENTINEL') {
+            if (this.bossData.type !== 'FIRESKULL' && this.bossData.type !== 'SENTINEL' && this.bossData.type !== 'COREGUARDIAN') {
                 this.physics.add.collider(this.boss, this.platforms);
             }
 
@@ -355,6 +400,26 @@ class GameScene extends Phaser.Scene {
             });
         }
 
+        // Clear all in-flight enemy bullets
+        this.weaponSystem.enemyBullets.getChildren().forEach(b => {
+            if (b.active) b.deactivate();
+        });
+
+        // Revive player if dead
+        if (this.player.isDead) {
+            this.player.isDead = false;
+            this.player.deathPhase = 0;
+            this.player.deathTimer = 0;
+            this.player.hp = 1;
+            this.player.setActive(true);
+            this.player.setVisible(true);
+            this.player.setAlpha(1);
+            if (this.player.body) {
+                this.player.body.enable = true;
+                this.player.body.allowGravity = true;
+            }
+        }
+
         // Notify HUD to hide boss HP bar
         this.events.emit('boss-defeated');
 
@@ -363,6 +428,7 @@ class GameScene extends Phaser.Scene {
         this.sound.stopByKey('music-level2');
         this.sound.stopByKey('music-level3');
         this.sound.stopByKey('music-level4');
+        this.sound.stopByKey('music-level5');
         this.time.delayedCall(1500, () => {
             this.sound.play('music-victory', { loop: false, volume: 0.5 });
         });
@@ -479,6 +545,485 @@ class GameScene extends Phaser.Scene {
                 fadeR: 0, fadeG: 0, fadeB: 0
             };
         }
+    }
+
+    // ====================================================================
+    // Destructible Walls
+    // ====================================================================
+    createDestructibleWalls(levelData) {
+        if (!levelData.destructibleWalls) return;
+        const tileKey = levelData.platformTile;
+
+        levelData.destructibleWalls.forEach(w => {
+            // Visual tileSprite
+            const visual = this.add.tileSprite(w.x + w.w / 2, w.y + w.h / 2, w.w, w.h, tileKey);
+            visual.setDepth(2);
+            visual.setTint(0x661122);
+
+            // Physics body
+            const rect = this.add.rectangle(w.x + w.w / 2, w.y + w.h / 2, w.w, w.h);
+            rect.setVisible(false);
+            this.destructibleWalls.add(rect);
+
+            rect.wallHP = w.hp;
+            rect.wallMaxHP = w.hp;
+            rect.wallVisual = visual;
+            rect.isDestructibleWall = true;
+        });
+    }
+
+    damageWall(wall, damage) {
+        if (!wall.wallHP) return;
+        wall.wallHP -= damage;
+
+        // Flash white
+        if (wall.wallVisual) {
+            wall.wallVisual.setTintFill(0xffffff);
+            this.time.delayedCall(80, () => {
+                if (wall.wallVisual && wall.wallHP > 0) {
+                    // Tint redder as HP drops
+                    const ratio = wall.wallHP / wall.wallMaxHP;
+                    const r = Math.floor(0x66 + (0xff - 0x66) * (1 - ratio));
+                    wall.wallVisual.setTint((r << 16) | 0x001122);
+                }
+            });
+        }
+
+        if (wall.wallHP <= 0) {
+            this.destroyWall(wall);
+        }
+    }
+
+    destroyWall(wall) {
+        // Explosion effect + camera shake + debris
+        this.effectsManager.playMediumExplosion(wall.x, wall.y);
+        this.cameras.main.shake(150, 0.008);
+        this.audioManager.playSound('sfx-fireball', 0.3);
+
+        // Destroy visual
+        if (wall.wallVisual) {
+            wall.wallVisual.destroy();
+        }
+
+        // Remove physics body
+        wall.destroy();
+    }
+
+    // ====================================================================
+    // Ladders
+    // ====================================================================
+    createLadders(levelData) {
+        if (!levelData.ladders) return;
+
+        levelData.ladders.forEach(l => {
+            // Draw ladder rungs procedurally
+            const gfx = this.add.graphics();
+            gfx.setDepth(0);
+            const rungSpacing = 20;
+            const cx = l.x + l.w / 2;
+            gfx.lineStyle(3, 0x888899, 0.8);
+            // Side rails
+            gfx.strokeRect(l.x, l.y, l.w, l.h);
+            // Rungs
+            for (let ry = l.y + rungSpacing; ry < l.y + l.h; ry += rungSpacing) {
+                gfx.beginPath();
+                gfx.moveTo(l.x, ry);
+                gfx.lineTo(l.x + l.w, ry);
+                gfx.strokePath();
+            }
+
+            // Store zone bounds for overlap checks
+            this.ladderZones.push({
+                x: l.x, y: l.y, w: l.w, h: l.h,
+                graphics: gfx
+            });
+        });
+    }
+
+    // ====================================================================
+    // Crawl Zones
+    // ====================================================================
+    createCrawlZones(levelData) {
+        if (!levelData.crawlZones) return;
+        levelData.crawlZones.forEach(cz => {
+            this.crawlZones.push({ x: cz.x, y: cz.y, w: cz.w, h: cz.h });
+        });
+    }
+
+    // ====================================================================
+    // Laser Gates
+    // ====================================================================
+    createLaserGates(levelData) {
+        if (!levelData.laserGates) return;
+
+        levelData.laserGates.forEach(lg => {
+            // Energy field visual
+            const sprite = this.add.sprite(lg.x, lg.y + lg.h / 2, 'energy-field0');
+            sprite.play('energy-field');
+            sprite.setTint(0xff2222);
+            sprite.setScale(1, lg.h / 40);
+            sprite.setDepth(3);
+
+            // Physics overlap zone
+            const zone = this.add.rectangle(lg.x, lg.y + lg.h / 2, 20, lg.h);
+            zone.setVisible(false);
+            this.physics.add.existing(zone, true); // static body
+
+            const gate = {
+                sprite: sprite,
+                zone: zone,
+                onTime: lg.onTime || 2000,
+                offTime: lg.offTime || 2000,
+                isOn: !lg.startOff,
+                timer: lg.startOff ? (lg.offTime || 2000) : (lg.onTime || 2000)
+            };
+
+            // Set initial state
+            if (lg.startOff) {
+                sprite.setVisible(false);
+                sprite.setActive(false);
+                if (zone.body) zone.body.enable = false;
+            }
+
+            this.laserGates.push(gate);
+        });
+    }
+
+    updateLaserGates(time) {
+        if (!this.laserGates.length) return;
+
+        const delta = this.game.loop.delta;
+        this.laserGates.forEach(gate => {
+            gate.timer -= delta;
+            if (gate.timer <= 0) {
+                gate.isOn = !gate.isOn;
+                gate.timer = gate.isOn ? gate.onTime : gate.offTime;
+
+                if (gate.isOn) {
+                    gate.sprite.setVisible(true);
+                    gate.sprite.setActive(true);
+                    if (gate.zone.body) gate.zone.body.enable = true;
+                } else {
+                    gate.sprite.setVisible(false);
+                    gate.sprite.setActive(false);
+                    if (gate.zone.body) gate.zone.body.enable = false;
+                }
+            }
+        });
+    }
+
+    // ====================================================================
+    // Explosive Barrels
+    // ====================================================================
+    createExplosiveBarrels(levelData) {
+        if (!levelData.explosiveBarrels) return;
+
+        levelData.explosiveBarrels.forEach(b => {
+            // Procedural barrel visual
+            const gfx = this.add.graphics();
+            gfx.setDepth(2);
+            gfx.fillStyle(0xdd8800, 1);
+            gfx.fillRoundedRect(-12, -18, 24, 36, 4);
+            gfx.lineStyle(2, 0xffaa00, 1);
+            gfx.strokeRoundedRect(-12, -18, 24, 36, 4);
+            // Hazard stripe
+            gfx.fillStyle(0x222222, 1);
+            gfx.fillRect(-10, -4, 20, 8);
+            gfx.fillStyle(0xffcc00, 1);
+            gfx.fillTriangle(0, -12, -6, -2, 6, -2);
+            gfx.setPosition(b.x, b.y);
+
+            // Physics body (static)
+            const barrel = this.add.rectangle(b.x, b.y, 24, 36);
+            barrel.setVisible(false);
+            this.explosiveBarrels.add(barrel);
+
+            barrel.barrelHP = b.hp;
+            barrel.barrelGraphics = gfx;
+            barrel.isExplosiveBarrel = true;
+        });
+    }
+
+    damageBarrel(barrel, damage) {
+        if (!barrel.barrelHP) return;
+        barrel.barrelHP -= damage;
+
+        // Flash white
+        if (barrel.barrelGraphics) {
+            barrel.barrelGraphics.setAlpha(0.5);
+            this.time.delayedCall(80, () => {
+                if (barrel.barrelGraphics) barrel.barrelGraphics.setAlpha(1);
+            });
+        }
+
+        if (barrel.barrelHP <= 0) {
+            this.explodeBarrel(barrel);
+        }
+    }
+
+    explodeBarrel(barrel) {
+        const bx = barrel.x;
+        const by = barrel.y;
+
+        // Big explosion
+        this.effectsManager.playLargeExplosion(bx, by);
+        this.cameras.main.shake(200, 0.012);
+        this.audioManager.playSound('sfx-fireball', 0.5);
+
+        // Damage all enemies within 200px radius
+        const radius = 200;
+        if (this.levelManager) {
+            this.levelManager.enemies.getChildren().forEach(enemy => {
+                if (!enemy.active) return;
+                const dist = Phaser.Math.Distance.Between(bx, by, enemy.x, enemy.y);
+                if (dist < radius && enemy.takeDamage) {
+                    enemy.takeDamage(3);
+                }
+            });
+        }
+
+        // Damage player if too close
+        if (this.player && !this.player.isDead && !this.player.isInvulnerable) {
+            const playerDist = Phaser.Math.Distance.Between(bx, by, this.player.x, this.player.y);
+            if (playerDist < 100) {
+                this.player.takeDamage(1);
+            }
+        }
+
+        // Destroy barrel
+        if (barrel.barrelGraphics) barrel.barrelGraphics.destroy();
+        barrel.destroy();
+    }
+
+    // ====================================================================
+    // Grenades
+    // ====================================================================
+    spawnGrenade(x, y, aimX, aimY) {
+        // Create or reuse grenade sprite
+        let grenade = this.grenades.getFirstDead(false);
+        if (!grenade) {
+            grenade = this.add.circle(0, 0, 5, 0x44cc44);
+            grenade.setDepth(8);
+            this.physics.add.existing(grenade, false);
+            this.grenades.add(grenade);
+        }
+
+        grenade.setPosition(x, y);
+        grenade.setActive(true);
+        grenade.setVisible(true);
+        grenade.body.enable = true;
+        grenade.body.reset(x, y);
+        grenade.body.allowGravity = true;
+        grenade.body.setGravityY(GRENADE.GRAVITY);
+        grenade.body.setCircle(5);
+
+        // Launch in aim direction
+        const len = Math.sqrt(aimX * aimX + aimY * aimY) || 1;
+        const nx = aimX / len;
+        const ny = aimY / len;
+        grenade.body.setVelocity(nx * GRENADE.SPEED, ny * GRENADE.SPEED - 80);
+
+        // Fuse timer — explode after timeout if it hasn't hit anything
+        grenade.fuseTimer = this.time.delayedCall(GRENADE.FUSE_TIME, () => {
+            if (grenade.active) this.explodeGrenade(grenade);
+        });
+    }
+
+    explodeGrenade(grenade) {
+        if (!grenade.active) return;
+        const gx = grenade.x;
+        const gy = grenade.y;
+
+        // Deactivate
+        grenade.setActive(false);
+        grenade.setVisible(false);
+        if (grenade.body) { grenade.body.stop(); grenade.body.enable = false; }
+        if (grenade.fuseTimer) { grenade.fuseTimer.remove(false); grenade.fuseTimer = null; }
+
+        // Explosion FX
+        this.effectsManager.playLargeExplosion(gx, gy);
+        this.cameras.main.shake(200, 0.015);
+        this.audioManager.playSound('sfx-fireball', 0.5);
+
+        // AoE damage to enemies
+        if (this.levelManager) {
+            this.levelManager.enemies.getChildren().forEach(enemy => {
+                if (!enemy.active) return;
+                const dist = Phaser.Math.Distance.Between(gx, gy, enemy.x, enemy.y);
+                if (dist < GRENADE.ENEMY_RADIUS && enemy.takeDamage) {
+                    enemy.takeDamage(GRENADE.ENEMY_DAMAGE);
+                }
+            });
+        }
+
+        // AoE damage to player
+        if (this.player && !this.player.isDead && !this.player.isInvulnerable) {
+            const playerDist = Phaser.Math.Distance.Between(gx, gy, this.player.x, this.player.y);
+            if (playerDist < GRENADE.PLAYER_RADIUS) {
+                this.player.takeDamage(GRENADE.PLAYER_DAMAGE);
+            }
+        }
+
+        // Also detonate nearby explosive barrels
+        if (this.explosiveBarrels) {
+            this.explosiveBarrels.getChildren().forEach(barrel => {
+                if (!barrel.active || !barrel.isExplosiveBarrel) return;
+                const dist = Phaser.Math.Distance.Between(gx, gy, barrel.x, barrel.y);
+                if (dist < GRENADE.ENEMY_RADIUS) {
+                    this.explodeBarrel(barrel);
+                }
+            });
+        }
+    }
+
+    // ====================================================================
+    // Lock Doors
+    // ====================================================================
+    createLockDoors(levelData) {
+        if (!levelData.lockDoors) return;
+
+        levelData.lockDoors.forEach(ld => {
+            // Visual: red barrier
+            const gfx = this.add.graphics();
+            gfx.setDepth(3);
+            gfx.fillStyle(0xcc0000, 0.8);
+            gfx.fillRect(-ld.w / 2, -ld.h / 2, ld.w, ld.h);
+            gfx.lineStyle(2, 0xff4444, 1);
+            gfx.strokeRect(-ld.w / 2, -ld.h / 2, ld.w, ld.h);
+            gfx.setPosition(ld.x + ld.w / 2, ld.y + ld.h / 2);
+
+            // LOCKED text
+            const lockText = this.add.text(ld.x + ld.w / 2, ld.y + ld.h / 2, 'LOCKED', {
+                fontSize: '8px', fontFamily: 'monospace', color: '#ffffff', fontStyle: 'bold'
+            }).setOrigin(0.5).setDepth(4);
+
+            // Pulsing animation for the lock indicator
+            this.tweens.add({
+                targets: lockText,
+                alpha: 0.3,
+                duration: 800,
+                yoyo: true,
+                repeat: -1
+            });
+
+            // Physics body
+            const door = this.add.rectangle(ld.x + ld.w / 2, ld.y + ld.h / 2, ld.w, ld.h);
+            door.setVisible(false);
+            this.lockDoors.add(door);
+
+            door.isLockDoor = true;
+            door.doorGraphics = gfx;
+            door.doorText = lockText;
+            door.triggerIndex = ld.triggerIndex;
+            door.isOpen = false;
+        });
+    }
+
+    checkLockDoors() {
+        this.lockDoors.getChildren().forEach(door => {
+            if (door.isOpen) return;
+
+            // Check if all enemies from the linked trigger are dead
+            const triggerIndex = door.triggerIndex;
+            if (triggerIndex === undefined) return;
+
+            // Only check if trigger has been activated
+            if (!this.levelManager.activatedTriggers.has(triggerIndex)) return;
+
+            // Check if all enemies from THIS trigger are dead
+            const allDead = this.levelManager.enemies.getChildren()
+                .filter(e => e.triggerIndex === triggerIndex)
+                .every(e => !e.active);
+
+            if (allDead) {
+                this.openLockDoor(door);
+            }
+        });
+    }
+
+    openLockDoor(door) {
+        door.isOpen = true;
+        this.audioManager.playSound('sfx-fireball', 0.4);
+        this.cameras.main.shake(150, 0.008);
+
+        // Flash green then slide up
+        if (door.doorGraphics) {
+            // Green flash
+            const flash = this.add.rectangle(
+                door.doorGraphics.x, door.doorGraphics.y,
+                50, 90, 0x00ff44, 0.8
+            ).setDepth(door.doorGraphics.depth + 1);
+
+            this.tweens.add({
+                targets: flash,
+                alpha: 0,
+                duration: 300,
+                onComplete: () => flash.destroy()
+            });
+
+            // Slide door up and fade out
+            this.tweens.add({
+                targets: door.doorGraphics,
+                y: door.doorGraphics.y - 80,
+                alpha: 0,
+                duration: 600,
+                ease: 'Power2',
+                onComplete: () => door.doorGraphics.destroy()
+            });
+        }
+        if (door.doorText) {
+            this.tweens.add({
+                targets: door.doorText,
+                y: door.doorText.y - 80,
+                alpha: 0,
+                duration: 400,
+                onComplete: () => door.doorText.destroy()
+            });
+        }
+
+        // Remove physics body
+        door.destroy();
+    }
+
+    // ====================================================================
+    // Player Zone Checks (Ladders + Crawl Zones)
+    // ====================================================================
+    updatePlayerZones() {
+        if (!this.player || this.player.isDead) return;
+
+        const px = this.player.x;
+        const py = this.player.y;
+        const pw = 10; // half player width
+        const ph = 18; // half player height
+
+        // Check ladder overlap (extra 20px margin at top so player can descend from platforms above)
+        let onLadder = false;
+        for (const lz of this.ladderZones) {
+            if (px + pw > lz.x && px - pw < lz.x + lz.w &&
+                py + ph >= lz.y - 20 && py - ph < lz.y + lz.h) {
+                onLadder = true;
+                this.player.currentLadder = lz;
+                break;
+            }
+        }
+        if (!onLadder) {
+            this.player.currentLadder = null;
+        }
+        this.player.nearLadder = onLadder;
+
+        // Check crawl zone overlap
+        let inCrawlZone = false;
+        for (const cz of this.crawlZones) {
+            if (px + pw > cz.x && px - pw < cz.x + cz.w &&
+                py + ph > cz.y && py - ph < cz.y + cz.h) {
+                inCrawlZone = true;
+                break;
+            }
+        }
+        this.player.inCrawlZone = inCrawlZone;
+
+        // Check lock doors
+        this.checkLockDoors();
     }
 
     togglePause(inputMode) {

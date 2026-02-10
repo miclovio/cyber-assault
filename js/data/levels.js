@@ -557,5 +557,239 @@ const LEVEL_DATA = {
             arenaEnd: 7900,
             name: 'OMEGA SENTINEL'
         }
+    },
+
+    // ========================================================================
+    // LEVEL 5 - Core Breach (Fortress Infiltration)
+    // ========================================================================
+    5: {
+        name: 'Core Breach',
+        width: 8000,
+        height: GAME_HEIGHT,
+        playerStart: { x: 100, y: 350 },
+        backgrounds: [
+            { key: 'l5-back',  speed: 0.05, tileScale: 2 },
+            { key: 'l5-mid',   speed: 0.15, tileScale: 2, alignBottom: true },
+            { key: 'l5-front', speed: 0.3,  tileScale: 1.5, alignBottom: true }
+        ],
+        platformTile: 'l1-floor',
+        platformCaps: true,
+        platformTint: 0xcc2233,
+        enemyTint: 0xcc4444,
+        endZoneX: 7800,
+        platforms: [
+            // ============================================================
+            // ROOM 1: Entry Hall (0-1200)
+            // ============================================================
+            { x: 0,    y: 420, w: 1200, h: 30 },   // floor
+            { x: 0,    y: 100, w: 1200, h: 30 },   // ceiling
+            { x: 400,  y: 320, w: 150,  h: 20 },   // power-up platform (single-jump reachable)
+
+            // ============================================================
+            // ROOM 2: First Arena (1200-2400)
+            // ============================================================
+            { x: 1200, y: 420, w: 1200, h: 30 },   // floor
+            { x: 1200, y: 100, w: 1200, h: 30 },   // ceiling
+            { x: 1400, y: 300, w: 200,  h: 20 },   // left upper platform
+            { x: 1800, y: 300, w: 200,  h: 20 },   // right upper platform
+
+            // ============================================================
+            // ROOM 3: Crawl Tunnel Passage (2400-3200)
+            // ============================================================
+            { x: 2400, y: 420, w: 800,  h: 30 },   // floor
+            { x: 2400, y: 100, w: 800,  h: 30 },   // ceiling
+            // Full-height wall blocking path — crawl tunnel is the only way through
+            { x: 2600, y: 130, w: 250,  h: 205 },  // wall above crawl (y=130 to y=335)
+            { x: 2600, y: 335, w: 250,  h: 30 },   // crawl tunnel ceiling (bottom at 365, gap=55px)
+
+            // ============================================================
+            // ROOM 4: Vertical Shaft (3200-4200)
+            // ============================================================
+            { x: 3200, y: 420, w: 1000, h: 30 },   // floor
+            { x: 3200, y: 100, w: 1000, h: 30 },   // ceiling
+            { x: 3400, y: 300, w: 300,  h: 20 },   // mid platform (needs ladder)
+            { x: 3400, y: 180, w: 300,  h: 20 },   // upper platform (needs ladder)
+            // ============================================================
+            // ROOM 5: Crawl-and-Climb Maze (4200-5400)
+            // ============================================================
+            { x: 4200, y: 420, w: 1200, h: 30 },   // floor
+            { x: 4200, y: 100, w: 1200, h: 30 },   // ceiling
+            // Crawl tunnel section (4200-4800)
+            { x: 4200, y: 130, w: 600,  h: 205 },  // wall above crawl
+            { x: 4200, y: 335, w: 600,  h: 30 },   // crawl tunnel ceiling (bottom at 365, gap=55px)
+            // Platforms after crawl exit
+            { x: 4800, y: 300, w: 300,  h: 20 },   // mid platform
+            { x: 4500, y: 180, w: 300,  h: 20 },   // upper platform (reachable via ladder from mid)
+
+            // ============================================================
+            // ROOM 6: Heavy Combat Arena (5400-6400)
+            // ============================================================
+            { x: 5400, y: 420, w: 1000, h: 30 },   // floor
+            { x: 5400, y: 100, w: 1000, h: 30 },   // ceiling
+            { x: 5500, y: 300, w: 200,  h: 20 },   // left platform
+            { x: 5900, y: 300, w: 200,  h: 20 },   // right platform
+            { x: 5700, y: 180, w: 200,  h: 20 },   // center high platform (needs ladder)
+
+            // ============================================================
+            // ROOM 7: Final Gauntlet (6400-7200)
+            // ============================================================
+            { x: 6400, y: 420, w: 800,  h: 30 },   // floor
+            // Crawl section (6400-6800)
+            { x: 6400, y: 130, w: 400,  h: 205 },  // wall above crawl
+            { x: 6400, y: 335, w: 400,  h: 30 },   // crawl tunnel ceiling (bottom at 365, gap=55px)
+            // Open section (6800-7200)
+            { x: 6800, y: 100, w: 400,  h: 30 },   // ceiling for open area
+            { x: 6900, y: 280, w: 200,  h: 20 },   // upper platform
+
+            // ============================================================
+            // ROOM 8: Boss Arena (7200-7900)
+            // ============================================================
+            { x: 7200, y: 420, w: 700,  h: 30 },    // floor
+            { x: 7200, y: 100, w: 700,  h: 30 }     // ceiling
+        ],
+
+        // Destructible walls
+        destructibleWalls: [
+            // Room 1: blocks exit to Room 2 (floor-to-ceiling)
+            { x: 900, y: 130, w: 40, h: 290, hp: 3 },
+            // Room 7: at end of crawl tunnel (shoot while crawling)
+            { x: 6780, y: 365, w: 40, h: 55, hp: 3 }
+        ],
+
+        // Ladders
+        ladders: [
+            // Room 4: full-height ladder for vertical shaft
+            { x: 3500, y: 180, w: 30, h: 240 },
+            // Room 5: climb from crawl exit to mid level
+            { x: 4850, y: 180, w: 30, h: 240 },
+            // Room 5: reach upper platform from mid level
+            { x: 4550, y: 180, w: 30, h: 120 },
+            // Room 6: reach center high platform
+            { x: 5750, y: 180, w: 30, h: 240 },
+            // Room 7: reach upper platform in open area
+            { x: 7000, y: 280, w: 30, h: 140 },
+            // Room 8: center boss arena ladder for vertical dodging
+            { x: 7535, y: 130, w: 30, h: 290 }
+        ],
+
+        // Crawl zones (55px gap between ceiling bottom at 365 and floor at 420)
+        crawlZones: [
+            // Room 3: through the wall
+            { x: 2600, y: 365, w: 250, h: 55 },
+            // Room 5: entry corridor
+            { x: 4200, y: 365, w: 600, h: 55 },
+            // Room 7: final crawl section
+            { x: 6400, y: 365, w: 400, h: 55 }
+        ],
+
+        // Laser gates
+        laserGates: [
+            // Room 3: inside crawl tunnel area
+            { x: 3000, y: 320, h: 100, onTime: 2000, offTime: 2000 },
+            // Room 5: alternating pair inside crawl tunnel
+            { x: 4400, y: 365, h: 55, onTime: 2000, offTime: 2000 },
+            { x: 4600, y: 365, h: 55, onTime: 2000, offTime: 2000, startOff: true },
+            // Room 7: inside crawl tunnel
+            { x: 6600, y: 365, h: 55, onTime: 1500, offTime: 1500 }
+        ],
+
+        // Explosive barrels
+        explosiveBarrels: [
+            // Room 2: between upper platforms
+            { x: 1700, y: 402, hp: 2 },
+            // Room 4: on mid platform near enemies
+            { x: 3550, y: 282, hp: 2 },
+            { x: 3650, y: 282, hp: 2 },
+            // Room 6: ground level near enemy clusters
+            { x: 5650, y: 402, hp: 2 },
+            { x: 5850, y: 402, hp: 2 },
+            // Room 7: ground level
+            { x: 6900, y: 402, hp: 2 },
+            { x: 7050, y: 402, hp: 3 }
+        ],
+
+        // Lock doors (linked to enemy triggers by index)
+        lockDoors: [
+            // Room 2: seals exit until arena is cleared
+            { x: 2350, y: 130, w: 40, h: 290, triggerIndex: 1 },
+            // Room 4: right side exit
+            { x: 4100, y: 130, w: 40, h: 290, triggerIndex: 3 },
+            // Room 5: exit after maze
+            { x: 5350, y: 130, w: 40, h: 290, triggerIndex: 5 },
+            // Room 6: exit after heavy combat
+            { x: 6350, y: 130, w: 40, h: 290, triggerIndex: 6 }
+        ],
+
+        enemyTriggers: [
+            // === Room 1 (trigger 0) ===
+            { x: 200, enemies: [
+                { type: 'grunt', x: 400, y: 380, config: { patrolDir: 1, patrolRange: 200 } },
+                { type: 'grunt', x: 600, y: 380, config: { patrolDir: -1, patrolRange: 150 } }
+            ]},
+            // === Room 2 (trigger 1 — linked to lock door) ===
+            { x: 1250, enemies: [
+                { type: 'grunt', x: 1500, y: 380, config: { patrolDir: 1, patrolRange: 100 } },
+                { type: 'grunt', x: 1700, y: 380, config: { patrolDir: -1, patrolRange: 100 } },
+                { type: 'grunt', x: 1900, y: 380, config: { patrolDir: 1, patrolRange: 80 } },
+                { type: 'heavy', x: 2100, y: 370, config: { patrolDir: -1, patrolRange: 150 } }
+            ]},
+            // === Room 3 (trigger 2) ===
+            { x: 2800, enemies: [
+                { type: 'grunt', x: 2950, y: 380, config: { patrolDir: -1, patrolRange: 80 } },
+                { type: 'turret', x: 2750, y: 362, config: { ceiling: true } }
+            ]},
+            // === Room 4 (trigger 3 — linked to lock door) ===
+            { x: 3250, enemies: [
+                { type: 'grunt', x: 3500, y: 270, config: { patrolDir: 1, patrolRange: 60 } },
+                { type: 'grunt', x: 3600, y: 270, config: { patrolDir: -1, patrolRange: 60 } },
+                { type: 'turret', x: 3550, y: 190, config: {} },
+                { type: 'grunt', x: 3800, y: 380, config: { patrolDir: -1, patrolRange: 100 } }
+            ]},
+            // === Room 5 mid/upper (trigger 4) ===
+            { x: 4800, enemies: [
+                { type: 'grunt', x: 4900, y: 270, config: { patrolDir: 1, patrolRange: 60 } },
+                { type: 'grunt', x: 5000, y: 270, config: { patrolDir: -1, patrolRange: 60 } }
+            ]},
+            // === Room 5 exit (trigger 5 — linked to lock door) ===
+            { x: 4500, enemies: [
+                { type: 'grunt', x: 4600, y: 150, config: { patrolDir: 1, patrolRange: 50 } },
+                { type: 'heavy', x: 5100, y: 370, config: { patrolDir: -1, patrolRange: 100 } }
+            ]},
+            // === Room 6 (trigger 6 — linked to lock door) ===
+            { x: 5450, enemies: [
+                { type: 'heavy', x: 5600, y: 370, config: { patrolDir: 1, patrolRange: 100 } },
+                { type: 'heavy', x: 5900, y: 370, config: { patrolDir: -1, patrolRange: 100 } },
+                { type: 'grunt', x: 5550, y: 270, config: { patrolDir: 1, patrolRange: 50 } },
+                { type: 'grunt', x: 5950, y: 270, config: { patrolDir: -1, patrolRange: 50 } },
+                { type: 'turret', x: 5800, y: 190, config: {} }
+            ]},
+            // === Room 7 (trigger 7) ===
+            { x: 6800, enemies: [
+                { type: 'grunt', x: 6900, y: 380, config: { patrolDir: 1, patrolRange: 80 } },
+                { type: 'grunt', x: 7050, y: 380, config: { patrolDir: -1, patrolRange: 80 } },
+                { type: 'heavy', x: 7100, y: 370, config: { patrolDir: -1, patrolRange: 60 } }
+            ]}
+        ],
+
+        checkpoints: [
+            // After Room 2
+            { x: 2380, y: 380 },
+            // After Room 4
+            { x: 4180, y: 380 },
+            // After Room 6
+            { x: 6380, y: 380 }
+        ],
+        fixedDrops: [
+            { x: 430, y: 290, type: 'SPREAD' },
+            { x: 4180, y: 380, type: 'SHIELD' }
+        ],
+        boss: {
+            type: 'COREGUARDIAN',
+            x: 7550,
+            y: 220,
+            arenaStart: 7200,
+            arenaEnd: 7900,
+            name: 'CORE GUARDIAN'
+        }
     }
 };

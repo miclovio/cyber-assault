@@ -189,6 +189,12 @@ class PreloadScene extends Phaser.Scene {
         this.load.image('l4-asteroid2', `${space}/asteroid-2.png`);
         this.load.image('l4-planet-big', `${space}/prop-planet-big.png`);
         this.load.image('l4-planet-small', `${space}/prop-planet-small.png`);
+
+        // Level 5 - Scifi Lab (Core Breach)
+        const lab = 'Assets/Environments/Scifi lab Files/layers';
+        this.load.image('l5-back', `${lab}/back.png`);
+        this.load.image('l5-mid', `${lab}/middle.png`);
+        this.load.image('l5-front', `${lab}/front.png`);
     }
 
     loadEffectsAssets() {
@@ -277,6 +283,7 @@ class PreloadScene extends Phaser.Scene {
         this.load.audio('music-level2', `${mus}/Level 2.ogg`);
         this.load.audio('music-level3', `${mus}/Level 3.ogg`);
         this.load.audio('music-level4', `${mus}/Level 4.ogg`);
+        this.load.audio('music-level5', `${mus}/Level 4.ogg`); // Temp reuse L4 until L5 music provided
         this.load.audio('music-gameover', `${mus}/Game Over.ogg`);
         this.load.audio('music-victory', `${mus}/Victory.ogg`);
     }
@@ -329,6 +336,7 @@ class PreloadScene extends Phaser.Scene {
         this.anims.create({ key: 'player-die', frames: this.frameKeys('die', 1, 3), frameRate: 6, repeat: 0 });
         this.anims.create({ key: 'player-climb', frames: this.frameKeys('climb', 1, 6), frameRate: 8, repeat: -1 });
         this.anims.create({ key: 'player-crawl', frames: this.frameKeys('crawl', 1, 6), frameRate: 10, repeat: -1 });
+        this.anims.create({ key: 'player-throw', frames: this.frameKeys('throw', 1, 8), frameRate: 12, repeat: 0 });
 
         // Grunt animations
         this.anims.create({ key: 'grunt-idle', frames: this.frameKeys('grunt-idle', 1, 4), frameRate: 6, repeat: -1 });

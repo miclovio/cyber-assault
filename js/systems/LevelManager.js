@@ -30,7 +30,7 @@ class LevelManager {
         this.triggers.forEach((trigger, index) => {
             if (!this.activatedTriggers.has(index) && camRight >= trigger.x) {
                 this.activatedTriggers.add(index);
-                this.spawnEnemyGroup(trigger);
+                this.spawnEnemyGroup(trigger, index);
             }
         });
 
@@ -75,10 +75,13 @@ class LevelManager {
         });
     }
 
-    spawnEnemyGroup(trigger) {
+    spawnEnemyGroup(trigger, triggerIndex) {
         const enemies = trigger.enemies || [];
         enemies.forEach(def => {
-            this.spawnEnemy(def.type, def.x, def.y, def.config);
+            const enemy = this.spawnEnemy(def.type, def.x, def.y, def.config);
+            if (enemy && triggerIndex !== undefined) {
+                enemy.triggerIndex = triggerIndex;
+            }
         });
     }
 
