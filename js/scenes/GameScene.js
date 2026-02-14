@@ -94,6 +94,39 @@ class GameScene extends Phaser.Scene {
         // Level events
         this.events.on('player-game-over', this.onGameOver, this);
 
+        // Debug: Room labels for L5 testing
+        if (this.currentLevel === 5) {
+            const rooms = [
+                { x: 600,  label: 'ROOM 1: Entry Hall' },
+                { x: 1800, label: 'ROOM 2: First Arena' },
+                { x: 2800, label: 'ROOM 3: Crawl Tunnel' },
+                { x: 3700, label: 'ROOM 4: Vertical Shaft' },
+                { x: 4800, label: 'ROOM 5: Crawl & Climb' },
+                { x: 5900, label: 'ROOM 6: Heavy Combat' },
+                { x: 7100, label: 'ROOM 7: Final Gauntlet' },
+                { x: 7950, label: 'ROOM 8: Boss Arena' }
+            ];
+            rooms.forEach(r => {
+                this.add.text(r.x, 408, r.label, {
+                    fontSize: '10px', fontFamily: 'monospace',
+                    color: '#ffff00', backgroundColor: '#00000088'
+                }).setOrigin(0.5, 0.5).setDepth(200);
+            });
+        }
+
+        // Debug: T = cycle through L5 rooms
+        if (this.currentLevel === 5) {
+            this.debugRoomIndex = 0;
+            const roomStarts = [50, 1250, 2450, 3250, 4250, 5450, 6450, 7650];
+            const roomNames = ['Room 1', 'Room 2', 'Room 3', 'Room 4', 'Room 5', 'Room 6', 'Room 7', 'Room 8'];
+            this.input.keyboard.on('keydown-T', () => {
+                this.debugRoomIndex = (this.debugRoomIndex + 1) % 8;
+                const x = roomStarts[this.debugRoomIndex];
+                this.player.setPosition(x, 380);
+                if (this.player.body) this.player.body.reset(x, 380);
+            });
+        }
+
         // Debug: B = skip to boss, N = skip to next level, M = mission complete, F5 = jump to Level 5
         this.input.keyboard.on('keydown-B', () => {
             if (!this.bossActive && this.bossData) {
@@ -366,8 +399,15 @@ class GameScene extends Phaser.Scene {
         // Emit boss warning event (HUD shows WARNING!)
         this.events.emit('boss-start', this.bossData.name);
 
+        // Play warning SFX 3 times
+        for (let i = 0; i < 3; i++) {
+            this.time.delayedCall(i * 1200, () => {
+                this.audioManager.playSound('sfx-warning', 0.5);
+            });
+        }
+
         // Delay boss spawn so player has time to prepare
-        this.time.delayedCall(2500, () => {
+        this.time.delayedCall(4500, () => {
             if (!this.bossActive) return; // scene may have changed
 
             // Spawn boss
@@ -575,6 +615,7 @@ class GameScene extends Phaser.Scene {
     damageWall(wall, damage) {
         if (!wall.wallHP) return;
         wall.wallHP -= damage;
+        this.audioManager.playSound('sfx-enemy-hit', 0.2);
 
         // Flash white
         if (wall.wallVisual) {
@@ -657,15 +698,15 @@ class GameScene extends Phaser.Scene {
         if (!levelData.laserGates) return;
 
         levelData.laserGates.forEach(lg => {
-            // Energy field visual
-            const sprite = this.add.sprite(lg.x, lg.y + lg.h / 2, 'energy-field0');
-            sprite.play('energy-field');
-            sprite.setTint(0xff2222);
-            sprite.setScale(1, lg.h / 40);
-            sprite.setDepth(3);
+            // Lightning visual (ADD blend forces separate WebGL batch, renders over masked TileSprites)
+            const sprite = this.add.sprite(lg.x, lg.y + lg.h / 2, 'lightning1');
+            sprite.play('lightning-gate');
+            sprite.setScale(1, lg.h / 193);  // 193 = native sprite height
+            sprite.setDepth(10);
+            sprite.setBlendMode(Phaser.BlendModes.ADD);
 
             // Physics overlap zone
-            const zone = this.add.rectangle(lg.x, lg.y + lg.h / 2, 20, lg.h);
+            const zone = this.add.rectangle(lg.x, lg.y + lg.h / 2, 40, lg.h);
             zone.setVisible(false);
             this.physics.add.existing(zone, true); // static body
 
@@ -747,6 +788,7 @@ class GameScene extends Phaser.Scene {
     damageBarrel(barrel, damage) {
         if (!barrel.barrelHP) return;
         barrel.barrelHP -= damage;
+        this.audioManager.playSound('sfx-enemy-hit', 0.2);
 
         // Flash white
         if (barrel.barrelGraphics) {

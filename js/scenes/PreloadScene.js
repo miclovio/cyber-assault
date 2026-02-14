@@ -130,6 +130,11 @@ class PreloadScene extends Phaser.Scene {
         const blueMechBase = 'Assets/Characters/Mechs/SpriteSheets/Blue_1';
         this.load.spritesheet('blue-mech-idle', `${blueMechBase}/B1_Idle.png`, { frameWidth: 80, frameHeight: 80 });
         this.load.spritesheet('blue-mech-alert', `${blueMechBase}/B1_Idle2.png`, { frameWidth: 80, frameHeight: 80 });
+
+        // Green Mech (96x80 frames)
+        const greenMechBase = 'Assets/Characters/Mechs/SpriteSheets/Green_1(96x80)';
+        this.load.spritesheet('green-mech-idle', `${greenMechBase}/G1_Idle.png`, { frameWidth: 96, frameHeight: 80 });
+        this.load.spritesheet('green-mech-alert', `${greenMechBase}/G1_Idle2.png`, { frameWidth: 96, frameHeight: 80 });
     }
 
     loadBossAssets() {
@@ -150,6 +155,20 @@ class PreloadScene extends Phaser.Scene {
         this.load.spritesheet('sentinel-body', `${sentBase}/boss.png`, { frameWidth: 192, frameHeight: 144 });
         this.load.spritesheet('sentinel-thrust', `${sentBase}/boss-thrust.png`, { frameWidth: 64, frameHeight: 48 });
         this.load.spritesheet('sentinel-bolt', `${sentBase}/bolt.png`, { frameWidth: 8, frameHeight: 8 });
+
+        // Warped Boss (Core Guardian - L5)
+        const warpedParts = 'Assets/Characters/Warped Boss/Boss Body Parts';
+        for (let i = 1; i <= 3; i++) this.load.image(`warped-torso${i}`, `${warpedParts}/torso${i}.png`);
+        for (let i = 1; i <= 3; i++) this.load.image(`warped-lower${i}`, `${warpedParts}/lower-torso-${i}.png`);
+        this.load.image('warped-arm', `${warpedParts}/arm-part.png`);
+        this.load.image('warped-arm-back', `${warpedParts}/arm-back-part.png`);
+        this.load.image('warped-forearm-front', `${warpedParts}/forearm-front.png`);
+        this.load.image('warped-forearm-back', `${warpedParts}/forearm-back.png`);
+        const warpedLaser = 'Assets/Characters/Warped Boss/Laser';
+        this.load.image('warped-laser-base1', `${warpedLaser}/Base/laser1.png`);
+        this.load.image('warped-laser-base2', `${warpedLaser}/Base/laser2.png`);
+        this.load.image('warped-laser-beam1', `${warpedLaser}/Laser/laser1.png`);
+        this.load.image('warped-laser-beam2', `${warpedLaser}/Laser/laser2.png`);
     }
 
     loadEnvironmentAssets() {
@@ -233,6 +252,14 @@ class PreloadScene extends Phaser.Scene {
             const pad = String(i).padStart(4, '0');
             this.load.image(`energy-field${i}`, `${fx}/energy-field/_${pad}_Layer-${i + 1}.png`);
         }
+        // Electro-shock (floor hazard)
+        for (let i = 0; i <= 8; i++) {
+            const pad = String(i).padStart(4, '0');
+            this.load.image(`electro-shock${i}`, `${fx}/electro-shock/_${pad}_Layer-${i + 1}.png`);
+        }
+        // Lightning (for laser gates)
+        const lightningBase = 'Assets/Misc/Pixel Art Explosions/PNG/Lightning';
+        for (let i = 1; i <= 6; i++) this.load.image(`lightning${i}`, `${lightningBase}/Lightning_cycle${i}.png`);
     }
 
     loadUIAssets() {
@@ -267,6 +294,7 @@ class PreloadScene extends Phaser.Scene {
         this.load.audio('sfx-hit', 'Assets/Music/ouch.mp3');
         this.load.audio('sfx-1up', 'Assets/Music/1-up.mp3');
         this.load.audio('sfx-boss-defeat', 'Assets/Music/boss-defeat.mp3');
+        this.load.audio('sfx-warning', 'Assets/Music/warning.mp3');
         this.load.audio('sfx-enemy-hit', 'Assets/Music/enemy-hit.mp3');
         this.load.audio('sfx-spread', 'Assets/Music/spread.mp3');
         this.load.audio('sfx-pause', 'Assets/Music/pause.mp3');
@@ -373,6 +401,10 @@ class PreloadScene extends Phaser.Scene {
         this.anims.create({ key: 'blue-mech-walk', frames: this.anims.generateFrameNumbers('blue-mech-idle', { start: 0, end: 12 }), frameRate: 6, repeat: -1 });
         this.anims.create({ key: 'blue-mech-attack', frames: this.anims.generateFrameNumbers('blue-mech-alert', { start: 0, end: 12 }), frameRate: 8, repeat: -1 });
 
+        // Green Mech animations
+        this.anims.create({ key: 'green-mech-walk', frames: this.anims.generateFrameNumbers('green-mech-idle', { start: 0, end: 12 }), frameRate: 6, repeat: -1 });
+        this.anims.create({ key: 'green-mech-attack', frames: this.anims.generateFrameNumbers('green-mech-alert', { start: 0, end: 12 }), frameRate: 8, repeat: -1 });
+
         // Boss animations
         this.anims.create({ key: 'tank-move', frames: this.frameKeys('tank', 1, 4), frameRate: 6, repeat: -1 });
         this.anims.create({ key: 'mech-walk', frames: this.frameKeys('mech', 1, 10), frameRate: 8, repeat: -1 });
@@ -391,6 +423,10 @@ class PreloadScene extends Phaser.Scene {
 
         // Energy field
         this.anims.create({ key: 'energy-field', frames: this.frameKeys('energy-field', 0, 7), frameRate: 10, repeat: -1 });
+        // Electro-shock
+        this.anims.create({ key: 'electro-shock', frames: this.frameKeys('electro-shock', 0, 8), frameRate: 12, repeat: -1 });
+        // Lightning gate
+        this.anims.create({ key: 'lightning-gate', frames: this.frameKeys('lightning', 1, 6), frameRate: 12, repeat: -1 });
 
         // Fire ball
         this.anims.create({ key: 'fire-ball', frames: this.frameKeys('fire-ball', 0, 2), frameRate: 10, repeat: -1 });
@@ -401,6 +437,12 @@ class PreloadScene extends Phaser.Scene {
 
         // Energy shield
         this.anims.create({ key: 'energy-shield-anim', frames: this.anims.generateFrameNumbers('energy-shield', { start: 0, end: 7 }), frameRate: 10, repeat: -1 });
+
+        // Warped Boss animations
+        this.anims.create({ key: 'warped-torso', frames: this.frameKeys('warped-torso', 1, 3), frameRate: 4, repeat: -1 });
+        this.anims.create({ key: 'warped-lower', frames: this.frameKeys('warped-lower', 1, 3), frameRate: 4, repeat: -1 });
+        this.anims.create({ key: 'warped-laser-base', frames: this.frameKeys('warped-laser-base', 1, 2), frameRate: 10, repeat: -1 });
+        this.anims.create({ key: 'warped-laser-beam', frames: this.frameKeys('warped-laser-beam', 1, 2), frameRate: 10, repeat: -1 });
     }
 
     frameKeys(prefix, start, end) {

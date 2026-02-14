@@ -159,7 +159,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
             // Update shield bubble position
             if (this.shieldBubble && this.shieldBubble.visible) {
-                this.shieldBubble.setPosition(this.x, this.y);
+                this.shieldBubble.setPosition(this.body.center.x, this.body.center.y);
             }
 
             // Fall death

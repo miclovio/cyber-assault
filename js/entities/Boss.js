@@ -9,7 +9,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             MECH: 'mech1',
             FIRESKULL: 'fireskull1',
             SENTINEL: 'sentinel-body',
-            COREGUARDIAN: 'sentinel-body'  // Reuse sentinel sprite until custom sprite provided
+            COREGUARDIAN: 'warped-torso1'
         };
 
         super(scene, x, y, textureMap[bossType] || 'tank1');
@@ -94,26 +94,58 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 break;
 
             case 'COREGUARDIAN':
-                this.body.setSize(130, 112);
-                this.body.setOffset(31, 16);
+                this.body.setSize(50, 55);
+                this.body.setOffset(19, 20);
                 this.body.allowGravity = false;
-                this.setScale(1.5);
-                this.hitRadius = 100;
-                this.play('sentinel-idle');
+                this.setScale(1.2);
+                this.hitRadius = 55;
+                this.setTexture('warped-torso1');
                 this.startY = this.y;
-                // Red energy glow underneath
-                this.coreGlow = this.scene.add.sprite(this.x, this.y + 50, 'energy-field0');
-                this.coreGlow.play('energy-field');
-                this.coreGlow.setTint(0xff2222);
-                this.coreGlow.setScale(2);
-                this.coreGlow.setDepth(7);
-                this.coreGlow.setAlpha(0.6);
+
+                // Back arm chain: shoulder joint → elbow joint → forearm (behind torso)
+                this.armBack1 = this.scene.add.sprite(this.x, this.y, 'warped-arm-back');
+                this.armBack1.setScale(1.2);
+                this.armBack1.setDepth(6);
+                this.armBack2 = this.scene.add.sprite(this.x, this.y, 'warped-arm-back');
+                this.armBack2.setScale(1.2);
+                this.armBack2.setDepth(6);
+                this.forearmBack = this.scene.add.sprite(this.x, this.y, 'warped-forearm-back');
+                this.forearmBack.setScale(1.2);
+                this.forearmBack.setDepth(6);
+
+                // Lower torso segments (stacked, each behind the one above)
+                this.lowerTorso1 = this.scene.add.sprite(this.x, this.y, 'warped-lower1');
+                this.lowerTorso1.setScale(1.2);
+                this.lowerTorso1.setDepth(7);
+                this.lowerTorso2 = this.scene.add.sprite(this.x, this.y, 'warped-lower2');
+                this.lowerTorso2.setScale(1.0);
+                this.lowerTorso2.setDepth(6);
+                this.lowerTorso3 = this.scene.add.sprite(this.x, this.y, 'warped-lower3');
+                this.lowerTorso3.setScale(0.8);
+                this.lowerTorso3.setDepth(5);
+
+                // Front arm chain: shoulder joint → forearm (in front of torso)
+                this.armFront1 = this.scene.add.sprite(this.x, this.y, 'warped-arm');
+                this.armFront1.setScale(1.2);
+                this.armFront1.setDepth(9);
+                this.forearmFront = this.scene.add.sprite(this.x, this.y, 'warped-forearm-front');
+                this.forearmFront.setScale(1.2);
+                this.forearmFront.setDepth(9);
+
                 this.attackPatterns = [
                     this.guardianLaserSweep.bind(this),
                     this.guardianLockdown.bind(this),
                     this.guardianMeltdown.bind(this)
                 ];
                 break;
+        }
+    }
+
+    preUpdate(time, delta) {
+        super.preUpdate(time, delta);
+        // Always sync child sprites to torso position
+        if (this.bossType === 'COREGUARDIAN') {
+            this.updateGuardianArms();
         }
     }
 
@@ -127,6 +159,14 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                     this.setVisible(false);
                     if (this.thrustSprite) this.thrustSprite.destroy();
                     if (this.coreGlow) this.coreGlow.destroy();
+                    if (this.armFront1) this.armFront1.destroy();
+                    if (this.armBack1) this.armBack1.destroy();
+                    if (this.armBack2) this.armBack2.destroy();
+                    if (this.forearmFront) this.forearmFront.destroy();
+                    if (this.forearmBack) this.forearmBack.destroy();
+                    if (this.lowerTorso1) this.lowerTorso1.destroy();
+                    if (this.lowerTorso2) this.lowerTorso2.destroy();
+                    if (this.lowerTorso3) this.lowerTorso3.destroy();
                 }
             }
             return;
@@ -267,11 +307,22 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 // Float and bob
                 const guardTargetY = this.startY + Math.sin(time * 0.0012) * 25;
                 this.setVelocityY((guardTargetY - this.y) * 6);
-                // Chase player slowly
+                // Chase player but strafe away if player is directly underneath
                 if (this.scene.player) {
                     const dx = this.scene.player.x - this.x;
-                    this.setVelocityX(Math.sign(dx) * this.speed * 0.5);
-                    this.setFlipX(dx < 0);
+                    const absDx = Math.abs(dx);
+                    if (this.laserSweeping) {
+                        // Don't change direction or move horizontally during laser
+                        this.setVelocityX(0);
+                    } else if (absDx < 60) {
+                        // Player is underneath - strafe sideways to get a clear shot
+                        const strafeDir = this.x < (this.arenaStart + this.arenaEnd) / 2 ? -1 : 1;
+                        this.setVelocityX(strafeDir * this.speed * 1.2);
+                        this.setFlipX(dx > 0);
+                    } else {
+                        this.setVelocityX(Math.sign(dx) * this.speed * 0.5);
+                        this.setFlipX(dx > 0);
+                    }
                 }
                 // Phase speed increase
                 if (this.phase === 2) this.speed = 45;
@@ -279,10 +330,9 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 // Clamp to arena
                 if (this.arenaStart && this.x < this.arenaStart + 80) this.x = this.arenaStart + 80;
                 if (this.arenaEnd && this.x > this.arenaEnd - 80) this.x = this.arenaEnd - 80;
-                // Update core glow
-                if (this.coreGlow) {
-                    this.coreGlow.setPosition(this.x, this.y + 50);
-                }
+
+                // Position arm parts relative to torso
+                this.updateGuardianArms();
                 break;
             }
         }
@@ -291,9 +341,10 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     updateVisual() {
         // Phase indicator tint
         if (this.bossType === 'COREGUARDIAN') {
-            if (this.phase === 3) this.setTint(0xff2222);
-            else if (this.phase === 2) this.setTint(0xff6644);
-            else this.setTint(0xcc4444);
+            // Torso texture shows damage state
+            const torsoKey = this.phase === 3 ? 'warped-torso3' : this.phase === 2 ? 'warped-torso2' : 'warped-torso1';
+            this.setTexture(torsoKey);
+            this.clearTint();
         } else if (this.phase === 3) {
             this.setTint(0xff4444);
         } else if (this.phase === 2) {
@@ -344,9 +395,17 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.body.allowGravity = false;
         if (this.body) this.body.enable = false;
 
-        // Hide thrust sprite / core glow
+        // Hide child sprites
         if (this.thrustSprite) this.thrustSprite.setVisible(false);
         if (this.coreGlow) this.coreGlow.setVisible(false);
+        if (this.armFront1) this.armFront1.setVisible(false);
+        if (this.armBack1) this.armBack1.setVisible(false);
+        if (this.armBack2) this.armBack2.setVisible(false);
+        if (this.forearmFront) this.forearmFront.setVisible(false);
+        if (this.forearmBack) this.forearmBack.setVisible(false);
+        if (this.lowerTorso1) this.lowerTorso1.setVisible(false);
+        if (this.lowerTorso2) this.lowerTorso2.setVisible(false);
+        if (this.lowerTorso3) this.lowerTorso3.setVisible(false);
 
         // Award score immediately
         if (this.scene.player) {
@@ -535,13 +594,48 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    // === CORE GUARDIAN ATTACKS ===
+    // === CORE GUARDIAN (WARPED BOSS) ATTACKS ===
+
+    getArmTip() {
+        // Fire position = eye on the torso
+        const eye = this.getEyePosition();
+        if (!this.scene.player) return { x: eye.x, y: eye.y, angle: 0 };
+        const angle = Phaser.Math.Angle.Between(eye.x, eye.y, this.scene.player.x, this.scene.player.y);
+        return { x: eye.x, y: eye.y, angle };
+    }
 
     guardianLaserSweep() {
-        // Rapid stream of 12 bullets in a sweeping arc
+        // Laser beam from eye: rapid bullet stream with laser visual
         if (!this.scene.player) return;
-        const startAngle = this.scene.player.x < this.x ? Math.PI * 0.8 : Math.PI * 0.2;
-        const sweepDir = this.scene.player.x < this.x ? -1 : 1;
+
+        // Lock facing direction for entire sweep
+        this.laserSweeping = true;
+
+        const eye = this.getEyePosition();
+        // Start ~5° from floor, sweep upward
+        const facingLeft = this.scene.player.x < this.x;
+        const startAngle = facingLeft ? Math.PI + 0.087 : 0.087;
+        const sweepDir = facingLeft ? 1 : -1;
+
+        // Laser base - shifted 10px toward facing direction for visor alignment
+        const dir = this.flipX ? 1 : -1;
+        const burstX = eye.x + 10 * dir;
+        const laserBase = this.scene.add.sprite(burstX, eye.y, 'warped-laser-base1');
+        laserBase.play('warped-laser-base');
+        laserBase.setScale(0.5);
+        laserBase.setDepth(8);
+        laserBase.setBlendMode(Phaser.BlendModes.ADD);
+
+        // Laser beam - starts at same point as burst so they connect
+        const beam = this.scene.add.sprite(burstX, eye.y, 'warped-laser-beam1');
+        beam.play('warped-laser-beam');
+        beam.setScale(12, 0.3);
+        beam.setDepth(12);
+        beam.setOrigin(0, 0.5);
+        beam.setBlendMode(Phaser.BlendModes.ADD);
+
+        // Track current angle for beam damage check
+        let currentAngle = startAngle;
 
         this.scene.time.addEvent({
             delay: 100,
@@ -550,50 +644,94 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 if (!this.active) return;
                 const i = this._sweepCount || 0;
                 this._sweepCount = i + 1;
-                const angle = startAngle - sweepDir * i * 0.12;
+                currentAngle = startAngle - sweepDir * i * 0.131;
+
+                // Update laser visuals to follow eye
+                const eyePos = this.getEyePosition();
+                const d = this.flipX ? 1 : -1;
+
+                const bx = eyePos.x + 10 * d;
+                if (laserBase.active) {
+                    laserBase.setPosition(bx, eyePos.y);
+                    laserBase.setRotation(currentAngle - Math.PI);
+                }
+                if (beam.active) {
+                    beam.setPosition(bx, eyePos.y);
+                    beam.setRotation(currentAngle);
+                }
+
                 this.scene.weaponSystem.fireBossBulletAngle(
-                    this.x, this.y + 20,
-                    angle, 300, 1
+                    eyePos.x, eyePos.y, currentAngle, 300, 1, 'bolt'
                 );
-                this.scene.audioManager.playSound('sfx-fireball', 0.25, 2.0);
+                this.scene.audioManager.playSound('sfx-mech-laser', 0.25);
             }
         });
         this._sweepCount = 0;
+
+        // Beam damage check every frame during sweep
+        const beamDamage = this.scene.time.addEvent({
+            delay: 50,
+            repeat: 29,
+            callback: () => {
+                if (!this.active || !this.scene.player) return;
+                const p = this.scene.player;
+                if (p.isDead || p.isInvulnerable) return;
+                const eyePos = this.getEyePosition();
+                // Check if player is along the beam line
+                const dx = p.x - eyePos.x;
+                const dy = p.y - eyePos.y;
+                const beamDirX = Math.cos(currentAngle);
+                const beamDirY = Math.sin(currentAngle);
+                // Project player onto beam direction
+                const dot = dx * beamDirX + dy * beamDirY;
+                if (dot < 0) return; // player is behind the beam
+                // Perpendicular distance from beam line
+                const perpDist = Math.abs(dx * beamDirY - dy * beamDirX);
+                if (perpDist < 25) {
+                    p.takeDamage(1);
+                }
+            }
+        });
+
+        // Clean up laser visuals and unlock facing
+        this.scene.time.delayedCall(1500, () => {
+            if (laserBase) laserBase.destroy();
+            if (beam) beam.destroy();
+            this.laserSweeping = false;
+        });
+
+        this.scene.cameras.main.shake(150, 0.006);
     }
 
     guardianLockdown() {
-        // Place 4 energy fields on the ground as damage zones, then fire aimed shots
+        // Place electro-shock hazards on the ground, then fire aimed shots
         if (!this.scene.player) return;
 
         const arenaCenter = (this.arenaStart + this.arenaEnd) / 2;
         const positions = [
-            arenaCenter - 150, arenaCenter - 50,
-            arenaCenter + 50, arenaCenter + 150
+            arenaCenter - 250, arenaCenter - 80,
+            arenaCenter + 80, arenaCenter + 250
         ];
 
         positions.forEach((px, i) => {
             this.scene.time.delayedCall(i * 200, () => {
                 if (!this.active) return;
-                // Energy field zone on ground
-                const field = this.scene.add.sprite(px, 400, 'energy-field0');
-                field.play('energy-field');
-                field.setTint(0xff2222);
-                field.setScale(1.5);
+                const field = this.scene.add.sprite(px, 390, 'electro-shock0');
+                field.play('electro-shock');
+                field.setTint(0xff4444);
+                field.setScale(1.2);
                 field.setDepth(3);
-                field.setAlpha(0.7);
+                field.setAlpha(0.8);
 
-                // Damage zone
-                const zone = this.scene.add.rectangle(px, 400, 40, 40);
+                const zone = this.scene.add.rectangle(px, 390, 50, 50);
                 zone.setVisible(false);
                 this.scene.physics.add.existing(zone, true);
 
-                // Overlap with player
                 this.scene.physics.add.overlap(this.scene.player, zone, () => {
                     if (this.scene.player.isDead || this.scene.player.isInvulnerable) return;
                     this.scene.player.takeDamage(1);
                 });
 
-                // Auto-destroy after 3s
                 this.scene.time.delayedCall(3000, () => {
                     field.destroy();
                     zone.destroy();
@@ -601,45 +739,43 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             });
         });
 
-        // Fire aimed shots after placing fields
+        // Fire aimed shots from eye
         this.scene.time.delayedCall(1000, () => {
             if (!this.active) return;
             for (let i = 0; i < 3; i++) {
                 this.scene.time.delayedCall(i * 300, () => {
                     if (!this.active || !this.scene.player) return;
+                    const eye = this.getEyePosition();
                     this.scene.weaponSystem.fireBossBullet(
-                        this.x, this.y,
+                        eye.x, eye.y,
                         this.scene.player.x, this.scene.player.y,
-                        350, 1
+                        350, 1, 'bolt'
                     );
-                    this.scene.audioManager.playSound('sfx-fireball', 0.3, 2.0);
+                    this.scene.audioManager.playSound('sfx-mech-laser', 0.3);
                 });
             }
         });
 
         this.scene.cameras.main.shake(200, 0.008);
-        this.scene.audioManager.playSound('sfx-fireball', 0.4, 2.0);
+        this.scene.audioManager.playSound('sfx-mech-laser', 0.4);
     }
 
     guardianMeltdown() {
         // Descend to ground, windup, emit 16-bullet ring + floor shockwave
         if (!this.active) return;
 
-        // Descend
         this.setVelocityY(150);
         this.scene.time.delayedCall(600, () => {
             if (!this.active) return;
             this.setVelocityY(0);
             this.setVelocityX(0);
 
-            // 1s windup: shake + red flash
             this.scene.cameras.main.shake(1000, 0.012);
             this.setTintFill(0xff0000);
             this.scene.time.delayedCall(300, () => {
                 if (this.active) this.updateVisual();
             });
 
-            // After windup: emit ring + floor shockwave
             this.scene.time.delayedCall(1000, () => {
                 if (!this.active) return;
 
@@ -652,7 +788,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                     );
                 }
 
-                // Floor shockwave: bullets along ground in both directions
+                // Floor shockwave
                 for (let i = 0; i < 6; i++) {
                     this.scene.time.delayedCall(i * 80, () => {
                         if (!this.active) return;
@@ -665,17 +801,73 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                     });
                 }
 
-                this.scene.audioManager.playSound('sfx-fireball', 0.5, 2.0);
+                this.scene.audioManager.playSound('sfx-mech-laser', 0.5);
                 this.scene.cameras.main.shake(300, 0.015);
 
-                // Return to float height
                 this.scene.time.delayedCall(500, () => {
-                    if (this.active) {
-                        this.startY = this.y;
-                    }
+                    if (this.active) this.startY = this.y;
                 });
             });
         });
+    }
+
+    updateGuardianArms() {
+        // dir: -1 when facing left (natural), +1 when facing right (flipped)
+        const dir = this.flipX ? 1 : -1;
+        const flip = this.flipX;
+
+        // Dark circle is on the BACK of the torso (opposite face direction)
+        const shoulderX = this.x - 15 * dir;
+        const shoulderY = this.y + 12;
+
+        // Chain goes diagonally down toward the facing direction
+        const jx = 12 * dir;
+        const jy = 12;
+
+        // Front arm chain: shoulder → joint1 → joint2 → forearm
+        if (this.armFront1) {
+            this.armFront1.setPosition(shoulderX - 25 * dir, shoulderY);
+            this.armFront1.setFlipX(flip);
+        }
+        if (this.forearmFront) {
+            this.forearmFront.setPosition(shoulderX + jx - 15 * dir, shoulderY + jy + 10);
+            this.forearmFront.setFlipX(flip);
+        }
+
+        // Back arm chain: same shoulder, slightly offset
+        const backShift = 20 * dir;
+        if (this.armBack1) {
+            this.armBack1.setPosition(shoulderX - 4 * dir + backShift, shoulderY - 4);
+            this.armBack1.setFlipX(flip);
+        }
+        if (this.armBack2) {
+            this.armBack2.setPosition(shoulderX + jx * 0.8 + backShift, shoulderY + jy - 4);
+            this.armBack2.setFlipX(flip);
+        }
+        if (this.forearmBack) {
+            this.forearmBack.setPosition(shoulderX + jx * 1.6 + backShift, shoulderY + jy * 2 - 4);
+            this.forearmBack.setFlipX(flip);
+        }
+
+        // Lower torso segments stacked below main torso
+        if (this.lowerTorso1) {
+            this.lowerTorso1.setPosition(this.x - 20 * dir, this.y + 55);
+            this.lowerTorso1.setFlipX(flip);
+        }
+        if (this.lowerTorso2) {
+            this.lowerTorso2.setPosition(this.x - 20 * dir, this.y + 80);
+            this.lowerTorso2.setFlipX(flip);
+        }
+        if (this.lowerTorso3) {
+            this.lowerTorso3.setPosition(this.x - 20 * dir, this.y + 102);
+            this.lowerTorso3.setFlipX(flip);
+        }
+    }
+
+    getEyePosition() {
+        // Sprite naturally faces LEFT, so eye is on LEFT when not flipped
+        const dir = this.flipX ? 1 : -1;
+        return { x: this.x + 15 * dir, y: this.y - 12 };
     }
 
     getAngleToPlayer() {
