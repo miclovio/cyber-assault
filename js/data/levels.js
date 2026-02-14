@@ -564,7 +564,7 @@ const LEVEL_DATA = {
     // ========================================================================
     5: {
         name: 'Core Breach',
-        width: 8000,
+        width: 8400,
         height: GAME_HEIGHT,
         playerStart: { x: 100, y: 350 },
         backgrounds: [
@@ -576,11 +576,12 @@ const LEVEL_DATA = {
         platformCaps: true,
         platformTint: 0xcc2233,
         enemyTint: 0xcc4444,
-        endZoneX: 7800,
+        endZoneX: 8200,
         platforms: [
             // ============================================================
             // ROOM 1: Entry Hall (0-1200)
             // ============================================================
+            { x: -30,  y: 0,   w: 30,   h: 450 },  // left wall (prevents falling off)
             { x: 0,    y: 420, w: 1200, h: 30 },   // floor
             { x: 0,    y: 100, w: 1200, h: 30 },   // ceiling
             { x: 400,  y: 320, w: 150,  h: 20 },   // power-up platform (single-jump reachable)
@@ -599,8 +600,8 @@ const LEVEL_DATA = {
             { x: 2400, y: 420, w: 800,  h: 30 },   // floor
             { x: 2400, y: 100, w: 800,  h: 30 },   // ceiling
             // Full-height wall blocking path — crawl tunnel is the only way through
-            { x: 2600, y: 130, w: 250,  h: 205 },  // wall above crawl (y=130 to y=335)
-            { x: 2600, y: 335, w: 250,  h: 30 },   // crawl tunnel ceiling (bottom at 365, gap=55px)
+            { x: 2600, y: 100, w: 250,  h: 270 },  // wall above crawl (y=100 to y=370, flush with ceiling)
+            { x: 2600, y: 370, w: 250,  h: 20 },   // crawl tunnel ceiling (bottom at 390, gap=30px)
 
             // ============================================================
             // ROOM 4: Vertical Shaft (3200-4200)
@@ -615,11 +616,11 @@ const LEVEL_DATA = {
             { x: 4200, y: 420, w: 1200, h: 30 },   // floor
             { x: 4200, y: 100, w: 1200, h: 30 },   // ceiling
             // Crawl tunnel section (4200-4800)
-            { x: 4200, y: 130, w: 600,  h: 205 },  // wall above crawl
-            { x: 4200, y: 335, w: 600,  h: 30 },   // crawl tunnel ceiling (bottom at 365, gap=55px)
+            { x: 4200, y: 100, w: 600,  h: 270 },  // wall above crawl (y=100 to y=370, flush with ceiling)
+            { x: 4200, y: 370, w: 600,  h: 20 },   // crawl tunnel ceiling (bottom at 390, gap=30px)
             // Platforms after crawl exit
             { x: 4800, y: 300, w: 300,  h: 20 },   // mid platform
-            { x: 4500, y: 180, w: 300,  h: 20 },   // upper platform (reachable via ladder from mid)
+            { x: 4800, y: 180, w: 300,  h: 20 },   // upper platform (above mid, reachable via ladder)
 
             // ============================================================
             // ROOM 6: Heavy Combat Arena (5400-6400)
@@ -631,93 +632,117 @@ const LEVEL_DATA = {
             { x: 5700, y: 180, w: 200,  h: 20 },   // center high platform (needs ladder)
 
             // ============================================================
-            // ROOM 7: Final Gauntlet (6400-7200)
+            // ROOM 7: Final Gauntlet (6400-7600)
             // ============================================================
-            { x: 6400, y: 420, w: 800,  h: 30 },   // floor
+            { x: 6400, y: 420, w: 1200, h: 30 },   // floor
             // Crawl section (6400-6800)
-            { x: 6400, y: 130, w: 400,  h: 205 },  // wall above crawl
-            { x: 6400, y: 335, w: 400,  h: 30 },   // crawl tunnel ceiling (bottom at 365, gap=55px)
-            // Open section (6800-7200)
-            { x: 6800, y: 100, w: 400,  h: 30 },   // ceiling for open area
-            { x: 6900, y: 280, w: 200,  h: 20 },   // upper platform
+            { x: 6400, y: 100, w: 400,  h: 270 },  // wall above crawl (y=100 to y=370, flush with ceiling)
+            { x: 6400, y: 370, w: 400,  h: 20 },   // crawl tunnel ceiling (bottom at 390, gap=30px)
+            // Open section (6800-7600) — mech mini-boss arena
+            { x: 6800, y: 100, w: 800,  h: 30 },   // ceiling for open area
+            { x: 7000, y: 280, w: 200,  h: 20 },   // left platform
+            { x: 7300, y: 280, w: 200,  h: 20 },   // right platform
 
             // ============================================================
-            // ROOM 8: Boss Arena (7200-7900)
+            // ROOM 8: Boss Arena (7600-8300)
             // ============================================================
-            { x: 7200, y: 420, w: 700,  h: 30 },    // floor
-            { x: 7200, y: 100, w: 700,  h: 30 }     // ceiling
+            { x: 7600, y: 420, w: 700,  h: 30 },    // floor
+            { x: 7600, y: 100, w: 700,  h: 30 }     // ceiling
         ],
 
         // Destructible walls
         destructibleWalls: [
-            // Room 1: blocks exit to Room 2 (floor-to-ceiling)
-            { x: 900, y: 130, w: 40, h: 290, hp: 3 },
+            // Room 2: splits arena between the two platforms
+            { x: 1700, y: 130, w: 40, h: 290, hp: 8 },
+            // Room 5: at crawl tunnel exit (floor-to-ceiling)
+            { x: 4780, y: 130, w: 40, h: 290, hp: 8 },
+            // Room 6: blocks center of arena (floor-to-ceiling)
+            { x: 5750, y: 130, w: 40, h: 290, hp: 10 },
             // Room 7: at end of crawl tunnel (shoot while crawling)
-            { x: 6780, y: 365, w: 40, h: 55, hp: 3 }
+            { x: 6780, y: 365, w: 40, h: 55, hp: 6 },
+            // Room 7: blocks path to boss arena (floor-to-ceiling)
+            { x: 7550, y: 130, w: 40, h: 290, hp: 10 }
         ],
 
         // Ladders
         ladders: [
             // Room 4: full-height ladder for vertical shaft
             { x: 3500, y: 180, w: 30, h: 240 },
-            // Room 5: climb from crawl exit to mid level
+            // Room 5: full-height ladder from floor to upper (serves mid + upper platforms)
             { x: 4850, y: 180, w: 30, h: 240 },
-            // Room 5: reach upper platform from mid level
-            { x: 4550, y: 180, w: 30, h: 120 },
             // Room 6: reach center high platform
             { x: 5750, y: 180, w: 30, h: 240 },
-            // Room 7: reach upper platform in open area
-            { x: 7000, y: 280, w: 30, h: 140 },
-            // Room 8: center boss arena ladder for vertical dodging
-            { x: 7535, y: 130, w: 30, h: 290 }
+            // Room 7: reach left platform in open area
+            { x: 7050, y: 280, w: 30, h: 140 },
+            // Room 7: reach right platform
+            { x: 7350, y: 280, w: 30, h: 140 }
         ],
 
-        // Crawl zones (55px gap between ceiling bottom at 365 and floor at 420)
+        // Crawl zones (30px gap between ceiling bottom at 390 and floor at 420)
         crawlZones: [
             // Room 3: through the wall
-            { x: 2600, y: 365, w: 250, h: 55 },
+            { x: 2600, y: 390, w: 250, h: 30 },
             // Room 5: entry corridor
-            { x: 4200, y: 365, w: 600, h: 55 },
+            { x: 4200, y: 390, w: 600, h: 30 },
             // Room 7: final crawl section
-            { x: 6400, y: 365, w: 400, h: 55 }
+            { x: 6400, y: 390, w: 400, h: 30 }
         ],
 
-        // Laser gates
+        // Laser gates (floor-to-ceiling lightning barriers, extend into floor for depth)
         laserGates: [
-            // Room 3: inside crawl tunnel area
-            { x: 3000, y: 320, h: 100, onTime: 2000, offTime: 2000 },
-            // Room 5: alternating pair inside crawl tunnel
-            { x: 4400, y: 365, h: 55, onTime: 2000, offTime: 2000 },
-            { x: 4600, y: 365, h: 55, onTime: 2000, offTime: 2000, startOff: true },
-            // Room 7: inside crawl tunnel
-            { x: 6600, y: 365, h: 55, onTime: 1500, offTime: 1500 }
+            // Room 1: gauntlet of 5 laser gates with staggered timings
+            { x: 475, y: 340, h: 100, onTime: 2000, offTime: 1500, startOff: true },
+            { x: 650, y: 130, h: 310, onTime: 1800, offTime: 1800 },
+            { x: 800, y: 130, h: 310, onTime: 2000, offTime: 2000, startOff: true },
+            { x: 950, y: 130, h: 310, onTime: 1500, offTime: 1500 },
+            { x: 1100, y: 130, h: 310, onTime: 2000, offTime: 1500, startOff: true },
+            // Room 1-2 transition: between last gate and 2nd platform
+            { x: 1250, y: 130, h: 310, onTime: 1800, offTime: 2000 },
+            // Room 2: under left platform (x=1400-1600)
+            { x: 1500, y: 320, h: 120, onTime: 2000, offTime: 1500, startOff: true },
+            // Room 2: under right platform (x=1800-2000)
+            { x: 1900, y: 320, h: 120, onTime: 1800, offTime: 1800 },
+            // Room 2: floor-to-ceiling gauntlet before crawl tunnel
+            { x: 2100, y: 130, h: 310, onTime: 1500, offTime: 2000 },
+            { x: 2200, y: 130, h: 310, onTime: 2000, offTime: 1500, startOff: true },
+            { x: 2300, y: 130, h: 310, onTime: 1800, offTime: 1800 },
+            // Room 3: after crawl tunnel exit
+            { x: 3050, y: 130, h: 310, onTime: 2000, offTime: 2000 },
+            // Room 4: before Room 5 crawl space
+            { x: 4100, y: 130, h: 310, onTime: 1800, offTime: 2000 },
+            // Room 5: inside crawl tunnel (extend into floor for depth)
+            { x: 4350, y: 390, h: 50, onTime: 1500, offTime: 2000 },
+            { x: 4500, y: 390, h: 50, onTime: 2000, offTime: 1500, startOff: true },
+            { x: 4650, y: 390, h: 50, onTime: 1800, offTime: 1800 },
+            // Room 5: alternating pair in open area after crawl/climb
+            { x: 5050, y: 130, h: 310, onTime: 2000, offTime: 2000 },
+            { x: 5250, y: 130, h: 310, onTime: 2000, offTime: 2000, startOff: true },
+            // Room 6: under left platform (x=5500-5700)
+            { x: 5600, y: 320, h: 120, onTime: 1800, offTime: 2000 },
+            // Room 6: under right platform (x=5900-6100)
+            { x: 6000, y: 320, h: 120, onTime: 2000, offTime: 1800, startOff: true },
+            // Room 7: corridor before boss
+            { x: 7500, y: 130, h: 310, onTime: 1500, offTime: 1500 }
         ],
 
         // Explosive barrels
         explosiveBarrels: [
             // Room 2: between upper platforms
             { x: 1700, y: 402, hp: 2 },
-            // Room 4: on mid platform near enemies
-            { x: 3550, y: 282, hp: 2 },
-            { x: 3650, y: 282, hp: 2 },
+            // Room 4: on mid platform
+            { x: 3600, y: 282, hp: 2 },
             // Room 6: ground level near enemy clusters
             { x: 5650, y: 402, hp: 2 },
             { x: 5850, y: 402, hp: 2 },
             // Room 7: ground level
-            { x: 6900, y: 402, hp: 2 },
-            { x: 7050, y: 402, hp: 3 }
+            { x: 7100, y: 402, hp: 2 },
+            { x: 7350, y: 402, hp: 3 }
         ],
 
         // Lock doors (linked to enemy triggers by index)
         lockDoors: [
-            // Room 2: seals exit until arena is cleared
-            { x: 2350, y: 130, w: 40, h: 290, triggerIndex: 1 },
-            // Room 4: right side exit
-            { x: 4100, y: 130, w: 40, h: 290, triggerIndex: 3 },
-            // Room 5: exit after maze
-            { x: 5350, y: 130, w: 40, h: 290, triggerIndex: 5 },
-            // Room 6: exit after heavy combat
-            { x: 6350, y: 130, w: 40, h: 290, triggerIndex: 6 }
+            // Room 7: blocks boss arena until green mech is defeated
+            { x: 7580, y: 130, w: 40, h: 290, triggerIndex: 7 }
         ],
 
         enemyTriggers: [
@@ -735,49 +760,59 @@ const LEVEL_DATA = {
             ]},
             // === Room 3 (trigger 2) ===
             { x: 2800, enemies: [
-                { type: 'grunt', x: 2950, y: 380, config: { patrolDir: -1, patrolRange: 80 } },
-                { type: 'turret', x: 2750, y: 362, config: { ceiling: true } }
+                { type: 'grunt', x: 2950, y: 380, config: { patrolDir: -1, patrolRange: 80 } }
             ]},
-            // === Room 4 (trigger 3 — linked to lock door) ===
+            // === Room 4 (trigger 3 — floor, upper, + flyers) ===
             { x: 3250, enemies: [
-                { type: 'grunt', x: 3500, y: 270, config: { patrolDir: 1, patrolRange: 60 } },
-                { type: 'grunt', x: 3600, y: 270, config: { patrolDir: -1, patrolRange: 60 } },
-                { type: 'turret', x: 3550, y: 190, config: {} },
-                { type: 'grunt', x: 3800, y: 380, config: { patrolDir: -1, patrolRange: 100 } }
+                { type: 'grunt', x: 3500, y: 380, config: { patrolDir: 1, patrolRange: 80 } },
+                { type: 'grunt', x: 3700, y: 380, config: { patrolDir: -1, patrolRange: 80 } },
+                { type: 'grunt', x: 3500, y: 150, config: { patrolDir: 1, patrolRange: 60 } },
+                { type: 'flyer', x: 3400, y: 200, config: {} },
+                { type: 'flyer', x: 3700, y: 250, config: {} },
+                { type: 'flyer', x: 4000, y: 200, config: {} },
+                { type: 'heavy', x: 3900, y: 370, config: { patrolDir: -1, patrolRange: 100 } }
             ]},
             // === Room 5 mid/upper (trigger 4) ===
             { x: 4800, enemies: [
                 { type: 'grunt', x: 4900, y: 270, config: { patrolDir: 1, patrolRange: 60 } },
                 { type: 'grunt', x: 5000, y: 270, config: { patrolDir: -1, patrolRange: 60 } }
             ]},
-            // === Room 5 exit (trigger 5 — linked to lock door) ===
+            // === Room 5 exit (trigger 5 — linked to lock door, all floor-level) ===
             { x: 4500, enemies: [
-                { type: 'grunt', x: 4600, y: 150, config: { patrolDir: 1, patrolRange: 50 } },
+                { type: 'grunt', x: 4900, y: 380, config: { patrolDir: 1, patrolRange: 60 } },
                 { type: 'heavy', x: 5100, y: 370, config: { patrolDir: -1, patrolRange: 100 } }
             ]},
-            // === Room 6 (trigger 6 — linked to lock door) ===
+            // === Room 6 (trigger 6 — linked to lock door, floor + platforms) ===
             { x: 5450, enemies: [
                 { type: 'heavy', x: 5600, y: 370, config: { patrolDir: 1, patrolRange: 100 } },
                 { type: 'heavy', x: 5900, y: 370, config: { patrolDir: -1, patrolRange: 100 } },
+                { type: 'grunt', x: 5700, y: 380, config: { patrolDir: 1, patrolRange: 80 } },
+                { type: 'grunt', x: 6100, y: 380, config: { patrolDir: -1, patrolRange: 80 } },
                 { type: 'grunt', x: 5550, y: 270, config: { patrolDir: 1, patrolRange: 50 } },
                 { type: 'grunt', x: 5950, y: 270, config: { patrolDir: -1, patrolRange: 50 } },
-                { type: 'turret', x: 5800, y: 190, config: {} }
+                { type: 'grunt', x: 5750, y: 150, config: { patrolDir: 1, patrolRange: 40 } }
             ]},
-            // === Room 7 (trigger 7) ===
+            // === Room 7 (trigger 7 — green mech mini-boss, linked to lock door) ===
             { x: 6800, enemies: [
-                { type: 'grunt', x: 6900, y: 380, config: { patrolDir: 1, patrolRange: 80 } },
-                { type: 'grunt', x: 7050, y: 380, config: { patrolDir: -1, patrolRange: 80 } },
-                { type: 'heavy', x: 7100, y: 370, config: { patrolDir: -1, patrolRange: 60 } }
+                { type: 'green_mech', x: 7200, y: 370, config: { patrolDir: -1, patrolRange: 250 } }
             ]}
         ],
 
         checkpoints: [
+            // After Room 1
+            { x: 1180, y: 380 },
             // After Room 2
             { x: 2380, y: 380 },
+            // After Room 3
+            { x: 3180, y: 380 },
             // After Room 4
             { x: 4180, y: 380 },
+            // After Room 5
+            { x: 5380, y: 380 },
             // After Room 6
-            { x: 6380, y: 380 }
+            { x: 6380, y: 380 },
+            // After Room 7
+            { x: 7580, y: 380 }
         ],
         fixedDrops: [
             { x: 430, y: 290, type: 'SPREAD' },
@@ -785,10 +820,10 @@ const LEVEL_DATA = {
         ],
         boss: {
             type: 'COREGUARDIAN',
-            x: 7550,
+            x: 7950,
             y: 220,
-            arenaStart: 7200,
-            arenaEnd: 7900,
+            arenaStart: 7600,
+            arenaEnd: 8300,
             name: 'CORE GUARDIAN'
         }
     }

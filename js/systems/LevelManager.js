@@ -122,6 +122,9 @@ class LevelManager {
             case 'blue_mech':
                 enemy = new Mech(this.scene, x, y, { ...config, variant: 'blue' });
                 break;
+            case 'green_mech':
+                enemy = new Mech(this.scene, x, y, { ...config, variant: 'green' });
+                break;
             default:
                 console.warn('Unknown enemy type:', type);
                 return;

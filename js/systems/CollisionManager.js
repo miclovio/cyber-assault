@@ -119,6 +119,11 @@ class CollisionManager {
     enemyBulletHitPlayer(player, bullet) {
         if (!bullet.active || player.isDead || player.isInvulnerable) return;
 
+        // L5: crouching/crawling dodges enemy bullets (not boss bullets)
+        if (this.scene.currentLevel === 5 && player.isCrouching && !bullet.isBoss) {
+            return;
+        }
+
         bullet.deactivate();
         player.takeDamage(1);
     }
@@ -168,11 +173,10 @@ class CollisionManager {
             scene.damageBarrel(barrel, bullet.damage || 1);
         });
 
-        // Enemy bullets vs explosive barrels
+        // Enemy bullets vs explosive barrels (block bullets but no damage)
         scene.physics.add.collider(scene.weaponSystem.enemyBullets, scene.explosiveBarrels, (bullet, barrel) => {
             if (!barrel.isExplosiveBarrel) return;
             bullet.deactivate();
-            scene.damageBarrel(barrel, 1);
         });
     }
 

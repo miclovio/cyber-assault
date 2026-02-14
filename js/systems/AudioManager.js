@@ -25,6 +25,7 @@ class AudioManager {
             this.sounds['sfx-enemy-gun'] = this.scene.sound.add('sfx-enemy-gun', { volume: 0.3 });
             this.sounds['sfx-tank-fire'] = this.scene.sound.add('sfx-tank-fire', { volume: 0.4 });
             this.sounds['sfx-skull-fire'] = this.scene.sound.add('sfx-skull-fire', { volume: 0.4 });
+            this.sounds['sfx-warning'] = this.scene.sound.add('sfx-warning', { volume: 0.6 });
         } catch (e) {
             console.warn('Audio not available:', e);
             this.enabled = false;

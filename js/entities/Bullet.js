@@ -20,6 +20,11 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
         this.isPlayerBullet = isPlayerBullet !== false;
         this.body.allowGravity = false;
 
+        // Track spawn position for max range
+        this.spawnX = x;
+        this.spawnY = y;
+        this.maxRange = isPlayerBullet ? 300 : (isBoss ? 600 : 250);
+
         // Boss bullets use animated sprites, others use static texture
         if (isBoss) {
             const animKey = bossAnimKey || 'fire-ball';
@@ -87,6 +92,14 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
                     return;
                 }
             }
+        }
+
+        // Deactivate if max range exceeded
+        const dx = this.x - this.spawnX;
+        const dy = this.y - this.spawnY;
+        if (dx * dx + dy * dy > this.maxRange * this.maxRange) {
+            this.deactivate();
+            return;
         }
 
         // Deactivate if off-camera

@@ -200,10 +200,12 @@ class HUDScene extends Phaser.Scene {
 
         this.tweens.add({
             targets: warning,
-            alpha: 0,
-            scaleX: 1.5,
-            scaleY: 1.5,
-            duration: 1500,
+            alpha: 0.2,
+            scaleX: 1.3,
+            scaleY: 1.3,
+            duration: 600,
+            yoyo: true,
+            repeat: 2,
             onComplete: () => warning.destroy()
         });
     }

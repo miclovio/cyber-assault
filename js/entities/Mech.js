@@ -5,7 +5,8 @@
 class Mech extends EnemyBase {
     constructor(scene, x, y, config) {
         const variant = (config && config.variant) || 'grey';
-        const baseConfig = variant === 'blue' ? ENEMY_CONFIG.BLUE_MECH :
+        const baseConfig = variant === 'green' ? ENEMY_CONFIG.GREEN_MECH :
+                           variant === 'blue' ? ENEMY_CONFIG.BLUE_MECH :
                            variant === 'orange' ? ENEMY_CONFIG.ORANGE_MECH :
                            variant === 'cyan' ? ENEMY_CONFIG.CYAN_MECH : ENEMY_CONFIG.GREY_MECH;
         const cfg = { ...baseConfig, ...config };
