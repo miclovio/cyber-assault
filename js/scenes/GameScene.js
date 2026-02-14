@@ -564,7 +564,7 @@ class GameScene extends Phaser.Scene {
         });
 
         // Start transition via update loop (6s celebration, then fade to black, hold, then switch)
-        if (this.currentLevel < 4) {
+        if (this.currentLevel < 5) {
             this.sceneTransition = {
                 phase: 1,
                 timer: 6000,
