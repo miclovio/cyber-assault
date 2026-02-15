@@ -12,9 +12,9 @@
 
 | Feature | Detail |
 |---------|--------|
-| Movement | WASD / Arrows, crouch with S/Down, climb ladders, crawl through tunnels |
+| Movement | WASD / Arrows, crouch with S/Down, climb ladders, crawl through tunnels, directional aim sprites |
 | Jump | Space / Z, single jump (double jump via power-up) |
-| Fire | X / Left click, 8-directional aiming |
+| Fire | X / Left click, 8-directional aiming (diagonal-up at 45°) |
 | Health | 3 HP per life, 3 lives |
 | Weapons | Pulse Rifle, Spread Shot, Laser, Rapid Fire |
 | Power-ups | Weapon drops, Shield, Health, Extra Life, Double Jump |
@@ -58,7 +58,7 @@
 
 | Mechanic | Description |
 |----------|-------------|
-| Fire Pits | Fireballs that launch upward from floor gaps with gravity arc (shoot up, fall back down). Timed cycle with SFX on launch. Player must time jumps between launches. Uses fire-ball animation rotated upward. |
+| Fire Pits | Fireballs that launch upward from floor gaps with gravity arc (shoot up, fall back down). Timed cycle with SFX on launch. Player must time jumps between launches. Uses fire-ball animation rotated upward, full color (no additive blend). |
 | Double Jump Perk | Earned from enemy drops (12% chance, orange "2J" orb) or fixed drops before parkour sections. Lost on damage (unless shield active). Player starts with single jump only. |
 | Pit Death | Falling through any floor gap is instant death. Respawn at last checkpoint. |
 
@@ -155,6 +155,12 @@ D:\Projects\Video Game\
 - **Trigger-based spawning** - enemies spawn as camera reaches trigger X positions
 - **Platforms** - separate visual tileSprite + invisible rectangle physics body
 - **Death/respawn** - delta-timer state machine in update loop (not delayedCall)
+- **Aim-aware animations** - player sprite changes based on aim direction and fire state:
+  - Straight up: shoot_3.png (gun) when firing, shoot3nogun.png (no gun) when idle
+  - Diagonal up: shoot5.png (gun) when firing, shoot3nogun.png (no gun) when idle
+  - Running: separate gun/no-gun animations, diagonal-up run variants
+  - Idle holster: after 2s of standing still, switches to no-gun idle animation
+  - Bullet spawn offsets adjust per aim direction to match gun muzzle position
 
 ---
 

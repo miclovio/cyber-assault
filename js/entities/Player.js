@@ -46,6 +46,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
         // State machine
         this.state = 'idle';
+        this._aimCat = 'fwd';
+        this._idleTimer = 0;
+        this._firing = false;
 
         // Input - WASD + arrow keys, Space/Z=jump, X/Click=fire
         this.cursors = scene.input.keyboard.createCursorKeys();
@@ -309,8 +312,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.aimY = 0;
 
         if (up) {
-            if (left) { this.aimX = -0.707; this.aimY = -0.707; }
-            else if (right) { this.aimX = 0.707; this.aimY = -0.707; }
+            if (left) { this.aimX = -0.940; this.aimY = -0.342; }
+            else if (right) { this.aimX = 0.940; this.aimY = -0.342; }
             else { this.aimX = 0; this.aimY = -1; }
         } else if (down && !onGround) {
             if (left) { this.aimX = -0.707; this.aimY = 0.707; }
@@ -430,6 +433,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     updateAnimationState(onGround, firing, moving) {
+        this._firing = firing;
         let newState;
 
         if (this.isThrowing) {
@@ -444,13 +448,29 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             newState = firing ? 'crouch-shoot' : 'crouch';
         } else if (firing && !moving) {
             newState = 'shoot';
+        } else if (moving && firing) {
+            newState = 'run-gun';
         } else if (moving) {
             newState = 'run';
         } else {
             newState = 'idle';
         }
 
-        if (newState !== this.state) {
+        // Track idle time for no-gun idle animation
+        if (newState === 'idle') {
+            this._idleTimer += this.scene.game.loop.delta;
+        } else {
+            this._idleTimer = 0;
+        }
+        const idleNoGun = this._idleTimer >= 2000;
+
+        const aimCat = this.aimY === -1 ? 'up' : this.aimY < 0 ? 'diag-up' : 'fwd';
+        const aimChanged = aimCat !== this._aimCat;
+        this._aimCat = aimCat;
+
+        const aimAwareState = (newState === 'idle' || newState === 'shoot' || newState === 'run-gun' || newState === 'run');
+        const idleSwitch = (newState === 'idle' && idleNoGun && this.state === 'idle' && this._idleTimer - this.scene.game.loop.delta < 2000);
+        if (newState !== this.state || (aimChanged && aimAwareState) || idleSwitch) {
             const prevState = this.state;
             this.state = newState;
             if (prevState === 'crouch-shoot' && newState === 'crouch') {
@@ -464,12 +484,28 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     playAnimation() {
         switch (this.state) {
-            case 'idle': this.play('player-idle-gun', true); break;
-            case 'run': this.play('player-run-gun', true); break;
+            case 'idle':
+                if (this._aimCat === 'up') this.play('player-idle-diag-up', true);
+                else if (this._aimCat === 'diag-up') this.play('player-idle-diag-up', true);
+                else if (this._idleTimer >= 2000) this.play('player-idle', true);
+                else this.play('player-idle-gun', true);
+                break;
+            case 'shoot':
+                if (this._aimCat === 'up') this.play('player-shoot-up', true);
+                else if (this._aimCat === 'diag-up') this.play('player-shoot-diag-up', true);
+                else this.play('player-shoot', true);
+                break;
             case 'jump': this.play('player-jump-gun', true); break;
+            case 'run':
+                if (this._aimCat === 'diag-up') this.play('player-run-diag-nogun', true);
+                else this.play('player-run', true);
+                break;
+            case 'run-gun':
+                if (this._aimCat === 'diag-up') this.play('player-run-diag-gun', true);
+                else this.play('player-run-gun', true);
+                break;
             case 'crouch': this.play('player-crouch-gun', true); break;
             case 'crouch-shoot': this.play('player-crouch-shoot', true); break;
-            case 'shoot': this.play('player-shoot', true); break;
             case 'die': this.play('player-die', true); break;
             case 'climb': this.play('player-climb', true); break;
             case 'crawl': this.play('player-crawl', true); break;

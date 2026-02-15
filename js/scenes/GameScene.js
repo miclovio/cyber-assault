@@ -197,7 +197,8 @@ class GameScene extends Phaser.Scene {
         const roundCaps = levelData.platformCaps || false;
         const capRadius = 12;
 
-        levelData.platforms.forEach(p => {
+        const allPlats = levelData.platforms;
+        allPlats.forEach(p => {
             // Visual tileSprite (centered)
             const visual = this.add.tileSprite(p.x + p.w / 2, p.y + p.h / 2, p.w, p.h, tileKey);
             visual.setDepth(1);
@@ -206,7 +207,17 @@ class GameScene extends Phaser.Scene {
             if (texH < p.h) visual.setTileScale(1, p.h / texH);
 
             // Round top corners with a geometry mask
+            // Skip cap on sides that connect to an adjacent platform at the same y
             if (roundCaps) {
+                const tolerance = 5;
+                let capLeft = true;
+                let capRight = true;
+                for (const other of allPlats) {
+                    if (other === p || other.y !== p.y) continue;
+                    if (Math.abs((other.x + other.w) - p.x) < tolerance) capLeft = false;
+                    if (Math.abs(other.x - (p.x + p.w)) < tolerance) capRight = false;
+                }
+
                 const gfx = this.make.graphics({ x: 0, y: 0, add: false });
                 const r = capRadius;
                 const left = p.x;
@@ -215,10 +226,18 @@ class GameScene extends Phaser.Scene {
                 const bottom = p.y + p.h;
                 gfx.fillStyle(0xffffff);
                 gfx.beginPath();
-                gfx.moveTo(left, top + r);
-                gfx.arc(left + r, top + r, r, Math.PI, Math.PI * 1.5);
-                gfx.lineTo(right - r, top);
-                gfx.arc(right - r, top + r, r, Math.PI * 1.5, 0);
+                if (capLeft) {
+                    gfx.moveTo(left, top + r);
+                    gfx.arc(left + r, top + r, r, Math.PI, Math.PI * 1.5);
+                } else {
+                    gfx.moveTo(left, top);
+                }
+                if (capRight) {
+                    gfx.lineTo(right - r, top);
+                    gfx.arc(right - r, top + r, r, Math.PI * 1.5, 0);
+                } else {
+                    gfx.lineTo(right, top);
+                }
                 gfx.lineTo(right, bottom);
                 gfx.lineTo(left, bottom);
                 gfx.closePath();
@@ -777,7 +796,6 @@ class GameScene extends Phaser.Scene {
             sprite.setAngle(-90);  // rotate to point upward
             sprite.setScale(3);
             sprite.setDepth(10);
-            sprite.setBlendMode(Phaser.BlendModes.ADD);
             sprite.setVisible(false);
 
             // Overlap zone for collision — stays at sprite position
