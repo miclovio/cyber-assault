@@ -49,15 +49,17 @@ class GamepadControls {
 
         this.enabled = true;
 
-        // Left stick
-        const stickX = pad.axes.length > 0 ? pad.axes[0].getValue() : 0;
-        const stickY = pad.axes.length > 1 ? pad.axes[1].getValue() : 0;
+        // Left stick (with null safety for Edge browser)
+        const axis0 = pad.axes.length > 0 ? pad.axes[0] : null;
+        const axis1 = pad.axes.length > 1 ? pad.axes[1] : null;
+        const stickX = axis0 ? (typeof axis0.getValue === 'function' ? axis0.getValue() : axis0.value || 0) : 0;
+        const stickY = axis1 ? (typeof axis1.getValue === 'function' ? axis1.getValue() : axis1.value || 0) : 0;
 
-        // D-pad buttons
-        const dpadUp = pad.buttons[12] && pad.buttons[12].pressed;
-        const dpadDown = pad.buttons[13] && pad.buttons[13].pressed;
-        const dpadLeft = pad.buttons[14] && pad.buttons[14].pressed;
-        const dpadRight = pad.buttons[15] && pad.buttons[15].pressed;
+        // D-pad buttons (with null safety)
+        const dpadUp = pad.buttons.length > 12 && pad.buttons[12] && pad.buttons[12].pressed;
+        const dpadDown = pad.buttons.length > 13 && pad.buttons[13] && pad.buttons[13].pressed;
+        const dpadLeft = pad.buttons.length > 14 && pad.buttons[14] && pad.buttons[14].pressed;
+        const dpadRight = pad.buttons.length > 15 && pad.buttons[15] && pad.buttons[15].pressed;
 
         // Directional flags (stick with deadzone OR d-pad)
         this.left = stickX < -this.DEADZONE || dpadLeft;
@@ -65,12 +67,13 @@ class GamepadControls {
         this.up = stickY < -this.DEADZONE || dpadUp;
         this.down = stickY > this.DEADZONE || dpadDown;
 
-        // Action buttons
-        const jumpNow = pad.buttons[0] && pad.buttons[0].pressed;       // A
-        const fireX = pad.buttons[2] && pad.buttons[2].pressed;         // X
-        const fireRT = pad.buttons[7] && pad.buttons[7].pressed;        // RT
-        const confirmNow = jumpNow || (pad.buttons[9] && pad.buttons[9].pressed); // A or Start
-        const backNow = pad.buttons[1] && pad.buttons[1].pressed;       // B
+        // Action buttons (with null safety)
+        const btn = (i) => pad.buttons.length > i && pad.buttons[i] && pad.buttons[i].pressed;
+        const jumpNow = btn(0);       // A
+        const fireX = btn(2);         // X
+        const fireRT = btn(7);        // RT
+        const confirmNow = jumpNow || btn(9); // A or Start
+        const backNow = btn(1);       // B
 
         // Fire is continuous (held)
         this.fire = fireX || fireRT;
@@ -88,7 +91,7 @@ class GamepadControls {
         this._prevBack = backNow;
 
         // Edge-detect Start button (for pause)
-        const startNow = pad.buttons[9] && pad.buttons[9].pressed;
+        const startNow = btn(9);
         this.startPressed = startNow && !this._prevStart;
         this._prevStart = startNow;
     }
