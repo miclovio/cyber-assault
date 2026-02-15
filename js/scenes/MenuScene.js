@@ -71,7 +71,8 @@ class MenuScene extends Phaser.Scene {
         });
 
         // Leaderboard display (right side)
-        this._createLeaderboard(w, h);
+        // Load scores from Firebase then display
+        Leaderboard.loadScores().then(() => this._createLeaderboard(w, h));
 
         // Gamepad polling
         this._gp = new GamepadControls(this);

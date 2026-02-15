@@ -1,6 +1,9 @@
 # Ignore all assets by default (only used assets are force-added)
 Assets/
 
+# Firebase config (contains API keys)
+js/data/firebase-config.js
+
 # Claude config
 .claude/
 

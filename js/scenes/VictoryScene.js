@@ -99,13 +99,15 @@ class VictoryScene extends Phaser.Scene {
         this._transitioning = false;
         this._initialsActive = false;
 
-        // After rank shows, check for high score
+        // After rank shows, load scores then check for high score
         this.time.delayedCall(3000, () => {
-            if (Leaderboard.isHighScore(this.finalScore)) {
-                this._showInitialsEntry(w, h);
-            } else {
-                this._showMenuPrompt(w, h);
-            }
+            Leaderboard.loadScores().then(() => {
+                if (Leaderboard.isHighScore(this.finalScore)) {
+                    this._showInitialsEntry(w, h);
+                } else {
+                    this._showMenuPrompt(w, h);
+                }
+            });
         });
 
         // Music
@@ -172,12 +174,11 @@ class VictoryScene extends Phaser.Scene {
         this.input.keyboard.off('keydown', this._keyHandler);
 
         const name = this._initials.join('');
-        Leaderboard.addScore(name, this.finalScore, 5);
 
         // Flash all letters gold
         this._initialTexts.forEach(t => t.setColor('#ffcc00'));
 
-        this.time.delayedCall(500, () => {
+        Leaderboard.addScore(name, this.finalScore, 5).then(() => {
             this._showMenuPrompt(GAME_WIDTH, GAME_HEIGHT);
         });
     }
