@@ -1254,15 +1254,13 @@ class GameScene extends Phaser.Scene {
                 }
             });
 
-            // LEFT/RIGHT keys to adjust
-            this._volLeft = this.input.keyboard.addKey('LEFT');
-            this._volRight = this.input.keyboard.addKey('RIGHT');
+            // LEFT/RIGHT keys to adjust (reuse existing cursor keys)
             this._volUpdate = () => {
                 if (!this.isPaused) return;
-                if (Phaser.Input.Keyboard.JustDown(this._volLeft)) {
+                if (Phaser.Input.Keyboard.JustDown(this.player.cursors.left)) {
                     updateSlider(this.audioManager.getMasterVolume() - 0.1);
                 }
-                if (Phaser.Input.Keyboard.JustDown(this._volRight)) {
+                if (Phaser.Input.Keyboard.JustDown(this.player.cursors.right)) {
                     updateSlider(this.audioManager.getMasterVolume() + 0.1);
                 }
             };
@@ -1282,9 +1280,7 @@ class GameScene extends Phaser.Scene {
             this.time.paused = false;
             this.sound.resumeAll();
 
-            // Clean up volume keys
-            if (this._volLeft) { this._volLeft.destroy(); this._volLeft = null; }
-            if (this._volRight) { this._volRight.destroy(); this._volRight = null; }
+            // Clean up volume update
             this._volUpdate = null;
 
             // Remove overlay
