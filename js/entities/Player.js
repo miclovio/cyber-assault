@@ -32,9 +32,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.facingRight = true;
         this.lastFireTime = 0;
 
-        // Double jump
-        this.jumpsLeft = 2;
-        this.maxJumps = 2;
+        // Jump (double jump earned via power-up)
+        this.jumpsLeft = 1;
+        this.maxJumps = 1;
 
         // Death timer (driven by update loop, not delayed calls)
         this.deathTimer = 0;
@@ -531,6 +531,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             this.scene.events.emit('player-weapon-changed', this.currentWeapon);
         }
 
+        // Lose double jump on hit
+        if (this.maxJumps > 1) {
+            this.maxJumps = 1;
+            this.scene.events.emit('player-doublejump-changed', false);
+        }
+
         if (this.hp <= 0) {
             this.die();
         } else {
@@ -557,11 +563,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         // Screen shake on death
         this.scene.cameras.main.shake(300, 0.015);
 
-        // Lose weapon upgrade and shield
+        // Lose weapon upgrade, shield, and double jump
         this.currentWeapon = 'PULSE';
         this.shieldHits = 0;
+        this.maxJumps = 1;
         this.hideShieldBubble();
         this.scene.events.emit('player-shield-changed', 0);
+        this.scene.events.emit('player-doublejump-changed', false);
 
         // Pop up
         this.setVelocityX(0);

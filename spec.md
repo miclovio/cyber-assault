@@ -13,11 +13,11 @@
 | Feature | Detail |
 |---------|--------|
 | Movement | WASD / Arrows, crouch with S/Down, climb ladders, crawl through tunnels |
-| Jump | Space / Z, double jump |
+| Jump | Space / Z, single jump (double jump via power-up) |
 | Fire | X / Left click, 8-directional aiming |
 | Health | 3 HP per life, 3 lives |
 | Weapons | Pulse Rifle, Spread Shot, Laser, Rapid Fire |
-| Power-ups | Weapon drops, Shield, Health, Extra Life |
+| Power-ups | Weapon drops, Shield, Health, Extra Life, Double Jump |
 | Death | Invuln frames (2s blink), respawn at checkpoint, lose weapon upgrade |
 | Score | Extra life every 50,000 points |
 
@@ -33,11 +33,34 @@
 
 ## Levels (8000px each)
 
-1. **Industrial Base** - Grunts + Flyers, Boss: Siege Tank (30 HP)
+1. **Industrial Base** - Grunts + Heavies + Mechs, Boss: Siege Tank (30 HP), 12000px
 2. **Underground Caverns** - Heavies + Ghosts, Boss: Assault Mech (40 HP)
 3. **Rocky Ridge** - Eye Demon swarms, Boss: Infernal Skull (35 HP)
 4. **Space Station** - All types + Turrets, Boss: Omega Sentinel (50 HP)
 5. **Core Breach** - Fortress infiltration with new mechanics, Boss: Core Guardian (60 HP)
+
+### Level 1: Industrial Base
+
+**Theme:** Industrial/military facility exterior with lush green parallax backgrounds. Extended 12000px level with parkour pit sections.
+
+**Layout (8 sections):**
+1. Intro (0-2000) — Ground floors with small gaps, basic grunt enemies. DOUBLE_JUMP fixed drop at x:1800
+2. Parkour Section 1 (2000-2900) — Floor segments with gaps between them, fire shoots up from each gap (2 fire pits, gentle timing)
+3. Mid Combat (2900-5000) — Ground floors, elevated platforms, heavies + grey mech encounter
+4. Parkour Section 2 (5000-6100) — Floor segments with tighter gaps, 3 fire pits with faster timing
+5. Late Combat (6100-8000) — Ground floors, grey mechs, heavy combat
+6. Parkour Section 3 (8000-9300) — Floor segments with 4 fire pit gaps, tight timing
+7. Final Push (9300-10100) — Ground floor, heavy enemies + mech
+8. Parkour Section 4 (10100-10800) — Pre-boss gauntlet, 3 fire pit gaps
+9. Boss Arena (11000-11900) — Siege Tank boss fight
+
+**New Mechanics:**
+
+| Mechanic | Description |
+|----------|-------------|
+| Fire Pits | Fireballs that launch upward from floor gaps with gravity arc (shoot up, fall back down). Timed cycle with SFX on launch. Player must time jumps between launches. Uses fire-ball animation rotated upward. |
+| Double Jump Perk | Earned from enemy drops (12% chance, orange "2J" orb) or fixed drops before parkour sections. Lost on damage (unless shield active). Player starts with single jump only. |
+| Pit Death | Falling through any floor gap is instant death. Respawn at last checkpoint. |
 
 ### Level 5: Core Breach
 

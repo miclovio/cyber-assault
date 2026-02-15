@@ -27,11 +27,9 @@ class CollisionManager {
             bullet.deactivate();
         });
 
-        // Enemy bullets vs Platforms (disabled during boss fights so aerial boss bullets reach the player)
+        // Enemy bullets vs Platforms
         scene.physics.add.collider(scene.weaponSystem.enemyBullets, platforms, (bullet) => {
             bullet.deactivate();
-        }, (bullet, platform) => {
-            return !scene.bossActive;
         });
 
         // Enemies vs Platforms (ghosts phase through, one-way platforms)
@@ -198,6 +196,19 @@ class CollisionManager {
                 scene.explodeGrenade(grenade);
             });
         }
+    }
+
+    setupFirePits() {
+        const scene = this.scene;
+        if (!scene.firePits || scene.firePits.length === 0) return;
+
+        scene.firePits.forEach(pit => {
+            scene.physics.add.overlap(scene.player, pit.zone, () => {
+                if (!pit.isOn) return;
+                if (scene.player.isDead || scene.player.isInvulnerable) return;
+                scene.player.takeDamage(1);
+            });
+        });
     }
 
     setupLaserGates() {
