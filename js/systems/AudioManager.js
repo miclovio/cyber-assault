@@ -3,13 +3,30 @@
 // ============================================================================
 
 class AudioManager {
+    static VOLUME_KEY = 'cyber-assault-volume';
+
     constructor(scene) {
         this.scene = scene;
         this.sounds = {};
         this.enabled = true;
+        const saved = localStorage.getItem(AudioManager.VOLUME_KEY);
+        this.masterVolume = saved !== null ? parseFloat(saved) : 0.75;
+    }
+
+    getMasterVolume() {
+        return this.masterVolume;
+    }
+
+    setMasterVolume(value) {
+        this.masterVolume = Phaser.Math.Clamp(value, 0, 1);
+        localStorage.setItem(AudioManager.VOLUME_KEY, this.masterVolume.toString());
+        // Apply globally — scales all currently playing sounds instantly
+        this.scene.sound.volume = this.masterVolume;
     }
 
     init() {
+        // Apply saved volume to Phaser's global sound manager
+        this.scene.sound.volume = this.masterVolume;
         try {
             this.sounds['sfx-jump'] = this.scene.sound.add('sfx-jump', { volume: 0.4 });
             this.sounds['sfx-laser'] = this.scene.sound.add('sfx-laser', { volume: 0.3 });
@@ -44,6 +61,10 @@ class AudioManager {
                 rate: rate
             });
         }
+    }
+
+    playMusic(key, loop = true, baseVolume = 0.5) {
+        this.scene.sound.play(key, { loop, volume: baseVolume });
     }
 
     destroy() {

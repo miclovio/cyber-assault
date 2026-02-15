@@ -265,7 +265,10 @@ class GameScene extends Phaser.Scene {
                 this.togglePause(gamepadStart ? 'gamepad' : 'keyboard');
             }
         }
-        if (this.isPaused) return;
+        if (this.isPaused) {
+            if (this._volUpdate) this._volUpdate();
+            return;
+        }
 
         // Handle scene transitions (reliable delta-timer, no camera events)
         if (this.sceneTransition) {
@@ -1214,9 +1217,59 @@ class GameScene extends Phaser.Scene {
                 fontSize: '16px', fontFamily: 'monospace', color: '#aaaaaa'
             }).setOrigin(0.5);
 
-            this.pauseOverlay.add([bg, title, hint]);
+            // Volume slider
+            const sliderX = GAME_WIDTH / 2;
+            const sliderY = GAME_HEIGHT / 2 + 80;
+            const sliderW = 200;
+            const vol = this.audioManager.getMasterVolume();
 
-            // If touch mode, allow tapping the overlay to resume
+            const volLabel = this.add.text(sliderX - sliderW / 2 - 60, sliderY, 'VOLUME', {
+                fontSize: '13px', fontFamily: 'monospace', color: '#ffffff'
+            }).setOrigin(0, 0.5);
+            const track = this.add.rectangle(sliderX, sliderY, sliderW, 10, 0x333333).setOrigin(0.5);
+            const fill = this.add.rectangle(sliderX - sliderW / 2, sliderY, sliderW * vol, 8, 0x00ffff).setOrigin(0, 0.5);
+            const handle = this.add.rectangle(sliderX - sliderW / 2 + sliderW * vol, sliderY, 6, 16, 0xffffff).setOrigin(0.5);
+            const pctText = this.add.text(sliderX + sliderW / 2 + 12, sliderY, `${Math.round(vol * 100)}%`, {
+                fontSize: '13px', fontFamily: 'monospace', color: '#aaaaaa'
+            }).setOrigin(0, 0.5);
+
+            const updateSlider = (v) => {
+                v = Phaser.Math.Clamp(v, 0, 1);
+                this.audioManager.setMasterVolume(v);
+                fill.width = sliderW * v;
+                handle.x = sliderX - sliderW / 2 + sliderW * v;
+                pctText.setText(`${Math.round(v * 100)}%`);
+            };
+
+            // Click/drag on track
+            const hitZone = this.add.rectangle(sliderX, sliderY, sliderW + 20, 30, 0x000000, 0).setOrigin(0.5).setInteractive();
+            hitZone.on('pointerdown', (ptr) => {
+                const localX = ptr.x - (sliderX - sliderW / 2);
+                updateSlider(localX / sliderW);
+            });
+            hitZone.on('pointermove', (ptr) => {
+                if (ptr.isDown) {
+                    const localX = ptr.x - (sliderX - sliderW / 2);
+                    updateSlider(localX / sliderW);
+                }
+            });
+
+            // LEFT/RIGHT keys to adjust
+            this._volLeft = this.input.keyboard.addKey('LEFT');
+            this._volRight = this.input.keyboard.addKey('RIGHT');
+            this._volUpdate = () => {
+                if (!this.isPaused) return;
+                if (Phaser.Input.Keyboard.JustDown(this._volLeft)) {
+                    updateSlider(this.audioManager.getMasterVolume() - 0.1);
+                }
+                if (Phaser.Input.Keyboard.JustDown(this._volRight)) {
+                    updateSlider(this.audioManager.getMasterVolume() + 0.1);
+                }
+            };
+
+            this.pauseOverlay.add([bg, title, hint, volLabel, track, fill, handle, pctText, hitZone]);
+
+            // If touch mode, allow tapping the bg (not slider) to resume
             if (inputMode === 'touch') {
                 bg.setInteractive();
                 bg.on('pointerdown', () => this.togglePause('touch'));
@@ -1228,6 +1281,11 @@ class GameScene extends Phaser.Scene {
             this.tweens.resumeAll();
             this.time.paused = false;
             this.sound.resumeAll();
+
+            // Clean up volume keys
+            if (this._volLeft) { this._volLeft.destroy(); this._volLeft = null; }
+            if (this._volRight) { this._volRight.destroy(); this._volRight = null; }
+            this._volUpdate = null;
 
             // Remove overlay
             if (this.pauseOverlay) {
