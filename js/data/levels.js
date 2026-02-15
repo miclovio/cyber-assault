@@ -205,11 +205,8 @@ const LEVEL_DATA = {
                 { type: 'grey_mech', x: 9900, y: 350, config: { patrolDir: -1, patrolRange: 150 } },
                 { type: 'grunt', x: 9700, y: 240, config: { patrolDir: 1, patrolRange: 60 } }
             ]},
-            { x: 11100, enemies: [
-                { type: 'heavy', x: 11200, y: 370, config: {} },
-                { type: 'grunt', x: 11300, y: 380, config: { patrolDir: -1 } },
-                { type: 'heavy', x: 11400, y: 370, config: {} },
-                { type: 'grunt', x: 11500, y: 240, config: { patrolDir: 1, patrolRange: 80 } }
+            { x: 9950, enemies: [
+                { type: 'heavy', x: 10000, y: 370, config: { patrolDir: -1 } }
             ]}
         ],
         checkpoints: [

@@ -93,40 +93,20 @@ class VictoryScene extends Phaser.Scene {
             }).setOrigin(0.5);
         });
 
-        // Return to menu
-        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-        this._transitioning = false;
-        this.time.delayedCall(3000, () => {
-            const menuText = this.add.text(w / 2, 400,
-                isTouchDevice ? 'TAP FOR MENU' : 'PRESS ENTER FOR MENU', {
-                fontSize: '16px', fontFamily: 'monospace', color: '#ffffff'
-            }).setOrigin(0.5);
-
-            this.tweens.add({
-                targets: menuText,
-                alpha: 0.3,
-                duration: 600,
-                yoyo: true,
-                repeat: -1
-            });
-
-            const goToMenu = () => {
-                if (this._transitioning) return;
-                this._transitioning = true;
-                this.cameras.main.fadeOut(500, 0, 0, 0);
-                this.cameras.main.once('camerafadeoutcomplete', () => {
-                    this.scene.start('MenuScene');
-                });
-            };
-            this.input.keyboard.once('keydown-ENTER', goToMenu);
-            this.input.once('pointerdown', goToMenu);
-            this._goToMenu = goToMenu;
-            this._menuReady = true;
-        });
-
         // Gamepad polling
         this._gp = new GamepadControls(this);
         this._menuReady = false;
+        this._transitioning = false;
+        this._initialsActive = false;
+
+        // After rank shows, check for high score
+        this.time.delayedCall(3000, () => {
+            if (Leaderboard.isHighScore(this.finalScore)) {
+                this._showInitialsEntry(w, h);
+            } else {
+                this._showMenuPrompt(w, h);
+            }
+        });
 
         // Music
         this.sound.stopAll();
@@ -135,8 +115,137 @@ class VictoryScene extends Phaser.Scene {
         this.cameras.main.fadeIn(1000, 0, 0, 0);
     }
 
+    _showInitialsEntry(w, y) {
+        this._initialsActive = true;
+        this._initials = ['A', 'A', 'A'];
+        this._initialSlot = 0;
+
+        // "NEW HIGH SCORE!" label
+        this.add.text(w / 2, 370, 'NEW HIGH SCORE!', {
+            fontSize: '16px', fontFamily: 'monospace', color: '#ffcc00', fontStyle: 'bold',
+            stroke: '#332200', strokeThickness: 3
+        }).setOrigin(0.5);
+
+        // 3-letter display
+        this._initialTexts = [];
+        for (let i = 0; i < 3; i++) {
+            const t = this.add.text(w / 2 - 30 + i * 30, 400, 'A', {
+                fontSize: '24px', fontFamily: 'monospace', color: '#888888', fontStyle: 'bold'
+            }).setOrigin(0.5);
+            this._initialTexts.push(t);
+        }
+        this._updateInitialsDisplay();
+
+        // Keyboard: A-Z direct type, backspace, enter
+        this._keyHandler = (e) => {
+            if (!this._initialsActive) return;
+            const key = e.key.toUpperCase();
+            if (key.length === 1 && key >= 'A' && key <= 'Z') {
+                this._initials[this._initialSlot] = key;
+                this._updateInitialsDisplay();
+                if (this._initialSlot < 2) this._initialSlot++;
+                this._updateInitialsDisplay();
+            } else if (e.key === 'Backspace') {
+                if (this._initialSlot > 0) this._initialSlot--;
+                this._updateInitialsDisplay();
+            } else if (e.key === 'Enter') {
+                this._confirmInitials();
+            }
+        };
+        this.input.keyboard.on('keydown', this._keyHandler);
+
+        // Gamepad state tracking
+        this._gpRepeatTimer = 0;
+        this._gpLastDir = null;
+    }
+
+    _updateInitialsDisplay() {
+        for (let i = 0; i < 3; i++) {
+            this._initialTexts[i].setText(this._initials[i]);
+            this._initialTexts[i].setColor(i === this._initialSlot ? '#00ffff' : '#888888');
+        }
+    }
+
+    _confirmInitials() {
+        if (!this._initialsActive) return;
+        this._initialsActive = false;
+        this.input.keyboard.off('keydown', this._keyHandler);
+
+        const name = this._initials.join('');
+        Leaderboard.addScore(name, this.finalScore, 5);
+
+        // Flash all letters gold
+        this._initialTexts.forEach(t => t.setColor('#ffcc00'));
+
+        this.time.delayedCall(500, () => {
+            this._showMenuPrompt(GAME_WIDTH, GAME_HEIGHT);
+        });
+    }
+
+    _showMenuPrompt(w, h) {
+        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        const menuText = this.add.text(w / 2, 430,
+            isTouchDevice ? 'TAP FOR MENU' : 'PRESS ENTER FOR MENU', {
+            fontSize: '16px', fontFamily: 'monospace', color: '#ffffff'
+        }).setOrigin(0.5);
+
+        this.tweens.add({
+            targets: menuText,
+            alpha: 0.3,
+            duration: 600,
+            yoyo: true,
+            repeat: -1
+        });
+
+        const goToMenu = () => {
+            if (this._transitioning) return;
+            this._transitioning = true;
+            this.cameras.main.fadeOut(500, 0, 0, 0);
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+                this.scene.start('MenuScene');
+            });
+        };
+        this.input.keyboard.once('keydown-ENTER', goToMenu);
+        this.input.once('pointerdown', goToMenu);
+        this._goToMenu = goToMenu;
+        this._menuReady = true;
+    }
+
     update() {
         this._gp.update();
+
+        // Gamepad initials entry
+        if (this._initialsActive && this._gp.enabled) {
+            const pad = navigator.getGamepads()[0];
+            if (pad) {
+                // D-pad up/down to cycle letter
+                const up = pad.buttons[12] && pad.buttons[12].pressed;
+                const down = pad.buttons[13] && pad.buttons[13].pressed;
+                const left = pad.buttons[14] && pad.buttons[14].pressed;
+                const right = pad.buttons[15] && pad.buttons[15].pressed;
+
+                const dir = up ? 'up' : down ? 'down' : left ? 'left' : right ? 'right' : null;
+                if (dir && dir !== this._gpLastDir) {
+                    this._gpLastDir = dir;
+                    const code = this._initials[this._initialSlot].charCodeAt(0);
+                    if (dir === 'up') {
+                        this._initials[this._initialSlot] = String.fromCharCode(code === 65 ? 90 : code - 1);
+                    } else if (dir === 'down') {
+                        this._initials[this._initialSlot] = String.fromCharCode(code === 90 ? 65 : code + 1);
+                    } else if (dir === 'left' && this._initialSlot > 0) {
+                        this._initialSlot--;
+                    } else if (dir === 'right' && this._initialSlot < 2) {
+                        this._initialSlot++;
+                    }
+                    this._updateInitialsDisplay();
+                }
+                if (!dir) this._gpLastDir = null;
+
+                // A button to confirm
+                if (this._gp.confirm) this._confirmInitials();
+            }
+        }
+
         if (this._menuReady && this._gp.confirm) this._goToMenu();
     }
 }
