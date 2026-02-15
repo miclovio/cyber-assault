@@ -8,7 +8,7 @@ const LEVEL_DATA = {
     // ========================================================================
     1: {
         name: 'Industrial Base',
-        width: 12000,
+        width: 13200,
         height: GAME_HEIGHT,
         playerStart: { x: 100, y: 350 },
         backgrounds: [
@@ -96,12 +96,15 @@ const LEVEL_DATA = {
             { x: 10680, y: 420, w: 140, h: 30 },  // gap 140px, fire
             { x: 10960, y: 420, w: 160, h: 30 },  // gap 140px, fire
 
-            // ── Boss Approach (11120-12000) ──
+            // ── Pre-Boss Combat (11120-12000) ──
             { x: 11120, y: 420, w: 880, h: 30 },
 
             // Elevated platforms
             { x: 11200, y: 330, w: 180, h: 20 },
-            { x: 11500, y: 270, w: 150, h: 20 }
+            { x: 11500, y: 270, w: 150, h: 20 },
+
+            // ── Empty Buffer → Boss Arena (12000-13200) ──
+            { x: 12000, y: 420, w: 1200, h: 30 }
         ],
         firePits: [
             // Parkour 1 — fire in each gap between floor segments
@@ -205,8 +208,12 @@ const LEVEL_DATA = {
                 { type: 'grey_mech', x: 9900, y: 350, config: { patrolDir: -1, patrolRange: 150 } },
                 { type: 'grunt', x: 9700, y: 240, config: { patrolDir: 1, patrolRange: 60 } }
             ]},
-            { x: 9950, enemies: [
-                { type: 'heavy', x: 10000, y: 370, config: { patrolDir: -1 } }
+            // Pre-Boss Combat (11120-12000)
+            { x: 11100, enemies: [
+                { type: 'heavy', x: 11200, y: 370, config: {} },
+                { type: 'grunt', x: 11300, y: 380, config: { patrolDir: -1 } },
+                { type: 'heavy', x: 11400, y: 370, config: {} },
+                { type: 'grunt', x: 11500, y: 240, config: { patrolDir: 1, patrolRange: 80 } }
             ]}
         ],
         checkpoints: [
@@ -221,7 +228,8 @@ const LEVEL_DATA = {
             { x: 7800, y: 380 },   // before parkour 3
             { x: 9300, y: 380 },   // after parkour 3
             { x: 9900, y: 380 },   // before parkour 4
-            { x: 11120, y: 380 }   // boss approach
+            { x: 11120, y: 380 },  // pre-boss combat
+            { x: 12200, y: 380 }   // boss arena
         ],
         fixedDrops: [
             { x: 1800, y: 380, type: 'DOUBLE_JUMP' },  // before parkour 1
@@ -232,10 +240,10 @@ const LEVEL_DATA = {
         ],
         boss: {
             type: 'TANK',
-            x: 11750,
+            x: 12900,
             y: 370,
-            arenaStart: 11000,
-            arenaEnd: 11900,
+            arenaStart: 12200,
+            arenaEnd: 13100,
             name: 'SIEGE TANK'
         }
     },

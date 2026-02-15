@@ -116,11 +116,11 @@ class MenuScene extends Phaser.Scene {
 
     _createLeaderboard(w, h) {
         const scores = Leaderboard.getScores();
-        const x = 670;  // right side
+        const x = 600;  // left edge of leaderboard
         const startY = 100;
 
-        // Title
-        this.add.text(x, startY, 'HIGH SCORES', {
+        // Title (centered over the leaderboard column)
+        this.add.text(670, startY, 'HIGH SCORES', {
             fontSize: '14px', fontFamily: 'monospace', color: '#00ffff', fontStyle: 'bold',
             stroke: '#003333', strokeThickness: 2
         }).setOrigin(0.5);
@@ -135,11 +135,11 @@ class MenuScene extends Phaser.Scene {
                 const color = i < 3 ? '#ffff00' : '#888888';
                 this.add.text(x, y, `${rank} ${entry.name}  ${entry.score.toString().padStart(7, ' ')}  L${entry.level}`, {
                     fontSize: '12px', fontFamily: 'monospace', color: color
-                }).setOrigin(0.5);
+                }).setOrigin(0);
             } else {
                 this.add.text(x, y, `${rank} ---`, {
                     fontSize: '12px', fontFamily: 'monospace', color: '#444444'
-                }).setOrigin(0.5);
+                }).setOrigin(0);
             }
         }
     }
