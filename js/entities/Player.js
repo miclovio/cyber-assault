@@ -477,7 +477,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             this.state = newState;
             if (prevState === 'crouch-shoot' && newState === 'crouch') {
                 // Play crouch from last frame (fully crouched) to avoid stand-up transition
-                this.play({ key: 'player-crouch-gun', startFrame: 2 });
+                this.play({ key: 'player-crouch', startFrame: 2 });
             } else {
                 this.playAnimation();
             }
@@ -507,7 +507,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                 if (this._aimCat === 'diag-up') this.play('player-run-diag-gun', true);
                 else this.play('player-run-gun', true);
                 break;
-            case 'crouch': this.play('player-crouch-gun', true); break;
+            case 'crouch': this.play('player-crouch', true); break;
             case 'crouch-shoot': this.play('player-crouch-shoot', true); break;
             case 'die': this.play('player-die', true); break;
             case 'climb': this.play('player-climb', true); break;

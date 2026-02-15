@@ -112,9 +112,9 @@ class EnemyBase extends Phaser.Physics.Arcade.Sprite {
 
     isOnScreen() {
         const cam = this.scene.cameras.main;
-        return this.x > cam.scrollX - 50 &&
-               this.x < cam.scrollX + cam.width + 50 &&
-               this.y > cam.scrollY - 50 &&
-               this.y < cam.scrollY + cam.height + 50;
+        return this.x > cam.scrollX - 200 &&
+               this.x < cam.scrollX + cam.width + 300 &&
+               this.y > cam.scrollY - 100 &&
+               this.y < cam.scrollY + cam.height + 100;
     }
 }

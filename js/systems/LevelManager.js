@@ -98,6 +98,9 @@ class LevelManager {
             case 'flying_eye':
                 enemy = new Flyer(this.scene, x, y, { ...config, variant: 'eye' });
                 break;
+            case 'octopus':
+                enemy = new Flyer(this.scene, x, y, { ...config, variant: 'octopus' });
+                break;
             case 'heavy':
                 enemy = new Heavy(this.scene, x, y, config);
                 break;
@@ -109,6 +112,9 @@ class LevelManager {
                 break;
             case 'turret':
                 enemy = new Turret(this.scene, x, y, config);
+                break;
+            case 'v1_turret':
+                enemy = new Turret(this.scene, x, y, { ...config, variant: 'v1' });
                 break;
             case 'grey_mech':
                 enemy = new Mech(this.scene, x, y, config);

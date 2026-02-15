@@ -24,12 +24,13 @@ const PLAYER_CONFIG = {
 const ENEMY_CONFIG = {
     GRUNT: { hp: 1, speed: 60, score: 150, fireRate: 1800, detectionRange: 400 },
     FLYER: { hp: 1, speed: 80, score: 200, amplitude: 50, frequency: 0.003, diveSpeed: 220 },
-    FLYING_EYE: { hp: 2, speed: 100, score: 250, amplitude: 40, frequency: 0.004, diveSpeed: 250 },
+    FLYING_EYE: { hp: 1, speed: 100, score: 250, amplitude: 40, frequency: 0.004, diveSpeed: 250 },
+    OCTOPUS: { hp: 2, speed: 70, score: 300, amplitude: 45, frequency: 0.003, diveSpeed: 200 },
     HEAVY: { hp: 6, speed: 40, score: 400, fireRate: 1500, burstCount: 3, burstDelay: 200 },
     GHOST: { hp: 2, speed: 55, score: 300, floatSpeed: 90 },
     TURRET: { hp: 5, speed: 0, score: 250, fireRate: 1400, detectionRange: 500 },
     GREY_MECH: { hp: 10, speed: 35, score: 800, fireRate: 2000, burstCount: 4, burstDelay: 180, detectionRange: 450 },
-    CYAN_MECH: { hp: 8, speed: 40, score: 1000, fireRate: 1800, burstCount: 4, burstDelay: 160, detectionRange: 500 },
+    CYAN_MECH: { hp: 10, speed: 40, score: 1000, fireRate: 1800, burstCount: 4, burstDelay: 160, detectionRange: 500 },
     ORANGE_MECH: { hp: 10, speed: 45, score: 1200, fireRate: 1600, burstCount: 5, burstDelay: 150, detectionRange: 550 },
     BLUE_MECH: { hp: 12, speed: 50, score: 1500, fireRate: 1400, burstCount: 5, burstDelay: 140, detectionRange: 600 },
     GREEN_MECH: { hp: 20, speed: 55, score: 2000, fireRate: 1200, burstCount: 6, burstDelay: 120, detectionRange: 650 }
