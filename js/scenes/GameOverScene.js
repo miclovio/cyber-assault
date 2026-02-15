@@ -41,12 +41,14 @@ class GameOverScene extends Phaser.Scene {
         this._initialsActive = false;
         this._optionsReady = false;
 
-        // Check for high score
-        if (Leaderboard.isHighScore(this.finalScore)) {
-            this._showInitialsEntry(w, h);
-        } else {
-            this._showOptions(w, h);
-        }
+        // Load scores from Firebase then check for high score
+        Leaderboard.loadScores().then(() => {
+            if (Leaderboard.isHighScore(this.finalScore)) {
+                this._showInitialsEntry(w, h);
+            } else {
+                this._showOptions(w, h);
+            }
+        });
 
         // Music
         this.sound.stopAll();
@@ -116,12 +118,11 @@ class GameOverScene extends Phaser.Scene {
         this.input.keyboard.off('keydown', this._keyHandler);
 
         const name = this._initials.join('');
-        Leaderboard.addScore(name, this.finalScore, this.levelReached);
 
         // Flash all letters gold
         this._initialTexts.forEach(t => t.setColor('#ffcc00'));
 
-        this.time.delayedCall(500, () => {
+        Leaderboard.addScore(name, this.finalScore, this.levelReached).then(() => {
             this._showOptions(GAME_WIDTH, GAME_HEIGHT);
         });
     }
