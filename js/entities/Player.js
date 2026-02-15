@@ -440,6 +440,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             newState = 'throw';
         } else if (this.isClimbing) {
             newState = 'climb';
+        } else if (!onGround && firing) {
+            newState = 'jump-gun';
         } else if (!onGround) {
             newState = 'jump';
         } else if (this.isCrawling && moving) {
@@ -495,7 +497,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                 else if (this._aimCat === 'diag-up') this.play('player-shoot-diag-up', true);
                 else this.play('player-shoot', true);
                 break;
-            case 'jump': this.play('player-jump-gun', true); break;
+            case 'jump': this.play('player-jump', true); break;
+            case 'jump-gun': this.play('player-jump-gun', true); break;
             case 'run':
                 if (this._aimCat === 'diag-up') this.play('player-run-diag-nogun', true);
                 else this.play('player-run', true);
