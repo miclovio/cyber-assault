@@ -31,7 +31,7 @@ const WEAPONS = {
         fireRate: 20,
         bulletCount: 1,
         spread: 0,
-        damage: 2,
+        damage: 1,
         bulletSpeed: 700,
         bulletKey: 'bullet1',
         color: 0x00ffff
@@ -50,10 +50,11 @@ const WEAPONS = {
 };
 
 const POWERUP_TYPES = {
-    SPREAD: { weapon: 'SPREAD', label: 'S', color: 0xff6600, dropRate: 0.30 },
-    LASER:  { weapon: 'LASER',  label: 'L', color: 0x00ffff, dropRate: 0.20 },
-    RAPID:  { weapon: 'RAPID',  label: 'R', color: 0xffff00, dropRate: 0.25 },
-    SHIELD: { weapon: null,     label: 'B', color: 0x0088ff, dropRate: 0.10 },
-    HEALTH: { weapon: null,     label: '+', color: 0x00ff00, dropRate: 0.10 },
-    LIFE:   { weapon: null,     label: '1UP', color: 0xff00ff, dropRate: 0.05 }
+    SPREAD:      { weapon: 'SPREAD', label: 'S',   color: 0xff6600, dropRate: 0.25 },
+    LASER:       { weapon: 'LASER',  label: 'L',   color: 0x00ffff, dropRate: 0.17 },
+    RAPID:       { weapon: 'RAPID',  label: 'R',   color: 0xffff00, dropRate: 0.21 },
+    SHIELD:      { weapon: null,     label: 'B',   color: 0x0088ff, dropRate: 0.10 },
+    HEALTH:      { weapon: null,     label: '+',   color: 0x00ff00, dropRate: 0.10 },
+    LIFE:        { weapon: null,     label: '1UP', color: 0xff00ff, dropRate: 0.05 },
+    DOUBLE_JUMP: { weapon: null,     label: '2J',  color: 0xff8800, dropRate: 0.12 }
 };

@@ -23,7 +23,7 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
         // Track spawn position for max range
         this.spawnX = x;
         this.spawnY = y;
-        this.maxRange = isPlayerBullet ? 300 : (isBoss ? 600 : 250);
+        this.maxRange = isPlayerBullet ? 400 : (isBoss ? 600 : 250);
 
         // Boss bullets use animated sprites, others use static texture
         if (isBoss) {

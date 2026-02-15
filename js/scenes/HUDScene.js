@@ -55,6 +55,18 @@ class HUDScene extends Phaser.Scene {
         this.shieldIcon.setVisible(false);
         this.shieldText.setVisible(false);
 
+        // Double jump indicator (shown when double jump perk is active)
+        this.djIcon = this.add.graphics();
+        this.djIcon.fillStyle(0xff8800, 0.8);
+        this.djIcon.fillRoundedRect(0, 0, 52, 16, 4);
+        this.djIcon.setPosition(margin + 132, 30);
+        this.djText = this.add.text(margin + 158, 38, '2J', {
+            fontSize: '10px', fontFamily: 'monospace', color: '#ffffff', fontStyle: 'bold',
+            stroke: '#000000', strokeThickness: 3
+        }).setOrigin(0.5, 0.5);
+        this.djIcon.setVisible(false);
+        this.djText.setVisible(false);
+
         // Weapon indicator
         this.weaponText = this.add.text(GAME_WIDTH - margin, margin, 'PULSE RIFLE', {
             fontSize: '14px', fontFamily: 'monospace', color: '#00ffff', fontStyle: 'bold',
@@ -104,6 +116,7 @@ class HUDScene extends Phaser.Scene {
         gameScene.events.on('level-changed', this.updateLevel, this);
         gameScene.events.on('extra-life', this.showExtraLife, this);
         gameScene.events.on('player-shield-changed', this.updateShield, this);
+        gameScene.events.on('player-doublejump-changed', this.updateDoubleJump, this);
 
         // Touch controls (only visible on touch devices)
         this.touchControls = new TouchControls(this);
@@ -248,6 +261,35 @@ class HUDScene extends Phaser.Scene {
                     this.shieldText.setVisible(false);
                     this.shieldIcon.setAlpha(1);
                     this.shieldText.setAlpha(1);
+                }
+            });
+        }
+    }
+
+    updateDoubleJump(active) {
+        if (active) {
+            if (!this.djIcon.visible) {
+                this.djIcon.setVisible(true);
+                this.djText.setVisible(true);
+                this.djIcon.setScale(0);
+                this.djText.setScale(0);
+                this.tweens.add({
+                    targets: [this.djIcon, this.djText],
+                    scaleX: 1, scaleY: 1,
+                    duration: 300,
+                    ease: 'Back.easeOut'
+                });
+            }
+        } else {
+            this.tweens.add({
+                targets: [this.djIcon, this.djText],
+                alpha: 0,
+                duration: 300,
+                onComplete: () => {
+                    this.djIcon.setVisible(false);
+                    this.djText.setVisible(false);
+                    this.djIcon.setAlpha(1);
+                    this.djText.setAlpha(1);
                 }
             });
         }

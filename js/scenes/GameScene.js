@@ -54,6 +54,8 @@ class GameScene extends Phaser.Scene {
         this.createLaserGates(levelData);
         this.createExplosiveBarrels(levelData);
         this.createLockDoors(levelData);
+        this.firePits = [];
+        this.createFirePits(levelData);
 
         // Create player
         this.player = new Player(this, levelData.playerStart.x, levelData.playerStart.y);
@@ -61,7 +63,6 @@ class GameScene extends Phaser.Scene {
         this.player.lives = this.playerLives;
         this.player.currentWeapon = this.playerWeapon;
         this.player.grenadeEnabled = (this.currentLevel === 5);
-        if (this.currentLevel === 5) this.player.maxJumps = 1;
 
         // Setup camera
         this.cameras.main.setBounds(0, 0, levelData.width, levelData.height);
@@ -80,6 +81,7 @@ class GameScene extends Phaser.Scene {
         this.collisionManager.setupDestructibleWalls();
         this.collisionManager.setupExplosiveBarrels();
         this.collisionManager.setupLaserGates();
+        this.collisionManager.setupFirePits();
         this.collisionManager.setupLockDoors();
         this.collisionManager.setupGrenades();
 
@@ -254,6 +256,11 @@ class GameScene extends Phaser.Scene {
         // Update player
         this.player.update(time, delta);
 
+        // Pit death - kill player if they fall below the screen
+        if (this.player.y > GAME_HEIGHT + 50 && !this.player.isDead) {
+            this.player.die();
+        }
+
         // Update parallax
         this.parallaxManager.update();
 
@@ -262,6 +269,9 @@ class GameScene extends Phaser.Scene {
 
         // Update laser gates (toggle on/off)
         this.updateLaserGates(time);
+
+        // Update fire pits (toggle on/off)
+        this.updateFirePits(time);
 
         // Update ladder/crawl zone overlaps for player
         this.updatePlayerZones();
@@ -748,6 +758,92 @@ class GameScene extends Phaser.Scene {
                     gate.sprite.setVisible(false);
                     gate.sprite.setActive(false);
                     if (gate.zone.body) gate.zone.body.enable = false;
+                }
+            }
+        });
+    }
+
+    // ====================================================================
+    // Fire Pits
+    // ====================================================================
+    createFirePits(levelData) {
+        if (!levelData.firePits) return;
+
+        levelData.firePits.forEach(fp => {
+            // Fire-ball sprite — manual velocity/gravity (no physics body issues)
+            const launchY = fp.y + 30;  // start below floor level
+            const sprite = this.add.sprite(fp.x, launchY, 'fire-ball0');
+            sprite.play('fire-ball');
+            sprite.setAngle(-90);  // rotate to point upward
+            sprite.setScale(3);
+            sprite.setDepth(10);
+            sprite.setBlendMode(Phaser.BlendModes.ADD);
+            sprite.setVisible(false);
+
+            // Overlap zone for collision — stays at sprite position
+            const zone = this.add.rectangle(fp.x, launchY, 40, 40);
+            zone.setVisible(false);
+            this.physics.add.existing(zone, true);
+            zone.body.enable = false;
+
+            const pit = {
+                sprite: sprite,
+                zone: zone,
+                launchX: fp.x,
+                launchY: launchY,
+                launchVelocity: -350,
+                gravity: 400,
+                vy: 0,
+                offTime: fp.offTime || 2000,
+                state: 'waiting',
+                timer: fp.startOff ? (fp.offTime || 2000) : 500,
+                isOn: false
+            };
+
+            this.firePits.push(pit);
+        });
+    }
+
+    updateFirePits(time) {
+        if (!this.firePits.length) return;
+
+        const dt = this.game.loop.delta / 1000;  // seconds
+        this.firePits.forEach(pit => {
+            if (pit.state === 'waiting') {
+                pit.timer -= this.game.loop.delta;
+                if (pit.timer <= 0) {
+                    // Launch fire upward
+                    pit.state = 'firing';
+                    pit.isOn = true;
+                    pit.vy = pit.launchVelocity;
+                    pit.sprite.setPosition(pit.launchX, pit.launchY);
+                    pit.sprite.setAngle(-90);  // face upward on launch
+                    pit.sprite.setVisible(true);
+                    pit.zone.body.enable = true;
+                    this.audioManager.playSound('sfx-fireball', 0.25);
+                }
+            } else if (pit.state === 'firing' || pit.state === 'falling') {
+                // Apply gravity and move sprite
+                pit.vy += pit.gravity * dt;
+                pit.sprite.y += pit.vy * dt;
+
+                // Move overlap zone to match sprite
+                pit.zone.setPosition(pit.sprite.x, pit.sprite.y);
+                pit.zone.body.reset(pit.sprite.x, pit.sprite.y);
+
+                // Transition from firing to falling when velocity flips
+                if (pit.state === 'firing' && pit.vy > 0) {
+                    pit.state = 'falling';
+                    pit.sprite.setAngle(90);  // flip to face downward
+                }
+
+                // Fire has fallen back below floor level — reset
+                if (pit.state === 'falling' && pit.sprite.y > pit.launchY) {
+                    pit.state = 'waiting';
+                    pit.isOn = false;
+                    pit.timer = pit.offTime;
+                    pit.sprite.setVisible(false);
+                    pit.zone.body.enable = false;
                 }
             }
         });

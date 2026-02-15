@@ -96,6 +96,10 @@ class PowerUpSystem {
             this.scene.events.emit('player-lives-changed', player.lives);
             this.scene.events.emit('extra-life');
             this.scene.audioManager.playSound('sfx-1up');
+        } else if (type === 'DOUBLE_JUMP') {
+            player.maxJumps = 2;
+            player.jumpsLeft = Math.max(player.jumpsLeft, 2);
+            this.scene.events.emit('player-doublejump-changed', true);
         }
 
         this.scene.audioManager.playSound('sfx-pickup');

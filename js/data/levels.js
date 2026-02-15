@@ -1,5 +1,5 @@
 // ============================================================================
-// CYBER ASSAULT - Level Definitions (All 4 Levels)
+// CYBER ASSAULT - Level Definitions (All 5 Levels)
 // ============================================================================
 
 const LEVEL_DATA = {
@@ -8,7 +8,7 @@ const LEVEL_DATA = {
     // ========================================================================
     1: {
         name: 'Industrial Base',
-        width: 8000,
+        width: 12000,
         height: GAME_HEIGHT,
         playerStart: { x: 100, y: 350 },
         backgrounds: [
@@ -21,37 +21,111 @@ const LEVEL_DATA = {
         platformCaps: true,
         platformTint: 0x88ccbb,
         platforms: [
-            // Ground floor - continuous with small gaps (all jumpable)
-            // Gaps are only 100px wide - easy to jump over
+            // ── Section 1: Intro (0-2000) ──
             { x: 0,    y: 420, w: 1400, h: 30 },
-            { x: 1500, y: 420, w: 1000, h: 30 },
-            { x: 2600, y: 420, w: 1200, h: 30 },
-            { x: 3900, y: 420, w: 1400, h: 30 },
-            { x: 5400, y: 420, w: 800,  h: 30 },
-            { x: 6300, y: 420, w: 1700, h: 30 },
+            { x: 1500, y: 420, w: 500,  h: 30 },
 
-            // Elevated platforms (all positioned OVER solid ground)
+            // Elevated platforms over ground
             { x: 300,  y: 330, w: 200, h: 20 },
             { x: 650,  y: 270, w: 150, h: 20 },
             { x: 1000, y: 310, w: 180, h: 20 },
             { x: 1600, y: 330, w: 200, h: 20 },
-            { x: 1900, y: 270, w: 150, h: 20 },
-            { x: 2700, y: 320, w: 200, h: 20 },
-            { x: 3000, y: 260, w: 180, h: 20 },
-            { x: 3400, y: 330, w: 150, h: 20 },
-            { x: 4400, y: 330, w: 150, h: 20 },
-            { x: 4700, y: 270, w: 200, h: 20 },
-            { x: 5000, y: 320, w: 180, h: 20 },
-            { x: 5500, y: 290, w: 200, h: 20 },
-            { x: 5800, y: 330, w: 150, h: 20 },
-            { x: 6500, y: 300, w: 180, h: 20 },
-
-            // High platforms (over solid ground for bonus/powerups)
+            // High bonus platform
             { x: 700,  y: 190, w: 120, h: 20 },
-            { x: 2800, y: 180, w: 120, h: 20 },
-            { x: 4600, y: 190, w: 120, h: 20 }
+
+            // ── Parkour Section 1 (2000-2800) ──
+            // Floor segments with gaps between them — fire in the gaps
+            { x: 2000, y: 420, w: 200, h: 30 },
+            { x: 2350, y: 420, w: 200, h: 30 },  // gap 150px, fire between
+            { x: 2700, y: 420, w: 200, h: 30 },  // gap 150px, fire between
+
+            // ── Section 2: Mid Combat (2900-5000) ──
+            { x: 2900, y: 420, w: 1000, h: 30 },
+            { x: 4000, y: 420, w: 1000, h: 30 },
+
+            // Elevated platforms
+            { x: 2950, y: 320, w: 200, h: 20 },
+            { x: 3200, y: 260, w: 180, h: 20 },
+            { x: 3500, y: 330, w: 150, h: 20 },
+            { x: 4100, y: 330, w: 150, h: 20 },
+            { x: 4400, y: 270, w: 200, h: 20 },
+            { x: 4700, y: 320, w: 180, h: 20 },
+            // High bonus platform
+            { x: 3100, y: 180, w: 120, h: 20 },
+
+            // ── Parkour Section 2 (5000-5800) ──
+            // More gaps, faster fire timing
+            { x: 5000, y: 420, w: 180, h: 30 },
+            { x: 5320, y: 420, w: 160, h: 30 },  // gap 140px, fire
+            { x: 5620, y: 420, w: 160, h: 30 },  // gap 140px, fire
+            { x: 5920, y: 420, w: 180, h: 30 },  // gap 140px, fire
+
+            // ── Section 3: Late Combat (6100-8000) ──
+            { x: 6100, y: 420, w: 900, h: 30 },
+            { x: 7100, y: 420, w: 900, h: 30 },
+
+            // Elevated platforms
+            { x: 6200, y: 290, w: 200, h: 20 },
+            { x: 6450, y: 330, w: 150, h: 20 },
+            { x: 6700, y: 270, w: 180, h: 20 },
+            { x: 7200, y: 320, w: 150, h: 20 },
+            { x: 7450, y: 270, w: 200, h: 20 },
+            { x: 7700, y: 300, w: 150, h: 20 },
+            // High bonus platform
+            { x: 6600, y: 190, w: 120, h: 20 },
+
+            // ── Parkour Section 3 (8000-8800) ──
+            // Hardest — more gaps, tight fire timing
+            { x: 8000, y: 420, w: 160, h: 30 },
+            { x: 8300, y: 420, w: 140, h: 30 },  // gap 140px, fire
+            { x: 8580, y: 420, w: 140, h: 30 },  // gap 140px, fire
+            { x: 8860, y: 420, w: 140, h: 30 },  // gap 140px, fire
+            { x: 9140, y: 420, w: 160, h: 30 },  // gap 140px, fire
+
+            // ── Section 4: Final Push (9300-10100) ──
+            { x: 9300, y: 420, w: 800, h: 30 },
+
+            // Elevated platforms
+            { x: 9400, y: 330, w: 200, h: 20 },
+            { x: 9700, y: 270, w: 180, h: 20 },
+
+            // ── Parkour Section 4 (10100-10800) ──
+            // Pre-boss gauntlet — 3 fire gaps
+            { x: 10100, y: 420, w: 160, h: 30 },
+            { x: 10400, y: 420, w: 140, h: 30 },  // gap 140px, fire
+            { x: 10680, y: 420, w: 140, h: 30 },  // gap 140px, fire
+            { x: 10960, y: 420, w: 160, h: 30 },  // gap 140px, fire
+
+            // ── Boss Approach (11120-12000) ──
+            { x: 11120, y: 420, w: 880, h: 30 },
+
+            // Elevated platforms
+            { x: 11200, y: 330, w: 180, h: 20 },
+            { x: 11500, y: 270, w: 150, h: 20 }
+        ],
+        firePits: [
+            // Parkour 1 — fire in each gap between floor segments
+            { x: 2275, y: 420, h: 80, onTime: 1200, offTime: 2200, startOff: true },
+            { x: 2625, y: 420, h: 80, onTime: 1200, offTime: 2200 },
+
+            // Parkour 2 — faster timing
+            { x: 5240, y: 420, h: 80, onTime: 1400, offTime: 1800, startOff: true },
+            { x: 5540, y: 420, h: 80, onTime: 1400, offTime: 1800 },
+            { x: 5840, y: 420, h: 80, onTime: 1200, offTime: 1600, startOff: true },
+
+            // Parkour 3 — tight timing
+            { x: 8230, y: 420, h: 80, onTime: 1200, offTime: 1500, startOff: true },
+            { x: 8510, y: 420, h: 80, onTime: 1200, offTime: 1500 },
+            { x: 8790, y: 420, h: 80, onTime: 1000, offTime: 1400, startOff: true },
+            { x: 9070, y: 420, h: 80, onTime: 1000, offTime: 1400 },
+
+            // Parkour 4 — pre-boss gauntlet
+            { x: 10330, y: 420, h: 80, onTime: 1200, offTime: 1400, startOff: true },
+            { x: 10610, y: 420, h: 80, onTime: 1200, offTime: 1400 },
+            { x: 10890, y: 420, h: 80, onTime: 1000, offTime: 1200, startOff: true }
         ],
         enemyTriggers: [
+            // Section 1: Intro (0-2000)
             { x: 300, enemies: [
                 { type: 'grunt', x: 500, y: 380, config: { patrolDir: -1, patrolRange: 150 } },
                 { type: 'grunt', x: 600, y: 380, config: { patrolDir: 1, patrolRange: 100 } }
@@ -64,62 +138,107 @@ const LEVEL_DATA = {
                 { type: 'grunt', x: 1400, y: 380, config: { patrolDir: 1 } },
                 { type: 'grunt', x: 1500, y: 280, config: { patrolDir: -1, patrolRange: 80 } }
             ]},
-            { x: 1800, enemies: [
-                { type: 'grunt', x: 1940, y: 240, config: { patrolDir: -1, patrolRange: 50 } },
-                { type: 'grunt', x: 2000, y: 380, config: {} }
+            { x: 1700, enemies: [
+                { type: 'grunt', x: 1800, y: 380, config: { patrolDir: -1, patrolRange: 50 } },
+                { type: 'grunt', x: 1900, y: 380, config: {} }
             ]},
-            { x: 2400, enemies: [
-                { type: 'grunt', x: 2600, y: 380, config: { patrolDir: -1 } },
-                { type: 'grunt', x: 2800, y: 380, config: {} },
-                { type: 'grunt', x: 2700, y: 210, config: { patrolDir: 1, patrolRange: 60 } }
+
+            // Section 2: Mid Combat (2900-5000)
+            // Ground: 2900-3900, 4000-5000
+            { x: 2950, enemies: [
+                { type: 'grunt', x: 3050, y: 380, config: { patrolDir: -1 } },
+                { type: 'grunt', x: 3200, y: 380, config: {} },
+                { type: 'grunt', x: 2950, y: 290, config: { patrolDir: 1, patrolRange: 60 } }
             ]},
-            { x: 3000, enemies: [
-                { type: 'grunt', x: 3050, y: 230, config: { patrolDir: 1, patrolRange: 60 } },
-                { type: 'heavy', x: 3200, y: 370, config: { patrolDir: -1 } }
+            { x: 3300, enemies: [
+                { type: 'grunt', x: 3350, y: 230, config: { patrolDir: 1, patrolRange: 60 } },
+                { type: 'heavy', x: 3500, y: 370, config: { patrolDir: -1 } }
             ]},
-            { x: 3500, enemies: [
-                { type: 'grunt', x: 3440, y: 300, config: { patrolDir: -1, patrolRange: 50 } },
-                { type: 'grunt', x: 3700, y: 380, config: {} },
-                { type: 'grunt', x: 3800, y: 380, config: { patrolDir: -1 } }
-            ]},
-            { x: 3900, enemies: [
-                { type: 'grey_mech', x: 4100, y: 350, config: { patrolDir: -1, patrolRange: 180 } }
+            { x: 3700, enemies: [
+                { type: 'grunt', x: 3750, y: 300, config: { patrolDir: -1, patrolRange: 50 } },
+                { type: 'grunt', x: 4100, y: 380, config: {} },
+                { type: 'grunt', x: 4200, y: 380, config: { patrolDir: -1 } }
             ]},
             { x: 4200, enemies: [
-                { type: 'heavy', x: 4400, y: 370, config: { patrolRange: 200 } },
-                { type: 'grunt', x: 4500, y: 380, config: {} },
-                { type: 'grunt', x: 4600, y: 260, config: { patrolDir: -1, patrolRange: 60 } }
+                { type: 'grey_mech', x: 4400, y: 350, config: { patrolDir: -1, patrolRange: 180 } }
             ]},
-            { x: 4800, enemies: [
-                { type: 'grunt', x: 5050, y: 290, config: { patrolDir: -1, patrolRange: 60 } },
-                { type: 'grunt', x: 5000, y: 380, config: { patrolDir: 1 } }
+            { x: 4600, enemies: [
+                { type: 'heavy', x: 4700, y: 370, config: { patrolRange: 200 } },
+                { type: 'grunt', x: 4800, y: 380, config: {} },
+                { type: 'grunt', x: 4700, y: 240, config: { patrolDir: -1, patrolRange: 60 } }
             ]},
-            { x: 5400, enemies: [
-                { type: 'heavy', x: 5600, y: 370, config: {} },
-                { type: 'grunt', x: 5700, y: 380, config: { patrolDir: -1 } },
-                { type: 'grunt', x: 5800, y: 280, config: { patrolRange: 60 } }
+
+            // Section 3: Late Combat (6100-8000)
+            // Ground: 6100-7000, 7100-8000
+            { x: 6200, enemies: [
+                { type: 'heavy', x: 6300, y: 370, config: {} },
+                { type: 'grunt', x: 6400, y: 380, config: { patrolDir: -1 } },
+                { type: 'grunt', x: 6200, y: 260, config: { patrolRange: 60 } }
             ]},
-            { x: 6000, enemies: [
-                { type: 'grunt', x: 6200, y: 380, config: {} },
-                { type: 'grunt', x: 6300, y: 380, config: { patrolDir: -1 } },
-                { type: 'grunt', x: 6540, y: 270, config: { patrolDir: 1, patrolRange: 60 } },
-                { type: 'heavy', x: 6500, y: 370, config: { patrolDir: -1 } }
+            { x: 6500, enemies: [
+                { type: 'grunt', x: 6600, y: 380, config: {} },
+                { type: 'grunt', x: 6700, y: 380, config: { patrolDir: -1 } },
+                { type: 'grunt', x: 6700, y: 240, config: { patrolDir: 1, patrolRange: 60 } },
+                { type: 'heavy', x: 6800, y: 370, config: { patrolDir: -1 } }
+            ]},
+            { x: 6900, enemies: [
+                { type: 'grey_mech', x: 7200, y: 350, config: { patrolDir: -1, patrolRange: 200 } }
+            ]},
+            { x: 7300, enemies: [
+                { type: 'heavy', x: 7400, y: 370, config: {} },
+                { type: 'grunt', x: 7500, y: 380, config: { patrolDir: -1 } },
+                { type: 'grunt', x: 7450, y: 240, config: { patrolDir: 1, patrolRange: 80 } }
+            ]},
+            { x: 7600, enemies: [
+                { type: 'grunt', x: 7700, y: 380, config: {} },
+                { type: 'heavy', x: 7800, y: 370, config: { patrolDir: -1 } }
+            ]},
+
+            // Section 4: Final Push (9300-10100) + Boss Approach (11120-12000)
+            // Ground: 9300-10100, then parkour 4, then 11120-12000
+            { x: 9400, enemies: [
+                { type: 'grunt', x: 9500, y: 380, config: { patrolDir: -1 } },
+                { type: 'grunt', x: 9600, y: 380, config: {} },
+                { type: 'heavy', x: 9650, y: 370, config: { patrolDir: -1 } }
+            ]},
+            { x: 9700, enemies: [
+                { type: 'grey_mech', x: 9900, y: 350, config: { patrolDir: -1, patrolRange: 150 } },
+                { type: 'grunt', x: 9700, y: 240, config: { patrolDir: 1, patrolRange: 60 } }
+            ]},
+            { x: 11100, enemies: [
+                { type: 'heavy', x: 11200, y: 370, config: {} },
+                { type: 'grunt', x: 11300, y: 380, config: { patrolDir: -1 } },
+                { type: 'heavy', x: 11400, y: 370, config: {} },
+                { type: 'grunt', x: 11500, y: 240, config: { patrolDir: 1, patrolRange: 80 } }
             ]}
         ],
         checkpoints: [
-            { x: 2000, y: 380 },
-            { x: 4000, y: 380 },
-            { x: 6000, y: 380 }
+            { x: 1000, y: 380 },   // mid intro
+            { x: 1800, y: 380 },   // before parkour 1
+            { x: 2900, y: 380 },   // after parkour 1
+            { x: 3500, y: 380 },   // mid combat 2a
+            { x: 4500, y: 380 },   // mid combat 2b
+            { x: 5000, y: 380 },   // before parkour 2
+            { x: 6100, y: 380 },   // after parkour 2
+            { x: 7100, y: 380 },   // mid combat 3
+            { x: 7800, y: 380 },   // before parkour 3
+            { x: 9300, y: 380 },   // after parkour 3
+            { x: 9900, y: 380 },   // before parkour 4
+            { x: 11120, y: 380 }   // boss approach
         ],
         fixedDrops: [
-            { x: 3000, y: 380, type: 'SHIELD' }
+            { x: 1800, y: 380, type: 'DOUBLE_JUMP' },  // before parkour 1
+            { x: 3500, y: 380, type: 'SHIELD' },
+            { x: 4900, y: 380, type: 'DOUBLE_JUMP' },   // before parkour 2
+            { x: 7900, y: 380, type: 'DOUBLE_JUMP' },   // before parkour 3
+            { x: 9900, y: 380, type: 'DOUBLE_JUMP' }    // before parkour 4
         ],
         boss: {
             type: 'TANK',
-            x: 7500,
+            x: 11750,
             y: 370,
-            arenaStart: 7000,
-            arenaEnd: 7900,
+            arenaStart: 11000,
+            arenaEnd: 11900,
             name: 'SIEGE TANK'
         }
     },
