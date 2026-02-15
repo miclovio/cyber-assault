@@ -18,6 +18,12 @@ class VictoryScene extends Phaser.Scene {
         // Background
         this.add.rectangle(w / 2, h / 2, w, h, 0x000011);
 
+        // Space marine close-up (behind text)
+        const marine = this.add.sprite(160, h / 2, 'run-gun1');
+        marine.setScale(10);
+        marine.setAlpha(0.25);
+        marine.play('player-run-gun');
+
         // Victory text
         this.add.text(w / 2, 80, 'MISSION COMPLETE', {
             fontSize: '40px', fontFamily: 'monospace', color: '#00ffff', fontStyle: 'bold',
@@ -99,9 +105,10 @@ class VictoryScene extends Phaser.Scene {
         this._transitioning = false;
         this._initialsActive = false;
 
-        // After rank shows, load scores then check for high score
+        // After rank shows, load scores, show leaderboard, check for high score
         this.time.delayedCall(3000, () => {
             Leaderboard.loadScores().then(() => {
+                this._createLeaderboard(w, h);
                 if (Leaderboard.isHighScore(this.finalScore)) {
                     this._showInitialsEntry(w, h);
                 } else {
@@ -115,6 +122,34 @@ class VictoryScene extends Phaser.Scene {
         this.sound.play('music-intro', { loop: true, volume: 0.5 });
 
         this.cameras.main.fadeIn(1000, 0, 0, 0);
+    }
+
+    _createLeaderboard(w, h) {
+        const scores = Leaderboard.getScores();
+        const x = 600;
+        const startY = 100;
+
+        this.add.text(670, startY, 'HIGH SCORES', {
+            fontSize: '14px', fontFamily: 'monospace', color: '#00ffff', fontStyle: 'bold',
+            stroke: '#003333', strokeThickness: 2
+        }).setOrigin(0.5);
+
+        for (let i = 0; i < 10; i++) {
+            const y = startY + 28 + i * 22;
+            const entry = scores[i];
+            const rank = `${(i + 1).toString().padStart(2, ' ')}.`;
+
+            if (entry) {
+                const color = i < 3 ? '#ffff00' : '#888888';
+                this.add.text(x, y, `${rank} ${entry.name}  ${entry.score.toString().padStart(7, ' ')}  L${entry.level}`, {
+                    fontSize: '12px', fontFamily: 'monospace', color: color
+                }).setOrigin(0);
+            } else {
+                this.add.text(x, y, `${rank} ---`, {
+                    fontSize: '12px', fontFamily: 'monospace', color: '#444444'
+                }).setOrigin(0);
+            }
+        }
     }
 
     _showInitialsEntry(w, y) {

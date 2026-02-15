@@ -28,18 +28,40 @@ class PreloadScene extends Phaser.Scene {
             fontSize: '32px', fontFamily: 'monospace', color: '#00ffff', fontStyle: 'bold'
         }).setOrigin(0.5);
 
-        const barBg = this.add.rectangle(w / 2, h / 2, 400, 20, 0x333333);
-        const bar = this.add.rectangle(w / 2 - 198, h / 2, 0, 16, 0x00ffff);
-        bar.setOrigin(0, 0.5);
+        // Slim loading bar with rounded corners and glow
+        const barX = w / 2 - 150;
+        const barY = h / 2 - 2;
+        const barW = 300;
+        const barH = 4;
+        const radius = 2;
 
-        this.loadText = this.add.text(w / 2, h / 2 + 30, 'Loading... 0%', {
+        // Background track (dark teal, rounded)
+        const bgGraphics = this.add.graphics();
+        bgGraphics.fillStyle(0x1a3333, 1);
+        bgGraphics.fillRoundedRect(barX, barY, barW, barH, radius);
+
+        // Glow layer (wider, soft)
+        const glowGraphics = this.add.graphics();
+        // Fill bar (cyan, rounded)
+        const barGraphics = this.add.graphics();
+
+        this.loadText = this.add.text(w / 2, h / 2 + 20, 'Loading... 0%', {
             fontSize: '14px', fontFamily: 'monospace', color: '#aaaaaa', fontStyle: 'bold',
             stroke: '#000000', strokeThickness: 3,
             shadow: { offsetX: 1, offsetY: 1, color: '#000000', blur: 3, fill: true }
         }).setOrigin(0.5);
 
         this.load.on('progress', (value) => {
-            bar.width = 396 * value;
+            const fillW = Math.max(barH, barW * value);
+
+            glowGraphics.clear();
+            glowGraphics.fillStyle(0x00ffff, 0.15);
+            glowGraphics.fillRoundedRect(barX, barY - 3, fillW, barH + 6, radius + 1);
+
+            barGraphics.clear();
+            barGraphics.fillStyle(0x00ffff, 1);
+            barGraphics.fillRoundedRect(barX, barY, fillW, barH, radius);
+
             this.loadText.setText(`Loading... ${Math.floor(value * 100)}%`);
         });
     }
