@@ -33,6 +33,12 @@ class MenuScene extends Phaser.Scene {
         // Dark overlay
         this.add.rectangle(w / 2, h / 2, w, h, 0x000000, 0.5);
 
+        // Space marine close-up (behind text)
+        const marine = this.add.sprite(160, h / 2, 'run-gun1');
+        marine.setScale(10);
+        marine.setAlpha(0.25);
+        marine.play('player-run-gun');
+
         // Title
         this.add.text(w / 2, 100, 'CYBER ASSAULT', {
             fontSize: '48px', fontFamily: 'monospace', color: '#00ffff', fontStyle: 'bold',
