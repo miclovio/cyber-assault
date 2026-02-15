@@ -89,6 +89,13 @@ class PreloadScene extends Phaser.Scene {
         for (let i = 1; i <= 2; i++) this.load.image(`crouch-shoot${i}`, `${base}/Crouch Shoot/sprites/crouch-shoot${i}.png`);
         // Shoot
         for (let i = 1; i <= 2; i++) this.load.image(`shoot${i}`, `${base}/Shoot/sprites/shoot${i}.png`);
+        this.load.image('shoot-up', `${base}/Shoot/sprites/shoot_3.png`);
+        this.load.image('shoot-diag-up', `${base}/Shoot/sprites/shoot5.png`);
+        this.load.image('shoot-diag-up-nogun', `${base}/Shoot/sprites/shoot3nogun.png`);
+        // Run with diagonal gun
+        for (let i = 1; i <= 10; i++) this.load.image(`run-diag-gun${i}`, `${base}/run with diag gun/dia-with-gun${i}.png`);
+        // Run without diagonal gun
+        for (let i = 1; i <= 10; i++) this.load.image(`run-diag-nogun${i}`, `${base}/run without diag gun/dia-with-gun${i}.png`);
         // Die
         for (let i = 1; i <= 3; i++) this.load.image(`die${i}`, `${base}/Die/sprites/die${i}.png`);
         // Climb
@@ -382,7 +389,12 @@ class PreloadScene extends Phaser.Scene {
         this.anims.create({ key: 'player-crouch', frames: this.frameKeys('crouch', 1, 3), frameRate: 8, repeat: 0 });
         this.anims.create({ key: 'player-crouch-gun', frames: this.frameKeys('crouch-gun', 1, 3), frameRate: 8, repeat: 0 });
         this.anims.create({ key: 'player-crouch-shoot', frames: this.frameKeys('crouch-shoot', 1, 2), frameRate: 10, repeat: 0 });
-        this.anims.create({ key: 'player-shoot', frames: this.frameKeys('shoot', 1, 2), frameRate: 10, repeat: 0 });
+        this.anims.create({ key: 'player-shoot', frames: this.frameKeys('shoot', 1, 2), frameRate: 10, repeat: -1 });
+        this.anims.create({ key: 'player-shoot-up', frames: [{ key: 'shoot-up' }], frameRate: 10, repeat: -1 });
+        this.anims.create({ key: 'player-shoot-diag-up', frames: [{ key: 'shoot-diag-up' }], frameRate: 10, repeat: -1 });
+        this.anims.create({ key: 'player-idle-diag-up', frames: [{ key: 'shoot-diag-up-nogun' }], frameRate: 10, repeat: -1 });
+        this.anims.create({ key: 'player-run-diag-gun', frames: this.frameKeys('run-diag-gun', 1, 10), frameRate: 12, repeat: -1 });
+        this.anims.create({ key: 'player-run-diag-nogun', frames: this.frameKeys('run-diag-nogun', 1, 10), frameRate: 12, repeat: -1 });
         this.anims.create({ key: 'player-die', frames: this.frameKeys('die', 1, 3), frameRate: 6, repeat: 0 });
         this.anims.create({ key: 'player-climb', frames: this.frameKeys('climb', 1, 6), frameRate: 8, repeat: -1 });
         this.anims.create({ key: 'player-crawl', frames: this.frameKeys('crawl', 1, 6), frameRate: 10, repeat: -1 });

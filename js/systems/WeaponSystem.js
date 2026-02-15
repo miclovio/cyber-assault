@@ -15,9 +15,11 @@ class WeaponSystem {
         const baseAngle = Math.atan2(player.aimY, player.aimX);
 
         // Spawn point offset from player center
-        const offsetX = player.facingRight ? 20 : -20;
+        const aimingUp = player.aimY === -1;
+        const aimingDiagUp = player.aimY < 0 && !aimingUp;
+        const offsetX = aimingUp ? 0 : aimingDiagUp ? (player.facingRight ? 20 : -20) : (player.facingRight ? 20 : -20);
         const isStanding = player.state === 'idle' || player.state === 'shoot';
-        const offsetY = player.isCrouching ? 10 : isStanding ? 3 : 6;
+        const offsetY = aimingDiagUp ? 1 : player.isCrouching ? 10 : isStanding ? 3 : 6;
         const spawnX = player.x + offsetX;
         const spawnY = player.y + offsetY;
 

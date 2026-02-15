@@ -22,7 +22,7 @@ const LEVEL_DATA = {
         platformTint: 0x88ccbb,
         platforms: [
             // ── Section 1: Intro (0-2000) ──
-            { x: 0,    y: 420, w: 1400, h: 30 },
+            { x: -200, y: 420, w: 1600, h: 30 },
             { x: 1500, y: 420, w: 500,  h: 30 },
 
             // Elevated platforms over ground
