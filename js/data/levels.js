@@ -376,7 +376,7 @@ const LEVEL_DATA = {
             ]},
             { x: 3700, enemies: [
                 { type: 'grunt', x: 3650, y: 290, config: { patrolDir: 1, patrolRange: 40 } },
-                { type: 'heavy', x: 4150, y: 280, config: { patrolDir: -1, patrolRange: 40 } },
+                { type: 'heavy', x: 4150, y: 370, config: { patrolDir: -1, patrolRange: 40 } },
                 { type: 'flyer', x: 4400, y: 160, config: { moveDir: -1 } }
             ]},
             { x: 4500, enemies: [
