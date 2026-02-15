@@ -113,6 +113,10 @@ class MenuScene extends Phaser.Scene {
         this.input.once('pointerdown', startGame);
         this._startGame = startGame;
 
+        // Apply saved volume
+        const savedVol = localStorage.getItem(AudioManager.VOLUME_KEY);
+        this.sound.volume = savedVol !== null ? parseFloat(savedVol) : 0.75;
+
         // Music (audio unlocked by splash screen tap/keypress)
         this.sound.stopAll();
         this.sound.play('music-intro', { loop: true, volume: 0.5 });

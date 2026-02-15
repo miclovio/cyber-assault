@@ -57,6 +57,10 @@ class GameOverScene extends Phaser.Scene {
             }
         });
 
+        // Apply saved volume
+        const savedVol = localStorage.getItem(AudioManager.VOLUME_KEY);
+        this.sound.volume = savedVol !== null ? parseFloat(savedVol) : 0.75;
+
         // Music
         this.sound.stopAll();
         this.sound.play('music-gameover', { loop: true, volume: 0.5 });
