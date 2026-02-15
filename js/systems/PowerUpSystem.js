@@ -38,6 +38,9 @@ class PowerUpSystem {
             gfx.destroy();
         }
 
+        // Snap x to nearest platform if spawning over a gap
+        x = this.findSafeX(x, y);
+
         const powerUp = this.scene.physics.add.sprite(x, y - 10, 'powerup-' + type);
         powerUp.setDepth(5);
         powerUp.body.allowGravity = true;
@@ -68,6 +71,42 @@ class PowerUpSystem {
                 this.destroyPowerUp(powerUp);
             }
         });
+    }
+
+    findSafeX(x, y) {
+        const platforms = this.scene.platforms;
+        if (!platforms) return x;
+
+        let bestX = x;
+        let bestDist = Infinity;
+
+        platforms.getChildren().forEach(plat => {
+            if (!plat.body) return;
+            const pLeft = plat.body.x;
+            const pRight = plat.body.x + plat.body.width;
+            const pTop = plat.body.y;
+
+            // Only consider platforms below or at spawn height
+            if (pTop < y - 50) return;
+
+            if (x >= pLeft && x <= pRight) {
+                // Already over this platform
+                bestX = x;
+                bestDist = 0;
+            } else if (bestDist > 0) {
+                // Find nearest edge
+                const distLeft = Math.abs(x - pLeft);
+                const distRight = Math.abs(x - pRight);
+                const nearest = distLeft < distRight ? pLeft + 20 : pRight - 20;
+                const dist = Math.min(distLeft, distRight);
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    bestX = nearest;
+                }
+            }
+        });
+
+        return bestX;
     }
 
     destroyPowerUp(powerUp) {

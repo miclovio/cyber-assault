@@ -5,17 +5,24 @@
 class Turret extends EnemyBase {
     constructor(scene, x, y, config) {
         const isSlime = config && config.variant === 'slime';
+        const isV1 = config && config.variant === 'v1';
         const isCeiling = config && config.ceiling;
         const cfg = { ...ENEMY_CONFIG.TURRET, ...config };
-        super(scene, x, y, isSlime ? 'slime1' : 'turret', cfg);
+        const texture = isSlime ? 'slime1' : isV1 ? 'v1-turret1' : 'turret';
+        super(scene, x, y, texture, cfg);
 
         this.isSlime = isSlime;
+        this.isV1 = isV1;
         this.isCeiling = isCeiling;
 
         if (isSlime) {
             this.setScale(1);
             this.body.setSize(24, 22);
             this.play('slime-idle');
+        } else if (isV1) {
+            this.setScale(1.5);
+            this.body.setSize(20, 28);
+            this.play('v1-turret-idle');
         } else {
             this.setScale(1.2);
             this.body.setSize(40, 40);
@@ -35,8 +42,8 @@ class Turret extends EnemyBase {
         if (!this.active || !this.isOnScreen()) return;
 
         if (this.scene.player && !this.scene.player.isDead) {
-            if (!this.isSlime) {
-                // Turret aims with rotation
+            if (!this.isSlime && !this.isV1) {
+                // Metal-Slug turret aims with rotation
                 const angle = this.getAngleToPlayer();
                 this.setRotation(Phaser.Math.Clamp(angle, -0.3, 0.3));
             }
@@ -46,6 +53,8 @@ class Turret extends EnemyBase {
         // Shoot at player
         if (this.isSlime) {
             this.shootSlime(time);
+        } else if (this.isV1) {
+            this.shootV1(time);
         } else if (this.isCeiling) {
             this.shootCeiling(time);
         } else {
@@ -65,6 +74,22 @@ class Turret extends EnemyBase {
             this.scene.player.x, this.scene.player.y,
             200, 1
         );
+    }
+
+    shootV1(time) {
+        if (time - this.lastFireTime < this.fireRate) return;
+        if (!this.canSeePlayer()) return;
+
+        this.lastFireTime = time;
+        // Fire horizontally toward player
+        const dir = this.scene.player.x < this.x ? -1 : 1;
+        const bulletY = this.y - 5;
+        this.scene.weaponSystem.fireEnemyBullet(
+            this.x + dir * 15, bulletY,
+            this.x + dir * 500, bulletY,
+            220, 1
+        );
+        this.scene.audioManager.playSound('sfx-enemy-gun', 0.3);
     }
 
     shootSlime(time) {

@@ -4,11 +4,11 @@
 
 class Flyer extends EnemyBase {
     constructor(scene, x, y, config) {
-        const variant = config && config.variant === 'eye' ? 'eye' : 'alien';
-        const defaults = variant === 'eye' ? ENEMY_CONFIG.FLYING_EYE : ENEMY_CONFIG.FLYER;
+        const variant = config && config.variant === 'octopus' ? 'octopus' : config && config.variant === 'eye' ? 'eye' : 'alien';
+        const defaults = variant === 'octopus' ? ENEMY_CONFIG.OCTOPUS : variant === 'eye' ? ENEMY_CONFIG.FLYING_EYE : ENEMY_CONFIG.FLYER;
         const cfg = { ...defaults, ...config, gravity: false };
 
-        const texture = variant === 'eye' ? 'eye-demon1' : 'flyer1';
+        const texture = variant === 'octopus' ? 'octopus1' : variant === 'eye' ? 'eye-demon1' : 'flyer1';
         super(scene, x, y, texture, cfg);
 
         this.variant = variant;
@@ -24,7 +24,7 @@ class Flyer extends EnemyBase {
         this.diveSpeed = cfg.diveSpeed;
         this.spawnTime = scene.time.now;
 
-        const animKey = variant === 'eye' ? 'eye-demon-fly' : 'flyer-fly';
+        const animKey = variant === 'octopus' ? 'octopus-fly' : variant === 'eye' ? 'eye-demon-fly' : 'flyer-fly';
         this.play(animKey);
     }
 
@@ -36,10 +36,11 @@ class Flyer extends EnemyBase {
             return;
         }
 
-        // Sine wave movement
+        // Sine wave movement (velocity-based to avoid physics jitter)
         const elapsed = time - this.spawnTime;
         this.setVelocityX(this.speed * this.moveDir);
-        this.y = this.startY + Math.sin(elapsed * this.frequency) * this.amplitude;
+        const targetY = this.startY + Math.sin(elapsed * this.frequency) * this.amplitude;
+        this.setVelocityY((targetY - this.y) * 8);
 
         this.setFlipX(this.moveDir > 0);
 

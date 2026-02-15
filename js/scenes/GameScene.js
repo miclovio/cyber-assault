@@ -251,6 +251,7 @@ class GameScene extends Phaser.Scene {
             if (p.h <= 20) rect.isOneWay = true;
             this.platforms.add(rect);
         });
+
     }
 
     update(time, delta) {

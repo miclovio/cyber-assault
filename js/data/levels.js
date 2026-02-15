@@ -265,123 +265,152 @@ const LEVEL_DATA = {
         platformCaps: true,
         enemyTint: 0x9977dd,
         platforms: [
-            // Ground sections with 150px pits
-            { x: 0,    y: 420, w: 700,  h: 30 },
-            { x: 850,  y: 420, w: 400,  h: 30 },
-            { x: 1400, y: 420, w: 550,  h: 30 },
-            { x: 2100, y: 420, w: 450,  h: 30 },
-            { x: 2700, y: 420, w: 750,  h: 30 },
-            { x: 3600, y: 420, w: 350,  h: 30 },
-            { x: 4100, y: 420, w: 550,  h: 30 },
-            { x: 4800, y: 420, w: 450,  h: 30 },
-            { x: 5400, y: 420, w: 750,  h: 30 },
-            { x: 6300, y: 420, w: 350,  h: 30 },
-            { x: 6800, y: 420, w: 1200, h: 30 },
+            // ── Section 1: Intro (0-1800) — easy gaps, learn the cavern ──
+            { x: -200, y: 420, w: 900,  h: 30 },
+            { x: 900,  y: 420, w: 500,  h: 30 },
+            { x: 1600, y: 420, w: 500,  h: 30 },
 
-            // Vertical platforming sections (staircase patterns)
-            { x: 300,  y: 340, w: 120, h: 20 },
-            { x: 500,  y: 260, w: 120, h: 20 },
-            { x: 300,  y: 180, w: 120, h: 20 },
-            { x: 600,  y: 140, w: 150, h: 20 },
+            // Stepping stones over first gaps
+            { x: 350,  y: 330, w: 120, h: 20 },
+            { x: 550,  y: 250, w: 100, h: 20 },
+            { x: 1000, y: 320, w: 110, h: 20 },
+            { x: 1200, y: 240, w: 100, h: 20 },
 
-            { x: 950,  y: 320, w: 100, h: 20 },
-            { x: 1100, y: 240, w: 120, h: 20 },
-            { x: 1150, y: 180, w: 100, h: 20 },
-            { x: 1500, y: 320, w: 150, h: 20 },
+            // ── Section 2: Wider gaps (1800-3500) — gaps need platforms ──
+            { x: 2100, y: 420, w: 400,  h: 30 },   // 200px gap before
+            { x: 2800, y: 420, w: 350,  h: 30 },   // 300px gap — need stepping stone
+            { x: 3500, y: 420, w: 400,  h: 30 },   // 350px gap — need stepping stone
 
-            { x: 1700, y: 260, w: 120, h: 20 },
-            { x: 1900, y: 200, w: 100, h: 20 },
-            { x: 2100, y: 300, w: 150, h: 20 },
-            { x: 2300, y: 220, w: 120, h: 20 },
+            // Bridge platforms over wide gaps
+            { x: 1850, y: 350, w: 100, h: 20 },    // bridge: 1600 block → 2100 block
+            { x: 2000, y: 300, w: 100, h: 20 },
+            { x: 2550, y: 340, w: 100, h: 20 },    // bridge: 2500 → 2800
+            { x: 2650, y: 270, w: 100, h: 20 },
+            { x: 3200, y: 350, w: 110, h: 20 },    // bridge: 3150 → 3500
+            { x: 3350, y: 280, w: 100, h: 20 },
 
-            { x: 2800, y: 320, w: 120, h: 20 },
-            { x: 3000, y: 240, w: 150, h: 20 },
-            { x: 3200, y: 180, w: 120, h: 20 },
-            { x: 3400, y: 300, w: 100, h: 20 },
+            // High platforms (need double jump or chaining)
+            { x: 2200, y: 240, w: 120, h: 20 },
+            { x: 2400, y: 170, w: 100, h: 20 },
+            { x: 3000, y: 200, w: 120, h: 20 },
 
-            { x: 3700, y: 320, w: 120, h: 20 },
-            { x: 3800, y: 250, w: 150, h: 20 },
+            // ── Section 3: Vertical challenge (3500-5200) — mech territory ──
+            { x: 4000, y: 420, w: 500,  h: 30 },   // 100px gap
+            { x: 4800, y: 420, w: 400,  h: 30 },   // 300px gap — need platform
 
-            { x: 4900, y: 340, w: 120, h: 20 },
-            { x: 5100, y: 260, w: 150, h: 20 },
-            { x: 5150, y: 180, w: 120, h: 20 },
-            { x: 5500, y: 300, w: 100, h: 20 },
-
-            { x: 5700, y: 240, w: 120, h: 20 },
-            { x: 5900, y: 320, w: 150, h: 20 },
-            { x: 6000, y: 200, w: 120, h: 20 },
+            // Stepping stones and elevated combat
+            { x: 3600, y: 320, w: 110, h: 20 },
+            { x: 3800, y: 240, w: 120, h: 20 },
+            { x: 4100, y: 310, w: 120, h: 20 },
+            { x: 4300, y: 230, w: 100, h: 20 },
+            { x: 4550, y: 340, w: 110, h: 20 },    // bridge over 300px gap
+            { x: 4680, y: 270, w: 100, h: 20 },
 
             // High secret area
-            { x: 3000, y: 120, w: 200, h: 20 }
+            { x: 3900, y: 150, w: 150, h: 20 },
+
+            // ── Section 4: Gauntlet (5200-6800) — hardest platforming ──
+            { x: 5200, y: 420, w: 350,  h: 30 },
+            { x: 5900, y: 420, w: 300,  h: 30 },   // 350px gap — need bridge
+            { x: 6500, y: 420, w: 300,  h: 30 },   // 300px gap — need bridge
+
+            // Bridge platforms over dangerous gaps
+            { x: 5600, y: 350, w: 100, h: 20 },
+            { x: 5750, y: 270, w: 100, h: 20 },
+            { x: 5550, y: 190, w: 110, h: 20 },
+
+            { x: 6250, y: 340, w: 100, h: 20 },
+            { x: 6380, y: 260, w: 100, h: 20 },
+
+            // High reward platforms
+            { x: 5300, y: 250, w: 110, h: 20 },
+            { x: 5100, y: 180, w: 100, h: 20 },
+            { x: 6100, y: 200, w: 120, h: 20 },
+
+            // ── Boss Arena (6800-8000) ──
+            { x: 6800, y: 420, w: 1200, h: 30 }
+        ],
+        firePits: [
+            // Section 1: Intro gaps
+            { x: 800,  y: 420, h: 80, onTime: 1200, offTime: 2200, startOff: true },
+            { x: 1500, y: 420, h: 80, onTime: 1200, offTime: 2200 },
+            // Section 2: Wider gaps
+            { x: 2650, y: 420, h: 80, onTime: 1400, offTime: 1800, startOff: true },
+            { x: 3325, y: 420, h: 80, onTime: 1400, offTime: 1800 },
+            // Section 3: Mech territory
+            { x: 4650, y: 420, h: 80, onTime: 1200, offTime: 1600, startOff: true },
+            // Section 4: Gauntlet
+            { x: 5725, y: 420, h: 80, onTime: 1200, offTime: 1400, startOff: true },
+            { x: 6350, y: 420, h: 80, onTime: 1000, offTime: 1400 }
         ],
         enemyTriggers: [
+            // Section 1: Intro
             { x: 300, enemies: [
                 { type: 'grunt', x: 500, y: 380, config: {} }
             ]},
             { x: 800, enemies: [
                 { type: 'heavy', x: 1000, y: 370, config: { patrolDir: -1 } },
-                { type: 'grunt', x: 980, y: 290, config: { patrolDir: 1, patrolRange: 40 } }
+                { type: 'grunt', x: 1100, y: 290, config: { patrolDir: 1, patrolRange: 40 } }
             ]},
-            { x: 1300, enemies: [
-                { type: 'grunt', x: 1500, y: 380, config: {} },
-                { type: 'grunt', x: 1600, y: 280, config: { patrolDir: -1, patrolRange: 60 } }
+            { x: 1400, enemies: [
+                { type: 'grunt', x: 1700, y: 380, config: {} },
+                { type: 'flyer', x: 1800, y: 180, config: { moveDir: -1 } }
             ]},
-            { x: 1900, enemies: [
-                { type: 'heavy', x: 2100, y: 370, config: {} },
-                { type: 'grunt', x: 2340, y: 190, config: { patrolDir: -1, patrolRange: 40 } },
-                { type: 'flyer', x: 2300, y: 180, config: { moveDir: -1 } }
+            // Section 2: Wider gaps
+            { x: 2000, enemies: [
+                { type: 'heavy', x: 2200, y: 370, config: {} },
+                { type: 'grunt', x: 2350, y: 380, config: { patrolDir: -1 } }
             ]},
-            { x: 2500, enemies: [
-                { type: 'grunt', x: 2800, y: 380, config: { patrolDir: -1 } },
-                { type: 'grunt', x: 3050, y: 210, config: { patrolDir: 1, patrolRange: 50 } },
-                { type: 'heavy', x: 2900, y: 370, config: {} }
+            { x: 2600, enemies: [
+                { type: 'grunt', x: 2900, y: 380, config: { patrolDir: -1 } },
+                { type: 'heavy', x: 3000, y: 370, config: {} },
+                { type: 'flyer', x: 2800, y: 160, config: { moveDir: -1 } }
             ]},
             { x: 3200, enemies: [
-                { type: 'heavy', x: 3400, y: 370, config: { patrolDir: -1 } },
-                { type: 'grunt', x: 3500, y: 380, config: {} }
+                { type: 'grunt', x: 3400, y: 250, config: { patrolDir: 1, patrolRange: 40 } },
+                { type: 'grunt', x: 3600, y: 380, config: {} }
             ]},
-            { x: 3900, enemies: [
+            // Section 3: Mech territory
+            { x: 3800, enemies: [
                 { type: 'cyan_mech', x: 4200, y: 350, config: { patrolDir: -1, patrolRange: 200 } }
             ]},
-            { x: 3800, enemies: [
-                { type: 'grunt', x: 3850, y: 220, config: { patrolDir: 1, patrolRange: 50 } },
-                { type: 'grunt', x: 4240, y: 270, config: { patrolDir: -1, patrolRange: 40 } },
-                { type: 'grunt', x: 4000, y: 380, config: {} },
-                { type: 'heavy', x: 4100, y: 370, config: { patrolDir: -1 } },
-                { type: 'flyer', x: 4300, y: 160, config: { moveDir: -1 } }
+            { x: 3700, enemies: [
+                { type: 'grunt', x: 3650, y: 290, config: { patrolDir: 1, patrolRange: 40 } },
+                { type: 'heavy', x: 4150, y: 280, config: { patrolDir: -1, patrolRange: 40 } },
+                { type: 'flyer', x: 4400, y: 160, config: { moveDir: -1 } }
             ]},
-            { x: 4400, enemies: [
+            { x: 4500, enemies: [
                 { type: 'heavy', x: 4900, y: 370, config: {} },
-                { type: 'grunt', x: 4600, y: 380, config: { patrolDir: -1 } }
+                { type: 'grunt', x: 5000, y: 380, config: { patrolDir: -1 } }
             ]},
+            // Section 4: Gauntlet
             { x: 5000, enemies: [
-                { type: 'grunt', x: 5150, y: 230, config: { patrolDir: 1, patrolRange: 50 } },
-                { type: 'grunt', x: 5200, y: 380, config: {} },
-                { type: 'grunt', x: 5300, y: 380, config: { patrolDir: -1 } },
-                { type: 'flyer', x: 5600, y: 180, config: { moveDir: -1 } }
+                { type: 'grunt', x: 5300, y: 380, config: {} },
+                { type: 'grunt', x: 5400, y: 380, config: { patrolDir: -1 } },
+                { type: 'flyer', x: 5500, y: 180, config: { moveDir: -1 } }
             ]},
-            { x: 5800, enemies: [
-                { type: 'grunt', x: 5950, y: 290, config: { patrolDir: -1, patrolRange: 50 } },
-                { type: 'heavy', x: 6000, y: 370, config: { patrolDir: -1 } },
-                { type: 'grunt', x: 5600, y: 380, config: {} }
+            { x: 5600, enemies: [
+                { type: 'heavy', x: 5950, y: 370, config: { patrolDir: -1 } },
+                { type: 'grunt', x: 6050, y: 380, config: {} },
+                { type: 'flyer', x: 6100, y: 160, config: { moveDir: -1 } }
             ]},
-            { x: 6400, enemies: [
-                { type: 'heavy', x: 6500, y: 370, config: {} },
-                { type: 'grunt', x: 6600, y: 380, config: { patrolDir: -1 } },
-                { type: 'flyer', x: 6800, y: 160, config: { moveDir: -1 } }
+            { x: 6300, enemies: [
+                { type: 'heavy', x: 6550, y: 370, config: {} },
+                { type: 'grunt', x: 6650, y: 380, config: { patrolDir: -1 } },
+                { type: 'flyer', x: 6700, y: 160, config: { moveDir: -1 } }
             ]}
         ],
         checkpoints: [
-            { x: 1800, y: 380 },
-            { x: 3800, y: 380 },
-            { x: 5800, y: 380 }
+            { x: 2100, y: 380 },
+            { x: 4000, y: 380 },
+            { x: 5900, y: 380 }
         ],
         fixedDrops: [
-            { x: 3000, y: 380, type: 'SHIELD' }
+            { x: 3900, y: 110, type: 'SHIELD' }
         ],
         boss: {
             type: 'MECH',
-            x: 7500,
+            x: 7700,
             y: 360,
             arenaStart: 7000,
             arenaEnd: 7900,
@@ -407,50 +436,72 @@ const LEVEL_DATA = {
         platformTint: 0x995544,
         enemyTint: 0xcc8855,
         platforms: [
-            // Organic ground - irregular layout
-            { x: 0,    y: 420, w: 600,  h: 30 },
-            { x: 700,  y: 420, w: 500,  h: 30 },
-            { x: 1300, y: 420, w: 400,  h: 30 },
-            { x: 1800, y: 420, w: 600,  h: 30 },
-            { x: 2500, y: 420, w: 400,  h: 30 },
-            { x: 3000, y: 420, w: 700,  h: 30 },
-            { x: 3800, y: 420, w: 500,  h: 30 },
-            { x: 4400, y: 420, w: 400,  h: 30 },
-            { x: 4900, y: 420, w: 600,  h: 30 },
-            { x: 5600, y: 420, w: 500,  h: 30 },
-            { x: 6200, y: 420, w: 400,  h: 30 },
-            { x: 6700, y: 420, w: 1300, h: 30 },
+            // ── Ground — widened gaps, progressive difficulty ──
+            { x: -200, y: 420, w: 700,  h: 30 },    // P1: -200 to 500
+            { x: 650,  y: 420, w: 400,  h: 30 },    // P2: 650 to 1050
+            { x: 1200, y: 420, w: 400,  h: 30 },    // P3: 1200 to 1600
+            { x: 1750, y: 420, w: 550,  h: 30 },    // P4: 1750 to 2300
+            { x: 2450, y: 420, w: 400,  h: 30 },    // P5: 2450 to 2850
+            { x: 3100, y: 420, w: 500,  h: 30 },    // P6: 3100 to 3600
+            { x: 3850, y: 420, w: 400,  h: 30 },    // P7: 3850 to 4250
+            { x: 4500, y: 420, w: 350,  h: 30 },    // P8: 4500 to 4850
+            { x: 5150, y: 420, w: 400,  h: 30 },    // P9: 5150 to 5550
+            { x: 5850, y: 420, w: 350,  h: 30 },    // P10: 5850 to 6200
+            { x: 6500, y: 420, w: 1500, h: 30 },    // P11: 6500 to 8000 (boss)
 
-            // Organic platforms at various heights
+            // ── Rocky outcrop bridges over wide gaps (250-300px) ──
+            { x: 2950, y: 395, w: 80, h: 18 },      // bridge: gap 2850-3100
+            { x: 3700, y: 395, w: 80, h: 18 },      // bridge: gap 3600-3850
+            { x: 4350, y: 395, w: 80, h: 18 },      // bridge: gap 4250-4500
+            { x: 4970, y: 390, w: 80, h: 18 },      // bridge: gap 4850-5150
+            { x: 5670, y: 390, w: 80, h: 18 },      // bridge: gap 5550-5850
+            { x: 6320, y: 390, w: 80, h: 18 },      // bridge: gap 6200-6500
+
+            // ── Elevated platforms at various heights ──
             { x: 200,  y: 330, w: 130, h: 18 },
             { x: 450,  y: 260, w: 100, h: 18 },
             { x: 750,  y: 300, w: 140, h: 18 },
             { x: 1000, y: 230, w: 110, h: 18 },
             { x: 1350, y: 310, w: 130, h: 18 },
-            { x: 1550, y: 240, w: 100, h: 18 },
-            { x: 1850, y: 320, w: 150, h: 18 },
+            { x: 1500, y: 240, w: 100, h: 18 },
+            { x: 1900, y: 320, w: 150, h: 18 },
             { x: 2100, y: 250, w: 120, h: 18 },
             { x: 2250, y: 180, w: 100, h: 18 },
             { x: 2600, y: 300, w: 130, h: 18 },
-            { x: 2700, y: 220, w: 110, h: 18 },
-            { x: 3100, y: 310, w: 140, h: 18 },
-            { x: 3900, y: 260, w: 120, h: 18 },
-            { x: 4150, y: 190, w: 100, h: 18 },
-            { x: 4450, y: 310, w: 130, h: 18 },
-            { x: 4550, y: 240, w: 110, h: 18 },
-            { x: 5000, y: 320, w: 140, h: 18 },
-            { x: 5250, y: 250, w: 100, h: 18 },
-            { x: 5350, y: 180, w: 120, h: 18 },
-            { x: 5750, y: 300, w: 130, h: 18 },
-            { x: 6000, y: 230, w: 100, h: 18 },
-            { x: 6300, y: 310, w: 140, h: 18 },
-            { x: 6400, y: 250, w: 120, h: 18 }
+            { x: 2750, y: 220, w: 110, h: 18 },
+            { x: 3200, y: 310, w: 140, h: 18 },
+            { x: 3950, y: 260, w: 120, h: 18 },
+            { x: 4200, y: 190, w: 100, h: 18 },
+            { x: 4550, y: 310, w: 130, h: 18 },
+            { x: 4700, y: 240, w: 110, h: 18 },
+            { x: 5200, y: 320, w: 140, h: 18 },
+            { x: 5400, y: 250, w: 100, h: 18 },
+            { x: 5500, y: 180, w: 120, h: 18 },
+            { x: 5900, y: 300, w: 130, h: 18 },
+            { x: 6100, y: 230, w: 100, h: 18 },
+            { x: 6550, y: 310, w: 140, h: 18 },
+            { x: 6700, y: 250, w: 120, h: 18 }
+        ],
+        firePits: [
+            // Early gaps (150-200px) — gentle timing
+            { x: 575,  y: 420, h: 80, onTime: 1200, offTime: 2200, startOff: true },
+            { x: 1125, y: 420, h: 80, onTime: 1200, offTime: 2200 },
+            { x: 1675, y: 420, h: 80, onTime: 1200, offTime: 2000, startOff: true },
+            // Mid gaps (150-250px) — moderate timing
+            { x: 2375, y: 420, h: 80, onTime: 1400, offTime: 1800 },
+            { x: 2975, y: 420, h: 80, onTime: 1400, offTime: 1800, startOff: true },
+            { x: 3725, y: 420, h: 80, onTime: 1200, offTime: 1600 },
+            // Late gaps (250-300px) — tighter timing
+            { x: 4375, y: 420, h: 80, onTime: 1200, offTime: 1500, startOff: true },
+            { x: 5000, y: 420, h: 80, onTime: 1200, offTime: 1500 },
+            { x: 5700, y: 420, h: 80, onTime: 1000, offTime: 1400, startOff: true },
+            { x: 6350, y: 420, h: 80, onTime: 1000, offTime: 1200 }
         ],
         enemyTriggers: [
             { x: 300, enemies: [
                 { type: 'flying_eye', x: 500, y: 180, config: { moveDir: -1 } },
                 { type: 'flying_eye', x: 550, y: 220, config: { moveDir: 1 } },
-                { type: 'grunt', x: 600, y: 380, config: {} }
+                { type: 'grunt', x: 450, y: 380, config: {} }
             ]},
             { x: 800, enemies: [
                 { type: 'flying_eye', x: 1000, y: 160, config: { moveDir: -1 } },
@@ -458,15 +509,20 @@ const LEVEL_DATA = {
                 { type: 'flying_eye', x: 1100, y: 240, config: { moveDir: 1 } }
             ]},
             { x: 1200, enemies: [
-                { type: 'grunt', x: 1400, y: 380, config: {} },
-                { type: 'grunt', x: 1500, y: 380, config: { patrolDir: -1 } },
+                { type: 'grunt', x: 1300, y: 380, config: {} },
+                { type: 'grunt', x: 1400, y: 280, config: { patrolDir: -1 } },
                 { type: 'flying_eye', x: 1600, y: 180, config: { moveDir: -1 } },
                 { type: 'flying_eye', x: 1650, y: 220, config: { moveDir: 1 } }
             ]},
-            { x: 1700, enemies: [
-                { type: 'heavy', x: 1900, y: 370, config: {} },
+            { x: 800, enemies: [
+                { type: 'heavy', x: 1500, y: 370, config: {} },
                 { type: 'flying_eye', x: 2000, y: 160, config: { moveDir: -1 } },
                 { type: 'flying_eye', x: 2050, y: 200, config: { moveDir: -1 } }
+            ]},
+            { x: 1400, enemies: [
+                { type: 'grunt', x: 1900, y: 380, config: {} },
+                { type: 'grunt', x: 2150, y: 380, config: { patrolDir: -1 } },
+                { type: 'flying_eye', x: 2100, y: 180, config: { moveDir: -1 } }
             ]},
             { x: 2300, enemies: [
                 { type: 'flying_eye', x: 2500, y: 150, config: { moveDir: -1 } },
@@ -474,13 +530,13 @@ const LEVEL_DATA = {
                 { type: 'flying_eye', x: 2600, y: 230, config: { moveDir: -1 } },
                 { type: 'grunt', x: 2700, y: 380, config: {} }
             ]},
-            { x: 2900, enemies: [
+            { x: 1800, enemies: [
                 { type: 'heavy', x: 2700, y: 370, config: { patrolDir: -1 } },
                 { type: 'flying_eye', x: 3300, y: 160, config: { moveDir: -1 } },
                 { type: 'flying_eye', x: 3350, y: 200, config: { moveDir: 1 } }
             ]},
-            { x: 3400, enemies: [
-                { type: 'orange_mech', x: 3600, y: 350, config: { patrolDir: -1, patrolRange: 200 } }
+            { x: 2600, enemies: [
+                { type: 'orange_mech', x: 3400, y: 350, config: { patrolDir: -1, patrolRange: 200 } }
             ]},
             { x: 3500, enemies: [
                 { type: 'flying_eye', x: 3700, y: 150, config: { moveDir: -1 } },
@@ -489,9 +545,9 @@ const LEVEL_DATA = {
                 { type: 'flying_eye', x: 3850, y: 170, config: { moveDir: 1 } },
                 { type: 'grunt', x: 3900, y: 380, config: { patrolDir: -1 } }
             ]},
-            { x: 4200, enemies: [
-                { type: 'heavy', x: 4400, y: 370, config: {} },
-                { type: 'grunt', x: 4500, y: 380, config: { patrolDir: -1 } },
+            { x: 3800, enemies: [
+                { type: 'heavy', x: 4550, y: 370, config: {} },
+                { type: 'grunt', x: 4650, y: 380, config: { patrolDir: -1 } },
                 { type: 'flying_eye', x: 4600, y: 160, config: { moveDir: -1 } }
             ]},
             { x: 4800, enemies: [
@@ -501,16 +557,16 @@ const LEVEL_DATA = {
                 { type: 'flying_eye', x: 5150, y: 210, config: { moveDir: 1 } },
                 { type: 'flying_eye', x: 5200, y: 170, config: { moveDir: -1 } }
             ]},
-            { x: 5400, enemies: [
-                { type: 'heavy', x: 5600, y: 370, config: {} },
-                { type: 'grunt', x: 5700, y: 380, config: { patrolDir: -1 } },
-                { type: 'flying_eye', x: 5900, y: 160, config: { moveDir: -1 } }
+            { x: 4200, enemies: [
+                { type: 'heavy', x: 5300, y: 370, config: {} },
+                { type: 'grunt', x: 5400, y: 220, config: { patrolDir: -1 } },
+                { type: 'flying_eye', x: 5500, y: 160, config: { moveDir: -1 } }
             ]},
             { x: 6000, enemies: [
                 { type: 'flying_eye', x: 6200, y: 150, config: { moveDir: -1 } },
                 { type: 'flying_eye', x: 6250, y: 190, config: { moveDir: 1 } },
                 { type: 'flying_eye', x: 6300, y: 230, config: { moveDir: -1 } },
-                { type: 'heavy', x: 6400, y: 370, config: { patrolDir: -1 } }
+                { type: 'heavy', x: 6600, y: 370, config: { patrolDir: -1 } }
             ]}
         ],
         checkpoints: [
@@ -519,7 +575,8 @@ const LEVEL_DATA = {
             { x: 6000, y: 380 }
         ],
         fixedDrops: [
-            { x: 3000, y: 380, type: 'SHIELD' }
+            { x: 2400, y: 380, type: 'DOUBLE_JUMP' },
+            { x: 3200, y: 380, type: 'SHIELD' }
         ],
         boss: {
             type: 'FIRESKULL',
@@ -593,43 +650,57 @@ const LEVEL_DATA = {
             { x: 6300, y: 320, w: 140, h: 20 },
             { x: 6550, y: 240, w: 100, h: 20 }
         ],
+        firePits: [
+            // Early gaps — gentle timing
+            { x: 1350, y: 420, h: 80, onTime: 1200, offTime: 2200, startOff: true },
+            { x: 1850, y: 420, h: 80, onTime: 1200, offTime: 2200 },
+            // Mid gaps — moderate timing
+            { x: 2550, y: 420, h: 80, onTime: 1400, offTime: 1800, startOff: true },
+            { x: 3150, y: 420, h: 80, onTime: 1400, offTime: 1800 },
+            // Post-mech gaps — tighter timing
+            { x: 4350, y: 420, h: 80, onTime: 1200, offTime: 1600, startOff: true },
+            { x: 4950, y: 420, h: 80, onTime: 1200, offTime: 1500 },
+            // Late gaps — tight timing
+            { x: 5650, y: 420, h: 80, onTime: 1000, offTime: 1400, startOff: true },
+            { x: 6150, y: 420, h: 80, onTime: 1000, offTime: 1400 }
+        ],
         enemyTint: 0x6688ee,
         enemyTriggers: [
             // Floor 0-700 (easy intro)
             { x: 300, enemies: [
                 { type: 'grunt', x: 500, y: 380, config: {} },
-                { type: 'flyer', x: 550, y: 180, config: { moveDir: -1 } }
+                { type: 'octopus', x: 550, y: 180, config: { moveDir: -1 } }
             ]},
             // Floor 800-1300
             { x: 700, enemies: [
                 { type: 'heavy', x: 1000, y: 370, config: { patrolRange: 120 } },
-                { type: 'grunt', x: 1130, y: 190, config: { patrolDir: -1, patrolRange: 40 } }
+                { type: 'grunt', x: 1130, y: 190, config: { patrolDir: -1, patrolRange: 40 } },
+                { type: 'v1_turret', x: 1020, y: 280, config: {} }
             ]},
             // Floor 1400-1800
             { x: 1200, enemies: [
                 { type: 'heavy', x: 1500, y: 370, config: {} },
-                { type: 'flyer', x: 1550, y: 150, config: { moveDir: -1 } }
-            ]},
-            { x: 1500, enemies: [
-                { type: 'slime', x: 1730, y: 210, config: {} }
+                { type: 'octopus', x: 1550, y: 150, config: { moveDir: -1 } },
+                { type: 'v1_turret', x: 1780, y: 400, config: {} }
             ]},
             // Floor 1900-2500
             { x: 1700, enemies: [
                 { type: 'grunt', x: 1900, y: 380, config: {} },
                 { type: 'heavy', x: 2100, y: 370, config: { patrolDir: -1 } },
-                { type: 'flyer', x: 2200, y: 160, config: { moveDir: -1 } }
+                { type: 'octopus', x: 2200, y: 160, config: { moveDir: -1 } },
+                { type: 'slime', x: 2400, y: 380, config: {} }
             ]},
             // Floor 2600-3100
             { x: 2300, enemies: [
                 { type: 'heavy', x: 2800, y: 370, config: {} },
                 { type: 'grunt', x: 2730, y: 290, config: { patrolDir: -1, patrolRange: 40 } },
-                { type: 'slime', x: 2980, y: 210, config: {} }
+                { type: 'slime', x: 2980, y: 380, config: {} }
             ]},
             // Floor 3200-3800
             { x: 3000, enemies: [
                 { type: 'heavy', x: 3400, y: 370, config: { patrolDir: -1 } },
-                { type: 'flyer', x: 3600, y: 160, config: { moveDir: -1 } },
-                { type: 'slime', x: 3630, y: 290, config: {} }
+                { type: 'octopus', x: 3600, y: 160, config: { moveDir: -1 } },
+                { type: 'v1_turret', x: 3780, y: 400, config: {} }
             ]},
             // Floor 3900-4300 + Blue Mech
             { x: 3700, enemies: [
@@ -639,23 +710,26 @@ const LEVEL_DATA = {
             { x: 4200, enemies: [
                 { type: 'heavy', x: 4600, y: 370, config: {} },
                 { type: 'grunt', x: 4530, y: 270, config: { patrolDir: -1, patrolRange: 40 } },
-                { type: 'flyer', x: 4950, y: 150, config: { moveDir: -1 } }
+                { type: 'octopus', x: 4950, y: 150, config: { moveDir: -1 } },
+                { type: 'slime', x: 4800, y: 380, config: {} }
             ]},
             // Floor 5000-5600
             { x: 5000, enemies: [
                 { type: 'heavy', x: 5400, y: 370, config: {} },
                 { type: 'grunt', x: 5080, y: 290, config: { patrolDir: 1, patrolRange: 40 } },
-                { type: 'slime', x: 5330, y: 210, config: {} }
+                { type: 'v1_turret', x: 5580, y: 400, config: {} }
             ]},
             // Floor 5700-6100
             { x: 5700, enemies: [
                 { type: 'heavy', x: 5900, y: 370, config: { patrolDir: -1 } },
-                { type: 'flyer', x: 6050, y: 190, config: { moveDir: 1 } }
+                { type: 'octopus', x: 6050, y: 190, config: { moveDir: 1 } },
+                { type: 'slime', x: 6000, y: 380, config: {} }
             ]},
             // Floor 6200-6700
             { x: 6100, enemies: [
                 { type: 'heavy', x: 6400, y: 370, config: {} },
-                { type: 'grunt', x: 6330, y: 290, config: { patrolDir: 1, patrolRange: 50 } }
+                { type: 'grunt', x: 6330, y: 290, config: { patrolDir: 1, patrolRange: 50 } },
+                { type: 'v1_turret', x: 6630, y: 220, config: {} }
             ]},
             // Floor 6800-8000 (pre-boss)
             { x: 6600, enemies: [
@@ -666,9 +740,13 @@ const LEVEL_DATA = {
             ]}
         ],
         checkpoints: [
-            { x: 2000, y: 380 },
-            { x: 4000, y: 380 },
-            { x: 6000, y: 380 }
+            { x: 1200, y: 380 },   // Floor B
+            { x: 2000, y: 380 },   // Floor D
+            { x: 3000, y: 380 },   // Floor E
+            { x: 4000, y: 380 },   // Floor G
+            { x: 5000, y: 380 },   // Floor I
+            { x: 6000, y: 380 },   // Floor K
+            { x: 6800, y: 380 }    // Floor L (pre-boss)
         ],
         fixedDrops: [
             { x: 3000, y: 380, type: 'SHIELD' }

@@ -125,6 +125,10 @@ class PreloadScene extends Phaser.Scene {
         const eyeBase = 'Assets/Characters/flying-eye-demon/Sprites';
         for (let i = 1; i <= 8; i++) this.load.image(`eye-demon${i}`, `${eyeBase}/flying-eye-demon${i}.png`);
 
+        // Octopus (L4 flyer)
+        const octoBase = 'Assets/Characters/octopus/sprites';
+        for (let i = 1; i <= 6; i++) this.load.image(`octopus${i}`, `${octoBase}/octopus${i}.png`);
+
         // Bipedal Unit (Heavy)
         const heavyBase = 'Assets/Characters/bipedal-Unit/sprites';
         for (let i = 1; i <= 7; i++) this.load.image(`heavy${i}`, `${heavyBase}/bipedal-unit${i}.png`);
@@ -135,6 +139,10 @@ class PreloadScene extends Phaser.Scene {
 
         // Turret (Metal-Slug single sprite)
         this.load.image('turret', 'Assets/Characters/Battle Sprites/Mechanic/Metal-Slug.png');
+
+        // V1 Turret (Warped City V1)
+        const v1TurretBase = 'Assets/Packs/Warped City/V1/warped city files/SPRITES/misc/turret';
+        for (let i = 1; i <= 6; i++) this.load.image(`v1-turret${i}`, `${v1TurretBase}/turret-${i}.png`);
 
         // Slime (Living Pack 1)
         const slimeBase = 'Assets/Characters/Battle Sprites/Living Pack 1/Slime/Sprites';
@@ -409,12 +417,16 @@ class PreloadScene extends Phaser.Scene {
 
         // Eye demon animation
         this.anims.create({ key: 'eye-demon-fly', frames: this.frameKeys('eye-demon', 1, 8), frameRate: 10, repeat: -1 });
+        this.anims.create({ key: 'octopus-fly', frames: this.frameKeys('octopus', 1, 6), frameRate: 8, repeat: -1 });
 
         // Heavy animation
         this.anims.create({ key: 'heavy-walk', frames: this.frameKeys('heavy', 1, 7), frameRate: 6, repeat: -1 });
 
         // Slime animation
         this.anims.create({ key: 'slime-idle', frames: this.frameKeys('slime', 1, 4), frameRate: 6, repeat: -1 });
+
+        // V1 Turret animation
+        this.anims.create({ key: 'v1-turret-idle', frames: this.frameKeys('v1-turret', 1, 6), frameRate: 6, repeat: -1 });
 
         // Ghost animation
         this.anims.create({ key: 'ghost-float', frames: this.frameKeys('ghost', 1, 6), frameRate: 8, repeat: -1 });
