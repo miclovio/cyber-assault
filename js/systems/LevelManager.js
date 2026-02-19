@@ -116,6 +116,9 @@ class LevelManager {
             case 'v1_turret':
                 enemy = new Turret(this.scene, x, y, { ...config, variant: 'v1' });
                 break;
+            case 'sentinel':
+                enemy = new Sentinel(this.scene, x, y, config);
+                break;
             case 'grey_mech':
                 enemy = new Mech(this.scene, x, y, config);
                 break;

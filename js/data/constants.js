@@ -28,6 +28,7 @@ const ENEMY_CONFIG = {
     OCTOPUS: { hp: 2, speed: 70, score: 300, amplitude: 45, frequency: 0.003, diveSpeed: 200 },
     HEAVY: { hp: 6, speed: 40, score: 400, fireRate: 1500, burstCount: 3, burstDelay: 200 },
     GHOST: { hp: 2, speed: 55, score: 300, floatSpeed: 90 },
+    SENTINEL: { hp: 3, speed: 90, score: 350, fireRate: 3000, detectionRange: 400, chargeTime: 1200, beamDuration: 350, beamRange: 280 },
     TURRET: { hp: 5, speed: 0, score: 250, fireRate: 1400, detectionRange: 500 },
     GREY_MECH: { hp: 10, speed: 35, score: 800, fireRate: 2000, burstCount: 4, burstDelay: 180, detectionRange: 450 },
     CYAN_MECH: { hp: 10, speed: 40, score: 1000, fireRate: 1800, burstCount: 4, burstDelay: 160, detectionRange: 500 },
