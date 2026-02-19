@@ -148,6 +148,10 @@ class PreloadScene extends Phaser.Scene {
         const slimeBase = 'Assets/Characters/Battle Sprites/Living Pack 1/Slime/Sprites';
         for (let i = 1; i <= 4; i++) this.load.image(`slime${i}`, `${slimeBase}/slime${i}.png`);
 
+        // Sentinel (cave eye)
+        const sentinelBase = 'Assets/Characters/sentinel/sprites';
+        for (let i = 1; i <= 6; i++) this.load.image(`sentinel-eye${i}`, `${sentinelBase}/sentinel${i}.png`);
+
         // Grey Mech
         const greyMechBase = 'Assets/Characters/Mechs/SpriteSheets/Grey_1';
         this.load.spritesheet('grey-mech-idle', `${greyMechBase}/Gr1_Idle.png`, { frameWidth: 80, frameHeight: 80 });
@@ -430,6 +434,9 @@ class PreloadScene extends Phaser.Scene {
 
         // Ghost animation
         this.anims.create({ key: 'ghost-float', frames: this.frameKeys('ghost', 1, 6), frameRate: 8, repeat: -1 });
+
+        // Sentinel animation
+        this.anims.create({ key: 'sentinel-patrol', frames: this.frameKeys('sentinel-eye', 1, 6), frameRate: 8, repeat: -1 });
 
         // Grey Mech animations
         this.anims.create({ key: 'grey-mech-walk', frames: this.anims.generateFrameNumbers('grey-mech-idle', { start: 0, end: 12 }), frameRate: 6, repeat: -1 });

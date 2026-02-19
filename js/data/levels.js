@@ -266,8 +266,8 @@ const LEVEL_DATA = {
         enemyTint: 0x9977dd,
         platforms: [
             // ── Section 1: Intro (0-1800) — easy gaps, learn the cavern ──
-            { x: -200, y: 420, w: 900,  h: 30 },
-            { x: 900,  y: 420, w: 500,  h: 30 },
+            { x: -200, y: 420, w: 950,  h: 30 },
+            { x: 900,  y: 420, w: 550,  h: 30 },
             { x: 1600, y: 420, w: 500,  h: 30 },
 
             // Stepping stones over first gaps
@@ -276,10 +276,10 @@ const LEVEL_DATA = {
             { x: 1000, y: 320, w: 110, h: 20 },
             { x: 1200, y: 240, w: 100, h: 20 },
 
-            // ── Section 2: Wider gaps (1800-3500) — gaps need platforms ──
-            { x: 2100, y: 420, w: 400,  h: 30 },   // 200px gap before
-            { x: 2800, y: 420, w: 350,  h: 30 },   // 300px gap — need stepping stone
-            { x: 3500, y: 420, w: 400,  h: 30 },   // 350px gap — need stepping stone
+            // ── Section 2: Wider gaps (1800-3500) — 150px gaps ──
+            { x: 2100, y: 420, w: 550,  h: 30 },   // 150px gap before
+            { x: 2800, y: 420, w: 550,  h: 30 },   // 150px gap — jumpable
+            { x: 3500, y: 420, w: 400,  h: 30 },   // 150px gap — jumpable
 
             // Bridge platforms over wide gaps
             { x: 1850, y: 350, w: 100, h: 20 },    // bridge: 1600 block → 2100 block
@@ -295,8 +295,8 @@ const LEVEL_DATA = {
             { x: 3000, y: 200, w: 120, h: 20 },
 
             // ── Section 3: Vertical challenge (3500-5200) — mech territory ──
-            { x: 4000, y: 420, w: 500,  h: 30 },   // 100px gap
-            { x: 4800, y: 420, w: 400,  h: 30 },   // 300px gap — need platform
+            { x: 4000, y: 420, w: 650,  h: 30 },   // 100px gap
+            { x: 4800, y: 420, w: 400,  h: 30 },   // 150px gap — jumpable
 
             // Stepping stones and elevated combat
             { x: 3600, y: 320, w: 110, h: 20 },
@@ -310,9 +310,9 @@ const LEVEL_DATA = {
             { x: 3900, y: 150, w: 150, h: 20 },
 
             // ── Section 4: Gauntlet (5200-6800) — hardest platforming ──
-            { x: 5200, y: 420, w: 350,  h: 30 },
-            { x: 5900, y: 420, w: 300,  h: 30 },   // 350px gap — need bridge
-            { x: 6500, y: 420, w: 300,  h: 30 },   // 300px gap — need bridge
+            { x: 5200, y: 420, w: 550,  h: 30 },
+            { x: 5900, y: 420, w: 450,  h: 30 },   // 150px gap — jumpable
+            { x: 6500, y: 420, w: 300,  h: 30 },   // 150px gap — jumpable
 
             // Bridge platforms over dangerous gaps
             { x: 5600, y: 350, w: 100, h: 20 },
@@ -331,17 +331,17 @@ const LEVEL_DATA = {
             { x: 6800, y: 420, w: 1200, h: 30 }
         ],
         firePits: [
-            // Section 1: Intro gaps
-            { x: 800,  y: 420, h: 80, onTime: 1200, offTime: 2200, startOff: true },
-            { x: 1500, y: 420, h: 80, onTime: 1200, offTime: 2200 },
-            // Section 2: Wider gaps
-            { x: 2650, y: 420, h: 80, onTime: 1400, offTime: 1800, startOff: true },
-            { x: 3325, y: 420, h: 80, onTime: 1400, offTime: 1800 },
-            // Section 3: Mech territory
-            { x: 4650, y: 420, h: 80, onTime: 1200, offTime: 1600, startOff: true },
-            // Section 4: Gauntlet
-            { x: 5725, y: 420, h: 80, onTime: 1200, offTime: 1400, startOff: true },
-            { x: 6350, y: 420, h: 80, onTime: 1000, offTime: 1400 }
+            // Section 1: Intro gaps (150px each)
+            { x: 825,  y: 420, h: 80, onTime: 1200, offTime: 2200, startOff: true },
+            { x: 1525, y: 420, h: 80, onTime: 1200, offTime: 2200 },
+            // Section 2: Wider gaps (150px each)
+            { x: 2725, y: 420, h: 80, onTime: 1400, offTime: 1800, startOff: true },
+            { x: 3425, y: 420, h: 80, onTime: 1400, offTime: 1800 },
+            // Section 3: Mech territory (150px gap)
+            { x: 4725, y: 420, h: 80, onTime: 1200, offTime: 1600, startOff: true },
+            // Section 4: Gauntlet (150px each)
+            { x: 5825, y: 420, h: 80, onTime: 1200, offTime: 1400, startOff: true },
+            { x: 6425, y: 420, h: 80, onTime: 1000, offTime: 1400 }
         ],
         enemyTriggers: [
             // Section 1: Intro
@@ -361,6 +361,9 @@ const LEVEL_DATA = {
                 { type: 'heavy', x: 2200, y: 370, config: {} },
                 { type: 'grunt', x: 2350, y: 380, config: { patrolDir: -1 } }
             ]},
+            { x: 2400, enemies: [
+                { type: 'sentinel', x: 2500, y: 380, config: {} }
+            ]},
             { x: 2600, enemies: [
                 { type: 'grunt', x: 2900, y: 380, config: { patrolDir: -1 } },
                 { type: 'heavy', x: 3000, y: 370, config: {} },
@@ -368,6 +371,7 @@ const LEVEL_DATA = {
             ]},
             { x: 3200, enemies: [
                 { type: 'grunt', x: 3400, y: 250, config: { patrolDir: 1, patrolRange: 40 } },
+                { type: 'sentinel', x: 3550, y: 380, config: {} },
                 { type: 'grunt', x: 3600, y: 380, config: {} }
             ]},
             // Section 3: Mech territory
@@ -383,6 +387,9 @@ const LEVEL_DATA = {
                 { type: 'heavy', x: 4900, y: 370, config: {} },
                 { type: 'grunt', x: 5000, y: 380, config: { patrolDir: -1 } }
             ]},
+            { x: 4700, enemies: [
+                { type: 'sentinel', x: 4850, y: 380, config: {} }
+            ]},
             // Section 4: Gauntlet
             { x: 5000, enemies: [
                 { type: 'grunt', x: 5300, y: 380, config: {} },
@@ -393,6 +400,9 @@ const LEVEL_DATA = {
                 { type: 'heavy', x: 5950, y: 370, config: { patrolDir: -1 } },
                 { type: 'grunt', x: 6050, y: 380, config: {} },
                 { type: 'flyer', x: 6100, y: 160, config: { moveDir: -1 } }
+            ]},
+            { x: 6100, enemies: [
+                { type: 'sentinel', x: 6200, y: 380, config: {} }
             ]},
             { x: 6300, enemies: [
                 { type: 'heavy', x: 6550, y: 370, config: {} },
