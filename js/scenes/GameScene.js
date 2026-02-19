@@ -1241,18 +1241,25 @@ class GameScene extends Phaser.Scene {
                 pctText.setText(`${Math.round(v * 100)}%`);
             };
 
-            // Click/drag on track
-            const hitZone = this.add.rectangle(sliderX, sliderY, sliderW + 20, 30, 0x000000, 0).setOrigin(0.5).setInteractive();
-            hitZone.on('pointerdown', (ptr) => {
-                const localX = ptr.x - (sliderX - sliderW / 2);
-                updateSlider(localX / sliderW);
-            });
-            hitZone.on('pointermove', (ptr) => {
-                if (ptr.isDown) {
-                    const localX = ptr.x - (sliderX - sliderW / 2);
-                    updateSlider(localX / sliderW);
-                }
-            });
+            // Click/drag on track using scene-level input (avoids scrollFactor hit-test issues)
+            // ptr.x/ptr.y are already screen-space in Phaser
+            const sliderLeft = sliderX - sliderW / 2;
+            const sliderTop = sliderY - 20;
+            const sliderBottom = sliderY + 20;
+            const inSliderBounds = (ptr) => {
+                return ptr.x >= sliderLeft - 20 && ptr.x <= sliderLeft + sliderW + 20 &&
+                       ptr.y >= sliderTop && ptr.y <= sliderBottom;
+            };
+            this._sliderDown = (ptr) => {
+                if (!this.isPaused || !inSliderBounds(ptr)) return;
+                updateSlider((ptr.x - sliderLeft) / sliderW);
+            };
+            this._sliderMove = (ptr) => {
+                if (!this.isPaused || !ptr.isDown || !inSliderBounds(ptr)) return;
+                updateSlider((ptr.x - sliderLeft) / sliderW);
+            };
+            this.input.on('pointerdown', this._sliderDown);
+            this.input.on('pointermove', this._sliderMove);
 
             // LEFT/RIGHT keys to adjust (reuse existing cursor keys)
             this._volUpdate = () => {
@@ -1265,7 +1272,7 @@ class GameScene extends Phaser.Scene {
                 }
             };
 
-            this.pauseOverlay.add([bg, title, hint, volLabel, track, fill, handle, pctText, hitZone]);
+            this.pauseOverlay.add([bg, title, hint, volLabel, track, fill, handle, pctText]);
 
             // If touch mode, allow tapping the bg (not slider) to resume
             if (inputMode === 'touch') {
@@ -1282,6 +1289,12 @@ class GameScene extends Phaser.Scene {
 
             // Clean up volume update
             this._volUpdate = null;
+            if (this._sliderDown) {
+                this.input.off('pointerdown', this._sliderDown);
+                this.input.off('pointermove', this._sliderMove);
+                this._sliderDown = null;
+                this._sliderMove = null;
+            }
 
             // Remove overlay
             if (this.pauseOverlay) {
