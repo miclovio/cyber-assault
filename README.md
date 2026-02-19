@@ -6,9 +6,9 @@ This is a personal project I built to learn game development. Level 5 is still a
 
 [Play it here](https://cyber-assault.vercel.app)
 
-<!-- Add screenshots here later -->
-<!-- ![Gameplay](screenshots/gameplay.png) -->
-<!-- ![Boss Fight](screenshots/boss.png) -->
+![Title Screen](Assets/Screenshots/screenshot%20Intro.JPG)
+![Gameplay](Assets/Screenshots/screenshot%20action.JPG)
+![Boss Fight](Assets/Screenshots/screenshot%20Boss.JPG)
 
 ## Overview
 
