@@ -112,6 +112,11 @@ class CollisionManager {
         if (boss.takeDamage) {
             boss.takeDamage(bullet.damage || 1);
         }
+
+        // Boost player fire rate while landing hits on boss (resets each hit, decays in 300ms)
+        if (this.scene.player) {
+            this.scene.player.bossHitTimer = 300;
+        }
     }
 
     enemyBulletHitPlayer(player, bullet) {

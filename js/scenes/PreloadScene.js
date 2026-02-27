@@ -255,6 +255,10 @@ class PreloadScene extends Phaser.Scene {
         this.load.image('l5-back', `${lab}/back.png`);
         this.load.image('l5-mid', `${lab}/middle.png`);
         this.load.image('l5-front', `${lab}/front.png`);
+
+        // Laser gate emitter brackets
+        const gateBase = 'Assets/Packs/warped-Caves/PNG/environment/props';
+        for (let i = 1; i <= 3; i++) this.load.image(`gate-emitter${i}`, `${gateBase}/gate-0${i}.png`);
     }
 
     loadEffectsAssets() {
@@ -344,6 +348,9 @@ class PreloadScene extends Phaser.Scene {
         this.load.audio('sfx-enemy-gun', 'Assets/Music/enemy-gun.mp3');
         this.load.audio('sfx-tank-fire', 'Assets/Music/tank-fire.mp3');
         this.load.audio('sfx-skull-fire', 'Assets/Music/fireball-sfx-02.mp3');
+
+        // Laser gate
+        this.load.audio('sfx-laser-gate', 'Assets/Music/electro.mp3');
 
         // Music
         const mus = 'Assets/Music';
@@ -480,6 +487,8 @@ class PreloadScene extends Phaser.Scene {
         this.anims.create({ key: 'electro-shock', frames: this.frameKeys('electro-shock', 0, 8), frameRate: 12, repeat: -1 });
         // Lightning gate
         this.anims.create({ key: 'lightning-gate', frames: this.frameKeys('lightning', 1, 6), frameRate: 12, repeat: -1 });
+        // Gate emitter bracket
+        this.anims.create({ key: 'gate-emitter', frames: this.frameKeys('gate-emitter', 1, 3), frameRate: 4, repeat: -1 });
 
         // Fire ball
         this.anims.create({ key: 'fire-ball', frames: this.frameKeys('fire-ball', 0, 2), frameRate: 10, repeat: -1 });

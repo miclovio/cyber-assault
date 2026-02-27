@@ -31,6 +31,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.inCrawlZone = false;
         this.facingRight = true;
         this.lastFireTime = 0;
+        this.bossHitTimer = 0; // time remaining on fire rate boost from hitting boss
 
         // Jump (double jump earned via power-up)
         this.jumpsLeft = 1;
@@ -78,6 +79,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             this.updateDeathSequence(time, delta);
             return;
         }
+
+        // Decay boss hit fire rate boost
+        if (this.bossHitTimer > 0) this.bossHitTimer -= delta;
 
         // Handle invulnerability timer
         if (this.isInvulnerable) {
@@ -537,7 +541,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     shoot(time) {
         const weapon = WEAPONS[this.currentWeapon];
-        if (time - this.lastFireTime < weapon.fireRate) return;
+        const boosted = this.bossHitTimer > 0;
+        const rate = boosted ? weapon.fireRate * 0.25 : weapon.fireRate;
+        if (time - this.lastFireTime < rate) return;
         this.lastFireTime = time;
 
         this.scene.weaponSystem.fire(this, weapon);

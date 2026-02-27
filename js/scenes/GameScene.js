@@ -597,7 +597,7 @@ class GameScene extends Phaser.Scene {
         });
 
         // Start transition via update loop (6s celebration, then fade to black, hold, then switch)
-        if (this.currentLevel < 4) {
+        if (this.currentLevel < 5) {
             this.sceneTransition = {
                 phase: 1,
                 timer: 6000,
@@ -731,6 +731,25 @@ class GameScene extends Phaser.Scene {
         if (!levelData.laserGates) return;
 
         levelData.laserGates.forEach(lg => {
+            const topY = lg.y;
+            const botY = lg.y + lg.h;
+
+            // Top emitter bracket (always visible, rotated so opening faces down toward beam)
+            const topBracket = this.add.sprite(lg.x, topY, 'gate-emitter1');
+            topBracket.play('gate-emitter');
+            topBracket.setScale(0.35);
+            topBracket.setAngle(90);
+            topBracket.setDepth(9);
+            topBracket.setTint(0xcc4444);
+
+            // Bottom emitter bracket (always visible, rotated so opening faces up toward beam)
+            const botBracket = this.add.sprite(lg.x, botY, 'gate-emitter1');
+            botBracket.play('gate-emitter');
+            botBracket.setScale(0.35);
+            botBracket.setAngle(-90);
+            botBracket.setDepth(9);
+            botBracket.setTint(0xcc4444);
+
             // Lightning visual (ADD blend forces separate WebGL batch, renders over masked TileSprites)
             const sprite = this.add.sprite(lg.x, lg.y + lg.h / 2, 'lightning1');
             sprite.play('lightning-gate');
@@ -746,10 +765,14 @@ class GameScene extends Phaser.Scene {
             const gate = {
                 sprite: sprite,
                 zone: zone,
+                topBracket: topBracket,
+                botBracket: botBracket,
+                x: lg.x,
                 onTime: lg.onTime || 2000,
                 offTime: lg.offTime || 2000,
                 isOn: !lg.startOff,
-                timer: lg.startOff ? (lg.offTime || 2000) : (lg.onTime || 2000)
+                timer: lg.startOff ? (lg.offTime || 2000) : (lg.onTime || 2000),
+                sound: null
             };
 
             // Set initial state
@@ -757,6 +780,9 @@ class GameScene extends Phaser.Scene {
                 sprite.setVisible(false);
                 sprite.setActive(false);
                 if (zone.body) zone.body.enable = false;
+            } else {
+                gate.sound = this.sound.add('sfx-laser-gate', { loop: true, volume: 0 });
+                gate.sound.play();
             }
 
             this.laserGates.push(gate);
@@ -767,7 +793,16 @@ class GameScene extends Phaser.Scene {
         if (!this.laserGates.length) return;
 
         const delta = this.game.loop.delta;
+        const camCenterX = this.cameras.main.scrollX + this.cameras.main.width / 2;
+
         this.laserGates.forEach(gate => {
+            // Proximity-based volume (max 0.15, fades over 400px)
+            if (gate.sound && gate.sound.isPlaying) {
+                const dist = Math.abs(gate.x - camCenterX);
+                const vol = Math.max(0, 0.15 * (1 - dist / 400));
+                gate.sound.setVolume(vol);
+            }
+
             gate.timer -= delta;
             if (gate.timer <= 0) {
                 gate.isOn = !gate.isOn;
@@ -777,10 +812,15 @@ class GameScene extends Phaser.Scene {
                     gate.sprite.setVisible(true);
                     gate.sprite.setActive(true);
                     if (gate.zone.body) gate.zone.body.enable = true;
+                    if (!gate.sound) {
+                        gate.sound = this.sound.add('sfx-laser-gate', { loop: true, volume: 0 });
+                    }
+                    gate.sound.play();
                 } else {
                     gate.sprite.setVisible(false);
                     gate.sprite.setActive(false);
                     if (gate.zone.body) gate.zone.body.enable = false;
+                    if (gate.sound) gate.sound.stop();
                 }
             }
         });

@@ -205,16 +205,27 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     checkPlayerBulletHits() {
         if (!this.scene || !this.scene.weaponSystem) return;
         const children = this.scene.weaponSystem.playerBullets.getChildren();
-        const cx = this.x;
-        const cy = this.y;
-        const r = this.hitRadius || 75;
-        const rSq = r * r;
+
+        // Build hit zones: main body + child parts for Core Guardian
+        const zones = [{ x: this.x, y: this.y, r: this.hitRadius || 75 }];
+        if (this.bossType === 'COREGUARDIAN') {
+            // Arms and lower torso are all hittable
+            const parts = [this.armFront1, this.forearmFront, this.armBack1, this.armBack2, this.forearmBack, this.lowerTorso1, this.lowerTorso2, this.lowerTorso3];
+            for (const p of parts) {
+                if (p && p.active !== false) zones.push({ x: p.x, y: p.y, r: 25 });
+            }
+        }
+
         for (let i = 0; i < children.length; i++) {
             const b = children[i];
             if (!b.active) continue;
-            const dx = b.x - cx;
-            const dy = b.y - cy;
-            if (dx * dx + dy * dy < rSq) {
+            let hit = false;
+            for (const z of zones) {
+                const dx = b.x - z.x;
+                const dy = b.y - z.y;
+                if (dx * dx + dy * dy < z.r * z.r) { hit = true; break; }
+            }
+            if (hit) {
                 // Inline deactivation to avoid any method issues
                 b.setActive(false);
                 b.setVisible(false);
@@ -223,6 +234,10 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                     this.scene.effectsManager.playHitEffect(b.x, b.y, b.rotation);
                 }
                 this.takeDamage(b.damage || 1);
+                // Boost player fire rate while landing hits
+                if (this.scene.player) {
+                    this.scene.player.bossHitTimer = 300;
+                }
             }
         }
     }
